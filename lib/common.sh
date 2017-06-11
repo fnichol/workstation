@@ -110,6 +110,9 @@ install_pkg() {
     Ubuntu)
       ubuntu_install_pkg "$@"
       ;;
+    Arch)
+      arch_install_pkg "$@"
+      ;;
     *)
       warn "Installing package on $_os not yet supported, skipping..."
       ;;

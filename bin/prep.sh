@@ -99,6 +99,8 @@ init() {
     _os="$_system"
   elif [ -f /etc/lsb-release ]; then
     _os="$(. /etc/lsb-release; echo $DISTRIB_ID)"
+  elif [ -f /etc/arch-release ]; then
+    _os="Arch"
   else
     _os="Unknown"
   fi
@@ -178,7 +180,10 @@ setup_package_system() {
       darwin_install_homebrew
       ;;
     Ubuntu)
-      sudo apt-get update
+      sudo apt-get update | indent
+      ;;
+    Arch)
+      sudo pacman -Syy --noconfirm | indent
       ;;
     *)
       warn "Setting up package system on $_os not yet supported, skipping"
@@ -195,6 +200,9 @@ update_system() {
       ;;
     Ubuntu)
       # Nothing to do
+      ;;
+    Arch)
+      sudo pacman -Su --noconfirm | indent
       ;;
     *)
       warn "Setting up package system on $_os not yet supported, skipping"
@@ -213,6 +221,10 @@ install_base_packages() {
     Ubuntu)
       install_pkg jq
       install_pkgs_from_json "$_data_path/ubuntu_base_pkgs.json"
+      ;;
+    Arch)
+      install_pkg jq
+      install_pkgs_from_json "$_data_path/arch_base_pkgs.json"
       ;;
     *)
       warn "Installing packages on $_os not yet supported, skipping"
@@ -234,6 +246,9 @@ install_workstation_packages() {
       ;;
     Ubuntu)
       install_pkgs_from_json "$_data_path/ubuntu_workstation_pkgs.json"
+      ;;
+    Arch)
+      install_pkgs_from_json "$_data_path/arch_workstation_pkgs.json"
       ;;
     *)
       warn "Installing packages on $_os not yet supported, skipping"

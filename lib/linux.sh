@@ -1,6 +1,21 @@
+arch_install_pkg() {
+  need_cmd pacman
+  need_cmd sudo
+
+  local pkg="$1"
+
+  if pacman -Qi "$pkg" > /dev/null 2>&1; then
+    return 0
+  fi
+
+  info "Installing package '$pkg'"
+  sudo pacman -S --noconfirm "$pkg" 2>&1 | indent
+}
+
 ubuntu_install_pkg() {
   need_cmd apt-get
   need_cmd dpkg
+  need_cmd sudo
 
   local pkg="$1"
 

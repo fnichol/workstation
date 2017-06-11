@@ -1,0 +1,18 @@
+[
+  "bash",
+  "curl",
+  "gawk",
+  "git",
+  "htop",
+  "mg",
+  "mosh",
+  "openssh",
+  "psmisc",
+  "screen",
+  "tmux",
+  "tree",
+  "wget",
+  "unzip",
+  "vim",
+  "yaourt"
+]
