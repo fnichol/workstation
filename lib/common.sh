@@ -103,12 +103,15 @@ info() {
 }
 
 install_pkg() {
-  case "$_system" in
+  case "$_os" in
     Darwin)
       darwin_install_pkg "$@"
       ;;
+    Ubuntu)
+      ubuntu_install_pkg "$@"
+      ;;
     *)
-      warn "Installing package on $_system not yet supported, skipping..."
+      warn "Installing package on $_os not yet supported, skipping..."
       ;;
   esac
 }

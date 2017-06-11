@@ -2,7 +2,7 @@
 # shellcheck shell=sh disable=SC2039
 
 # Fails on unset variables & whenever a command returns a non-zero exit code.
-set -euo pipefail
+set -eu
 # If the variable `$DEBUG` is set, then print the shell commands as we execute.
 if [ -n "${DEBUG:-}" ]; then set -x; fi
 
@@ -21,7 +21,7 @@ FLAGS:
     -h  Prints this message
 
 OPTIONS:
-    -a  App Store credentials of the form <email>:<password>
+    -a  macOS App Store credentials of the form <email>:<password>
 
 ARGS:
     <HOSTNAME>  The name for this workstation
@@ -35,6 +35,7 @@ main() {
   _program="$(basename "$0")"
   _version="0.5.0"
   _author="Fletcher Nichol <fnichol@nichol.ca>"
+  _system="$(uname -s)"
 
   OPTIND=1
   # Parse command line flags and options
@@ -63,7 +64,8 @@ main() {
     _argv_hostname="$1"
   fi
 
-  if [ "$base_only" != "true" ] \
+  if [ "$_system" = "Darwin" ] \
+      && [ "$base_only" != "true" ] \
       && [ ! -f "$HOME/Library/Preferences/com.apple.appstore.plist" ] \
       && [ -z "${_app_store_creds:-}" ]; then
     printf -- "Not logged into App Store, please provide '-a' option.\n\n"
@@ -77,7 +79,7 @@ main() {
   update_system
   install_base_packages
 
-  if [ "$base_only" != "true" ]; then
+  if [ "${base_only:-}" != "true" ]; then
     install_workstation_packages
     install_rust
     install_ruby
@@ -91,8 +93,15 @@ main() {
 init() {
   local p
 
-  _system="$(uname -s)"
   _hostname="$(hostname)"
+
+  if [ "$_system" != "Linux" ]; then
+    _os="$_system"
+  elif [ -f /etc/lsb-release ]; then
+    _os="$(. /etc/lsb-release; echo $DISTRIB_ID)"
+  else
+    _os="Unknown"
+  fi
 
   p="$(dirname "$0")"
   p="$(cd "$p"; pwd)/$(basename "$0")"
@@ -133,15 +142,16 @@ set_hostname() {
   if [ -z "${_argv_hostname:-}" ]; then
     return 0
   fi
-  need_cmd sudo
-  need_cmd scutil
-  need_cmd defaults
 
   local name="$_argv_hostname"
 
   header "Setting hostname to '$name'"
-  case "$_system" in
+  case "$_os" in
     Darwin)
+      need_cmd sudo
+      need_cmd scutil
+      need_cmd defaults
+
       local smb="/Library/Preferences/SystemConfiguration/com.apple.smb.server"
       if [ "$(scutil --get ComputerName)" != "$name" ]; then
         sudo scutil --set ComputerName "$name"
@@ -154,7 +164,7 @@ set_hostname() {
       fi
       ;;
     *)
-      warn "Setting hostname on $_system not yet supported, skipping"
+      warn "Setting hostname on $_os not yet supported, skipping"
       ;;
   esac
 }
@@ -162,13 +172,16 @@ set_hostname() {
 setup_package_system() {
   header "Setting up package system"
 
-  case "$_system" in
+  case "$_os" in
     Darwin)
       darwin_install_xcode_cli_tools
       darwin_install_homebrew
       ;;
+    Ubuntu)
+      sudo apt-get update
+      ;;
     *)
-      warn "Setting up package system on $_system not yet supported, skipping"
+      warn "Setting up package system on $_os not yet supported, skipping"
       ;;
   esac
 }
@@ -176,12 +189,15 @@ setup_package_system() {
 update_system() {
   header "Applying system updates"
 
-  case "$_system" in
+  case "$_os" in
     Darwin)
       softwareupdate --install --all 2>&1 | indent
       ;;
+    Ubuntu)
+      # Nothing to do
+      ;;
     *)
-      warn "Setting up package system on $_system not yet supported, skipping"
+      warn "Setting up package system on $_os not yet supported, skipping"
       ;;
   esac
 }
@@ -189,13 +205,17 @@ update_system() {
 install_base_packages() {
   header "Installing base packages"
 
-  case "$_system" in
+  case "$_os" in
     Darwin)
       install_pkg jq
       install_pkgs_from_json "$_data_path/darwin_base_pkgs.json"
       ;;
+    Ubuntu)
+      install_pkg jq
+      install_pkgs_from_json "$_data_path/ubuntu_base_pkgs.json"
+      ;;
     *)
-      warn "Installing packages on $_system not yet supported, skipping"
+      warn "Installing packages on $_os not yet supported, skipping"
       ;;
   esac
 }
@@ -203,7 +223,7 @@ install_base_packages() {
 install_workstation_packages() {
   header "Installing workstation packages"
 
-  case "$_system" in
+  case "$_os" in
     Darwin)
       darwin_add_homebrew_taps
       darwin_install_cask_pkgs_from_json "$_data_path/darwin_cask_pkgs.json"
@@ -212,8 +232,11 @@ install_workstation_packages() {
       killall Dock
       killall Finder
       ;;
+    Ubuntu)
+      install_pkgs_from_json "$_data_path/ubuntu_workstation_pkgs.json"
+      ;;
     *)
-      warn "Installing packages on $_system not yet supported, skipping"
+      warn "Installing packages on $_os not yet supported, skipping"
       ;;
   esac
 }
@@ -249,8 +272,12 @@ install_ruby() {
       install_pkg chruby
       install_pkg ruby-install
       ;;
+    Linux)
+      linux_install_chruby
+      linux_install_ruby_install
+      ;;
     *)
-      warn "Installing Ruby on $_system not yet supported, skipping"
+      warn "Installing Ruby on $_os not yet supported, skipping"
       return 0
       ;;
   esac
@@ -311,13 +338,16 @@ install_node() {
 set_preferences() {
   header "Setting preferences"
 
-  case "$_system" in
+  case "$_os" in
     Darwin)
       darwin_set_preferences "$_data_path/darwin_prefs.json"
       darwin_install_iterm2_settings
       ;;
+    Ubuntu)
+      # Nothing to do
+      ;;
     *)
-      warn "Installing packages on $_system not yet supported, skipping"
+      warn "Installing packages on $_os not yet supported, skipping"
       ;;
   esac
 }

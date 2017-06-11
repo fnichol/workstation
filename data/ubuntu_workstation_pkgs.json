@@ -1,0 +1,22 @@
+[
+  "ack",
+  "axel",
+  "build-essential",
+  "direnv",
+  "flac",
+  "graphviz",
+  "jo",
+  "lame",
+  "libxml2",
+  "lynx",
+  "mercurial",
+  "polipo",
+  "qemu",
+  "rsnapshot",
+  "rsync",
+  "shellcheck",
+  "sqlite3",
+  "sshuttle",
+  "unrar",
+  "youtube-dl"
+]
