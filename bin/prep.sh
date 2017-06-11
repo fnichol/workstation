@@ -78,6 +78,7 @@ main() {
   setup_package_system
   update_system
   install_base_packages
+  install_bashrc
 
   if [ "${base_only:-}" != "true" ]; then
     install_workstation_packages
@@ -85,7 +86,6 @@ main() {
     install_ruby
     install_node
     set_preferences
-    install_bashrc
     install_dot_configs
   fi
 }
