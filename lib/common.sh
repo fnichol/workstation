@@ -44,10 +44,23 @@ ensure_not_root() {
   fi
 }
 
+exit_with() {
+  case "${TERM:-}" in
+    *term | xterm-* | rxvt | screen | screen-*)
+      printf -- "\n\033[1;31mERROR: \033[1;37m${1:-}\033[0m\n\n" >&2
+      ;;
+    *)
+      printf -- "\nERROR: ${1:-}\n\n" >&2
+      ;;
+  esac
+  exit "${2:-10}"
+}
+
 get_sudo() {
+  need_cmd hostname
   need_cmd sudo
 
-  sudo -p "[sudo required for some tasks] Password for %u@${_hostname}: " -v
+  sudo -p "[sudo required for some tasks] Password for %u@$(hostname): " -v
 }
 
 header() {
@@ -59,32 +72,6 @@ header() {
       printf -- "-----> $*\n"
       ;;
   esac
-}
-
-homedir_for() {
-  local user="$1"
-  local home
-  case "$_system" in
-    Darwin)
-      need_cmd ruby
-
-      home="$(ruby -retc -e "puts Etc.getpwnam('$user').dir")"
-      ;;
-    *)
-      need_cmd cut
-      need_cmd getent
-
-      home="$(getent passwd "$user" | cut -d ':' -f 6)"
-      ;;
-  esac
-
-  if [ -z "$home" ]; then
-    warn "Could not find home for user $user"
-    return 5
-  else
-    echo "$home"
-    return 0
-  fi
 }
 
 indent() {
@@ -100,34 +87,6 @@ info() {
       printf -- "       ${*:-}\n"
       ;;
   esac
-}
-
-install_pkg() {
-  case "$_os" in
-    Darwin)
-      darwin_install_pkg "$@"
-      ;;
-    Ubuntu)
-      ubuntu_install_pkg "$@"
-      ;;
-    Arch)
-      arch_install_pkg "$@"
-      ;;
-    *)
-      warn "Installing package on $_os not yet supported, skipping..."
-      ;;
-  esac
-}
-
-install_pkgs_from_json() {
-  need_cmd cat
-  need_cmd jq
-
-  local json="$1"
-
-  cat "$json" | jq -r .[] | while read -r pkg; do
-    install_pkg "$pkg"
-  done
 }
 
 # Keep-alive: update existing sudo time stamp if set, otherwise do nothing.

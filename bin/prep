@@ -1,0 +1,32 @@
+#!/usr/bin/env sh
+# shellcheck shell=sh disable=SC2039
+
+main() {
+  set -eu
+  if [ -n "${DEBUG:-}" ]; then set -x; fi
+
+  # shellcheck source=lib/common.sh
+  . "${0%/*}/../lib/common.sh"
+  # shellcheck source=lib/prep.sh
+  . "${0%/*}/../lib/prep.sh"
+
+  parse_cli_args "$@"
+
+  init
+  set_hostname
+  setup_package_system
+  update_system
+  install_base_packages
+  set_preferences
+  install_bashrc
+  install_dot_configs
+
+  if [ "${_base_only:-}" != "true" ]; then
+    install_workstation_packages
+    install_rust
+    install_ruby
+    install_node
+  fi
+}
+
+main "$@" || exit 99

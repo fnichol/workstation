@@ -1,3 +1,15 @@
+arch_add_repos() {
+  if ! grep -q '^\[archlinuxfr\]$' /etc/pacman.conf; then
+    info "Adding repository for Yaourt"
+    cat <<'EOF' | sudo tee -a /etc/pacman.conf > /dev/null
+
+[archlinuxfr]
+SigLevel = Never
+Server = http://repo.archlinux.fr/$arch
+EOF
+  fi
+}
+
 arch_install_pkg() {
   need_cmd pacman
   need_cmd sudo
@@ -10,21 +22,6 @@ arch_install_pkg() {
 
   info "Installing package '$pkg'"
   sudo pacman -S --noconfirm "$pkg" 2>&1 | indent
-}
-
-ubuntu_install_pkg() {
-  need_cmd apt-get
-  need_cmd dpkg
-  need_cmd sudo
-
-  local pkg="$1"
-
-  if dpkg -l "$pkg" > /dev/null 2>&1; then
-    return 0
-  fi
-
-  info "Installing package '$pkg'"
-  sudo apt-get install -y "$pkg" 2>&1 | indent
 }
 
 linux_install_chruby() {
@@ -67,4 +64,19 @@ linux_install_ruby_install() {
   (cd /tmp && tar -xf "/tmp/ruby-install-${version#v}.tar.gz")
   (cd "/tmp/ruby-install-${version#v}" && sudo make install) | indent
   rm -rf "/tmp/ruby-install-${version#v}" "/tmp/ruby-install-${version#v}.tar.gz"
+}
+
+ubuntu_install_pkg() {
+  need_cmd apt-get
+  need_cmd dpkg
+  need_cmd sudo
+
+  local pkg="$1"
+
+  if dpkg -l "$pkg" > /dev/null 2>&1; then
+    return 0
+  fi
+
+  info "Installing package '$pkg'"
+  sudo apt-get install -y "$pkg" 2>&1 | indent
 }
