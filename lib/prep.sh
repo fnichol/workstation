@@ -251,7 +251,7 @@ install_dot_configs() {
       "$HOME/.homesick/repos/homeshick" | indent
   fi
 
-  for repo in fnichol/dotfiles fnichol/dotvim; do
+  cat "$_data_path/homesick_repos.json" | jq -r .[] | while read -r repo; do
     repo_dir="$HOME/.homesick/repos/$(echo "$repo" | cut -d '/' -f 2)"
 
     if [ ! -d "$repo_dir" ]; then
