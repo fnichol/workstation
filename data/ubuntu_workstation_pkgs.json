@@ -17,6 +17,5 @@
   "shellcheck",
   "sqlite3",
   "sshuttle",
-  "unrar",
-  "youtube-dl"
+  "unrar"
 ]
