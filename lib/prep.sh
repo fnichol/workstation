@@ -327,7 +327,7 @@ install_ruby() {
   # shellcheck disable=SC2012
   if [ "$(ls -1 "$HOME/.rubies" 2> /dev/null | wc -l)" -eq 0 ]; then
     info "Building curent stable version of Ruby"
-    ruby-install --cleanup --src-dir /tmp/ruby-src ruby 2>&1 | indent
+    ruby-install --cleanup --src-dir /tmp/ruby-src ruby 2>&1
   fi
 
   sudo mkdir -p /etc/profile.d
