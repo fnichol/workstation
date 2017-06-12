@@ -100,16 +100,14 @@ darwin_install_app() {
 darwin_install_apps_from_json() {
   need_cmd jq
 
-  local app id
+  local app
+  local id
   local json="$1"
-  local email="${_app_store_creds%%:*}"
-  local password="${_app_store_creds#*:}"
 
   install_pkg mas
 
   if ! mas account | grep -q '@'; then
-    info "Signing into App Store as '$email'"
-    mas signin "$email" "$password" | indent
+    exit_with "Not logged into App Store" 16
   fi
 
   cat "$json" \

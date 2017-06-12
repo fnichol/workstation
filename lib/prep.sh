@@ -13,9 +13,6 @@ FLAGS:
     -b  Only sets up base system (not extra workstation setup)
     -h  Prints this message
 
-OPTIONS:
-    -a  macOS App Store credentials of the form <email>:<password>
-
 ARGS:
     <HOSTNAME>  The name for this workstation
 
@@ -25,11 +22,8 @@ HELP
 parse_cli_args() {
   OPTIND=1
   # Parse command line flags and options
-  while getopts ":hba:" opt; do
+  while getopts ":hb" opt; do
     case $opt in
-      a)
-        _app_store_creds="$OPTARG"
-        ;;
       b)
         _base_only=true
         ;;
@@ -52,11 +46,10 @@ parse_cli_args() {
 
   if [ "$(uname -s)" = "Darwin" ] \
       && [ "$_base_only" != "true" ] \
-      && [ ! -f "$HOME/Library/Preferences/com.apple.appstore.plist" ] \
-      && [ -z "${_app_store_creds:-}" ]; then
-    printf -- "Not logged into App Store, please provide '-a' option.\n\n"
+      && [ ! -f "$HOME/Library/Preferences/com.apple.appstore.plist" ]; then
+    printf -- "Not logged into App Store, please login and try again.\n\n"
     print_help
-    exit_with "Must provide -a flag with <email>:<password>" 2
+    exit_with "Must be logged into App Store" 2
   fi
 }
 
