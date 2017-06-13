@@ -221,6 +221,7 @@ update_system() {
       ;;
     Darwin)
       softwareupdate --install --all 2>&1 | indent
+      env HOMEBREW_NO_AUTO_UPDATE=true brew upgrade --cleanup
       ;;
     Ubuntu)
       sudo apt-get -y dist-upgrade | indent
