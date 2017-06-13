@@ -118,6 +118,27 @@ set_hostname() {
 
   header "Setting hostname to '$fqdn'"
   case "$_os" in
+    Arch)
+      need_cmd grep
+      need_cmd hostname
+      need_cmd sed
+      need_cmd sudo
+      need_cmd tee
+
+      local old_hostname
+      old_hostname="$(hostname -f)"
+
+      if [ "$old_hostname" != "$name" ]; then
+        echo "$name" | sudo tee /etc/hostname > /dev/null
+        sudo hostname "$name"
+        if ! grep -q -w "$fqdn" /etc/hosts; then
+          sudo sed -i "1i 127.0.0.1\\t${fqdn}\\t${name}" /etc/hosts
+        fi
+        if command -v hostnamectl; then
+          sudo hostnamectl set-hostname "$name"
+        fi
+      fi
+      ;;
     Darwin)
       need_cmd sudo
       need_cmd scutil
@@ -135,6 +156,33 @@ set_hostname() {
       fi
       if [ "$(defaults read "$smb" NetBIOSName)" != "$name" ]; then
         sudo defaults write "$smb" NetBIOSName -string "$name"
+      fi
+      ;;
+    Ubuntu)
+      need_cmd grep
+      need_cmd hostname
+      need_cmd sed
+      need_cmd sudo
+      need_cmd tee
+
+      local old_hostname
+      old_hostname="$(hostname -f)"
+
+      if [ "$old_hostname" != "$name" ]; then
+        echo "$name" | sudo tee /etc/hostname > /dev/null
+        sudo hostname -F /etc/hostname
+        if ! grep -q -w "$fqdn" /etc/hosts; then
+          sudo sed -i "1i 127.0.0.1\\t${fqdn}\\t${name}" /etc/hosts
+        fi
+        if command -v hostnamectl; then
+          sudo hostnamectl set-hostname "$name"
+        fi
+        if [ -f /etc/init.d/hostname ]; then
+          sudo /etc/init.d/hostname start || true
+        fi
+        if [ -f /etc/init.d/hostname.sh ]; then
+          sudo /etc/init.d/hostname.sh start || true
+        fi
       fi
       ;;
     *)
@@ -175,7 +223,7 @@ update_system() {
       softwareupdate --install --all 2>&1 | indent
       ;;
     Ubuntu)
-      # Nothing to do
+      sudo apt-get -y dist-upgrade | indent
       ;;
     *)
       warn "Setting up package system on $_os not yet supported, skipping"
@@ -209,6 +257,9 @@ set_preferences() {
   header "Setting preferences"
 
   case "$_os" in
+    Arch)
+      # Nothing to do
+      ;;
     Darwin)
       darwin_set_preferences "$_data_path/darwin_prefs.json"
       darwin_install_iterm2_settings
@@ -390,14 +441,14 @@ install_node() {
 
 install_pkg() {
   case "$_os" in
+    Arch)
+      arch_install_pkg "$@"
+      ;;
     Darwin)
       darwin_install_pkg "$@"
       ;;
     Ubuntu)
       ubuntu_install_pkg "$@"
-      ;;
-    Arch)
-      arch_install_pkg "$@"
       ;;
     *)
       warn "Installing package on $_os not yet supported, skipping..."
