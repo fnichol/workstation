@@ -75,6 +75,8 @@ init() {
     _os="$(. /etc/lsb-release; echo $DISTRIB_ID)"
   elif [ -f /etc/arch-release ]; then
     _os="Arch"
+  elif [ -f /etc/redhat-release ]; then
+    _os="RedHat"
   else
     _os="Unknown"
   fi
@@ -203,6 +205,9 @@ setup_package_system() {
       darwin_install_xcode_cli_tools
       darwin_install_homebrew
       ;;
+    RedHat)
+      # Nothing to do
+      ;;
     Ubuntu)
       sudo apt-get update | indent
       ;;
@@ -222,6 +227,9 @@ update_system() {
     Darwin)
       softwareupdate --install --all 2>&1 | indent
       env HOMEBREW_NO_AUTO_UPDATE=true brew upgrade --cleanup
+      ;;
+    RedHat)
+      # Nothing to do
       ;;
     Ubuntu)
       sudo apt-get -y dist-upgrade | indent
@@ -244,6 +252,10 @@ install_base_packages() {
       install_pkg jq
       install_pkgs_from_json "$_data_path/darwin_base_pkgs.json"
       ;;
+    RedHat)
+      redhat_install_jq
+      install_pkgs_from_json "$_data_path/redhat_base_pkgs.json"
+      ;;
     Ubuntu)
       install_pkg jq
       install_pkgs_from_json "$_data_path/ubuntu_base_pkgs.json"
@@ -264,6 +276,9 @@ set_preferences() {
     Darwin)
       darwin_set_preferences "$_data_path/darwin_prefs.json"
       darwin_install_iterm2_settings
+      ;;
+    RedHat)
+      # Nothing to do
       ;;
     Ubuntu)
       # Nothing to do
@@ -335,6 +350,9 @@ install_workstation_packages() {
       killall Dock
       killall Finder
       ;;
+    RedHat)
+      install_pkgs_from_json "$_data_path/redhat_workstation_pkgs.json"
+      ;;
     Ubuntu)
       install_pkgs_from_json "$_data_path/ubuntu_workstation_pkgs.json"
       ;;
@@ -397,7 +415,6 @@ install_ruby() {
     info "Creating /etc/profile.d/chruby.sh"
     cat <<_CHRUBY_ | sudo tee /etc/profile.d/chruby.sh > /dev/null
 source /usr/local/share/chruby/chruby.sh
-RUBIES+=(/opt/chef/embedded)
 source /usr/local/share/chruby/auto.sh
 _CHRUBY_
   fi
@@ -447,6 +464,9 @@ install_pkg() {
       ;;
     Darwin)
       darwin_install_pkg "$@"
+      ;;
+    RedHat)
+      redhat_install_pkg "$@"
       ;;
     Ubuntu)
       ubuntu_install_pkg "$@"

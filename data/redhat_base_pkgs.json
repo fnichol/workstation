@@ -1,0 +1,13 @@
+[
+  "bash",
+  "curl",
+  "gawk",
+  "git",
+  "psmisc",
+  "screen",
+  "tmux",
+  "tree",
+  "wget",
+  "unzip",
+  "vim"
+]

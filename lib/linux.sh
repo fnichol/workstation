@@ -66,6 +66,31 @@ linux_install_ruby_install() {
   rm -rf "/tmp/ruby-install-${version#v}" "/tmp/ruby-install-${version#v}.tar.gz"
 }
 
+redhat_install_jq() {
+  install_pkg wget
+
+  if [ ! -f /usr/local/bin/jq ]; then
+    info "Installing jq"
+    download \
+      "https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64" \
+      /tmp/jq
+    sudo cp /tmp/jq /usr/local/bin/jq
+    sudo chmod 0755 /usr/local/bin/jq
+    rm -f /tmp/jq
+  fi
+}
+
+redhat_install_pkg() {
+  local pkg="$1"
+
+  if sudo yum list installed "$pkg" > /dev/null 2>&1; then
+    return 0
+  fi
+
+  info "Installing package '$pkg'"
+  sudo yum install -y "$pkg" 2>&1 | indent
+}
+
 ubuntu_install_pkg() {
   need_cmd apt-get
   need_cmd dpkg

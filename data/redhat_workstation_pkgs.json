@@ -1,0 +1,22 @@
+[
+  "autoconf",
+  "bison",
+  "bzip2",
+  "flac",
+  "flex",
+  "gcc",
+  "gcc-c++",
+  "gettext",
+  "graphviz",
+  "kernel-devel",
+  "libxml2-devel",
+  "libxslt-devel",
+  "lynx",
+  "m4",
+  "make",
+  "mercurial",
+  "ncurses-devel",
+  "patch",
+  "rsync",
+  "sqlite"
+]
