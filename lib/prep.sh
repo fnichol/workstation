@@ -7,14 +7,14 @@ $_author
 Workstation Setup
 
 USAGE:
-        $_program [FLAGS] [OPTIONS] [<HOSTNAME>]
+        $_program [FLAGS] [OPTIONS] [<FQDN>]
 
 FLAGS:
     -b  Only sets up base system (not extra workstation setup)
     -h  Prints this message
 
 ARGS:
-    <HOSTNAME>  The name for this workstation
+    <FQDN>    The name for this workstation
 
 HELP
 }
@@ -45,7 +45,7 @@ parse_cli_args() {
   fi
 
   if [ "$(uname -s)" = "Darwin" ] \
-      && [ "$_base_only" != "true" ] \
+      && [ "${_base_only:-}" != "true" ] \
       && [ ! -f "$HOME/Library/Preferences/com.apple.appstore.plist" ]; then
     printf -- "Not logged into App Store, please login and try again.\n\n"
     print_help
@@ -108,9 +108,15 @@ set_hostname() {
     return 0
   fi
 
-  local name="$_argv_hostname"
+  local fqdn
+  local name="${_argv_hostname%%.*}"
+  if [ "$_argv_hostname" = "$name" ]; then
+    fqdn="${name}.local"
+  else
+    fqdn="$_argv_hostname"
+  fi
 
-  header "Setting hostname to '$name'"
+  header "Setting hostname to '$fqdn'"
   case "$_os" in
     Darwin)
       need_cmd sudo
@@ -118,6 +124,9 @@ set_hostname() {
       need_cmd defaults
 
       local smb="/Library/Preferences/SystemConfiguration/com.apple.smb.server"
+      if [ "$(scutil --get HostName)" != "$fqdn" ]; then
+        sudo scutil --set HostName "$fqdn"
+      fi
       if [ "$(scutil --get ComputerName)" != "$name" ]; then
         sudo scutil --set ComputerName "$name"
       fi
