@@ -25,8 +25,11 @@ main() {
     install_workstation_packages
     install_rust
     install_ruby
+    install_go
     install_node
   fi
+
+  finish
 }
 
 main "$@" || exit 99

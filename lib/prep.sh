@@ -428,6 +428,59 @@ _CHRUBY_
   fi
 }
 
+install_go() {
+  header "Setting up Go"
+
+  need_cmd cat
+  need_cmd rm
+  need_cmd sudo
+
+  local ver
+  ver="1.8.3"
+
+  if [ -f /usr/local/go/VERSION ]; then
+    local installed_ver
+    installed_ver="$(cat /usr/local/go/VERSION)"
+    if [ "$installed_ver" = "go${ver}" ]; then
+      return 0
+    else
+      info "Uninstalling Go $installed_ver"
+      sudo rm -rf /usr/local/go
+    fi
+  fi
+
+  need_cmd uname
+  need_cmd mkdir
+  need_cmd tar
+
+  local arch
+  local kernel
+  local machine
+  local url
+  kernel="$(uname -s | tr '[:upper:]' '[:lower:]')"
+  machine="$(uname -m)"
+
+  case "$machine" in
+    x86_64)
+      arch="amd64"
+      ;;
+    i686)
+      arch="386"
+      ;;
+    *)
+      exit_with "Installation of Go not currently supported for $machine" 22
+      ;;
+  esac
+
+  url="https://storage.googleapis.com/golang/go${ver}.${kernel}-${arch}.tar.gz"
+
+  info "Installing Go $ver"
+  sudo mkdir -p /usr/local
+  download "$url" "/tmp/$(basename "$url")"
+  sudo tar xf "/tmp/$(basename "$url")" -C /usr/local
+  rm -f "/tmp/$(basename "$url")"
+}
+
 install_node() {
   need_cmd bash
   need_cmd curl
@@ -455,6 +508,10 @@ install_node() {
     info "Installing current stable version of Node"
     bash -c '. $HOME/.nvm/nvm.sh && nvm install --lts 2>&1' | indent
   fi
+}
+
+finish() {
+  header "Finished setting up workstation, enjoy!"
 }
 
 install_pkg() {
