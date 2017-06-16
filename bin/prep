@@ -22,6 +22,7 @@ main() {
   update_system
   install_base_packages
   set_preferences
+  generate_keys
   install_bashrc
   install_dot_configs
 

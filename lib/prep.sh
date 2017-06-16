@@ -286,6 +286,31 @@ set_preferences() {
   esac
 }
 
+generate_keys() {
+  header "Generating keys"
+
+  need_cmd chmod
+  need_cmd date
+  need_cmd hostname
+  need_cmd mkdir
+  need_cmd ssh-keygen
+
+  if [ ! -f "$HOME/.ssh/id_rsa" ]; then
+    info "Generating SSH key for '$USER' on this system"
+    mkdir -p "$HOME/.ssh"
+    ssh-keygen \
+      -N '' \
+      -C "${USER}@$(hostname -f)-$(date +%FT%T%z)" \
+      -t rsa \
+      -b 4096 \
+      -a 100 \
+      -f "$HOME/.ssh/id_rsa"
+    chmod 0700 "$HOME/.ssh"
+    chmod 0600 "$HOME/.ssh/id_rsa"
+    chmod 0644 "$HOME/.ssh/id_rsa.pub"
+  fi
+}
+
 install_bashrc() {
   need_cmd bash
   need_cmd rm
