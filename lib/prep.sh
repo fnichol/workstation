@@ -384,6 +384,25 @@ install_workstation_packages() {
   esac
 }
 
+install_habitat() {
+  header "Installing Habitat"
+
+  if command -v hab > /dev/null; then
+    return 0
+  fi
+
+  local url="https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh"
+
+  case "$_os" in
+    Darwin)
+      curl -sSf "$url" | sh 2>&1 | indent
+      ;;
+    *)
+      curl -sSf "$url" | sudo sh 2>&1 | indent
+      ;;
+  esac
+}
+
 install_rust() {
   local rustc="$HOME/.cargo/bin/rustc"
   local cargo="$HOME/.cargo/bin/cargo"
