@@ -5,6 +5,10 @@ main() {
   set -eu
   if [ -n "${DEBUG:-}" ]; then set -x; fi
 
+  _program="$(basename "$0")"
+  _version="0.5.0"
+  _author="Fletcher Nichol <fnichol@nichol.ca>"
+
   # shellcheck source=lib/common.sh
   . "${0%/*}/../lib/common.sh"
   # shellcheck source=lib/prep.sh

@@ -62,9 +62,6 @@ init() {
   local hostname
   hostname="$(hostname)"
 
-  _program="$(basename "$0")"
-  _version="0.5.0"
-  _author="Fletcher Nichol <fnichol@nichol.ca>"
   _system="$(uname -s)"
 
   _data_path="${0%/*}/../data"
