@@ -274,4 +274,7 @@ darwin_set_preferences() {
 
   info "Disable smart dashes"
   defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+  info "Use all function keys as function keys by default"
+  defaults write -g com.apple.keyboard.fnState -bool true
 }
