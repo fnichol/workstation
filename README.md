@@ -7,6 +7,31 @@ Currently, the following platforms are supported (older and newer version may al
 * macOS (10.12)
 * Ubuntu Linux (17.04)
 
+## Installation
+
+There are probably 2 use cases: running on a brand new system (before Git is even installed), and on an existing system (presumably with Git installed).
+
+### New System
+
+```sh
+wget https://github.com/fnichol/workstation/archive/master.tar.gz
+tar xfz master.tar.gz
+cd workstation-master
+```
+
+Alternatively, if `wget` is not present you can use `curl`:
+
+```sh
+curl -LO https://github.com/fnichol/workstation/archive/master.tar.gz
+```
+
+### Existing System
+
+```sh
+git clone https://github.com/fnichol/workstation.git
+cd workstation
+```
+
 ## Usage
 
 To run the workstation prep and set a hostname, provide your FQDN as the argument:
