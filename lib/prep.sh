@@ -432,6 +432,7 @@ install_go() {
   need_cmd rm
   need_cmd sudo
 
+  # https://golang.org/dl/
   local ver
   ver="1.8.3"
 
