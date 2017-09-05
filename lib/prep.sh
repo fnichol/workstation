@@ -478,7 +478,7 @@ install_go() {
 
   # https://golang.org/dl/
   local ver
-  ver="1.8.3"
+  ver="1.9"
 
   if [ -f /usr/local/go/VERSION ]; then
     local installed_ver
