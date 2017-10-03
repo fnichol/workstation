@@ -1,6 +1,7 @@
 [
   "ack",
   "axel",
+  "awscli",
   "coreutils",
   "direnv",
   "flac",
