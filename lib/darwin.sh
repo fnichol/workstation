@@ -163,9 +163,6 @@ darwin_set_preferences() {
   info "Disable screen saver hot corner (top right)"
   defaults write com.apple.dock wvous-tr-corner -int 6
 
-  info "Put display to sleep hot corner (top left)"
-  defaults write com.apple.dock wvous-tl-corner -int 10
-
 
   info "Automatically show and hide the Dock"
   defaults write com.apple.dock autohide -bool true
