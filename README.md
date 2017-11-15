@@ -5,7 +5,7 @@ Currently, the following platforms are supported (older and newer version may al
 * Arch Linux (circa June 2017)
 * CentOS (CentOS 7)
 * macOS (10.12)
-* Ubuntu Linux (17.04)
+* Ubuntu Linux (17.10)
 
 ## Installation
 
@@ -81,7 +81,7 @@ Vagrant with VMware Fusion is used to boot a macOS virtual machine.
 ### Ubuntu Linux
 
 ```sh
-docker run -v $(pwd):/src -ti ubuntu:17.04 bash -c '\
+docker run -v $(pwd):/src -ti ubuntu:17.10 bash -c '\
   apt-get update \
   && apt-get install -y sudo \
   && echo "%staff ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/01_staff \
