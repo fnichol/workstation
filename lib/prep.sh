@@ -70,6 +70,8 @@ init() {
     _os="$_system"
   elif [ -f /etc/lsb-release ]; then
     _os="$(. /etc/lsb-release; echo $DISTRIB_ID)"
+  elif [ -f /etc/alpine-release ]; then
+    _os="Alpine"
   elif [ -f /etc/arch-release ]; then
     _os="Arch"
   elif [ -f /etc/redhat-release ]; then
@@ -195,6 +197,9 @@ setup_package_system() {
   header "Setting up package system"
 
   case "$_os" in
+    Alpine)
+      sudo apk update | indent
+      ;;
     Arch)
       arch_add_repos
       sudo pacman -Syy --noconfirm | indent
@@ -219,6 +224,9 @@ update_system() {
   header "Applying system updates"
 
   case "$_os" in
+    Alpine)
+      sudo apk upgrade | indent
+      ;;
     Arch)
       sudo pacman -Su --noconfirm | indent
       ;;
@@ -242,6 +250,10 @@ install_base_packages() {
   header "Installing base packages"
 
   case "$_os" in
+    Alpine)
+      install_pkg jq
+      install_pkgs_from_json "$_data_path/alpine_base_pkgs.json"
+      ;;
     Arch)
       install_pkg jq
       install_pkgs_from_json "$_data_path/arch_base_pkgs.json"
@@ -268,6 +280,9 @@ set_preferences() {
   header "Setting preferences"
 
   case "$_os" in
+    Alpine)
+      # Nothing to do
+      ;;
     Arch)
       # Nothing to do
       ;;
@@ -362,6 +377,9 @@ install_workstation_packages() {
   header "Installing workstation packages"
 
   case "$_os" in
+    Alpine)
+      install_pkgs_from_json "$_data_path/alpine_workstation_pkgs.json"
+      ;;
     Arch)
       install_pkgs_from_json "$_data_path/arch_workstation_pkgs.json"
       ;;
@@ -411,6 +429,11 @@ install_rust() {
 
   header "Setting up Rust"
 
+  if [ "$_os" = Alpine ]; then
+    warn "Alpine Linux not supported, skipping Rust installation"
+    return 0
+  fi
+
   if [ ! -x "$rustc" ]; then
     need_cmd curl
 
@@ -432,6 +455,11 @@ install_rust() {
 
 install_ruby() {
   header "Setting up Ruby"
+
+  if [ "$_os" = Alpine ]; then
+    warn "Alpine Linux not supported, skipping Ruby installation"
+    return 0
+  fi
 
   case "$_system" in
     Darwin)
@@ -475,6 +503,11 @@ _CHRUBY_
 
 install_go() {
   header "Setting up Go"
+
+  if [ "$_os" = Alpine ]; then
+    warn "Alpine Linux not supported, skipping Go installation"
+    return 0
+  fi
 
   need_cmd cat
   need_cmd rm
@@ -536,6 +569,11 @@ install_node() {
 
   header "Setting up Node"
 
+  if [ "$_os" = Alpine ]; then
+    warn "Alpine Linux not supported, skipping Node installation"
+    return 0
+  fi
+
   local url version
 
   if [ ! -f "$HOME/.nvm/nvm.sh" ]; then
@@ -562,6 +600,9 @@ finish() {
 
 install_pkg() {
   case "$_os" in
+    Alpine)
+      alpine_install_pkg "$@"
+      ;;
     Arch)
       arch_install_pkg "$@"
       ;;

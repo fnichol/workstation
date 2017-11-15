@@ -1,0 +1,19 @@
+[
+  "bash",
+  "bash-completion",
+  "curl",
+  "gawk",
+  "git",
+  "htop",
+  "mg",
+  "mosh",
+  "ncurses",
+  "openssh",
+  "psmisc",
+  "screen",
+  "tmux",
+  "tree",
+  "wget",
+  "unzip",
+  "vim"
+]

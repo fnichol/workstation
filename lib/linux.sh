@@ -1,3 +1,17 @@
+alpine_install_pkg() {
+  need_cmd apk
+  need_cmd sudo
+
+  local pkg="$1"
+
+  if apk info | grep -q "^${pkg}$" > /dev/null 2>&1; then
+    return 0
+  fi
+
+  info "Installing package '$pkg'"
+  sudo apk add "$pkg" 2>&1 | indent
+}
+
 arch_add_repos() {
   if ! grep -q '^\[archlinuxfr\]$' /etc/pacman.conf; then
     info "Adding repository for Yaourt"

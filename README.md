@@ -2,7 +2,8 @@
 
 Currently, the following platforms are supported (older and newer version may also work):
 
-* Arch Linux (circa June 2017)
+* Alpine Linux (3.6)
+* Arch Linux (circa November 2017)
 * CentOS (CentOS 7)
 * macOS (10.12)
 * Ubuntu Linux (17.10)
@@ -49,6 +50,19 @@ bin/prep -b <FQDN>
 ```
 
 ## Development and Testing
+
+### Alpine Linux
+
+```sh
+docker run -v $(pwd):/src -ti alpine:3.6 sh -c '\
+  apk add --no-cache bash sudo \
+  && echo "%wheel ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/01_wheel \
+  && addgroup jdoe \
+  && adduser -D -s /bin/bash -G jdoe jdoe \
+  && adduser jdoe wheel \
+  ; echo jdoe:1234 | chpasswd \
+  ; su - jdoe'
+```
 
 ### Arch Linux
 
