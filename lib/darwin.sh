@@ -1,3 +1,10 @@
+darwin_check_tmux() {
+  if [ -n "${TMUX:-}" ]; then
+    warn "$_program must not be run under tmux for mas to work correctly."
+    exit_with "Program run under tmux session" 1
+  fi
+}
+
 # Implementation graciously borrowed and modified from the build-essential
 # Chef cookbook which has been graciously borrowed and modified from Tim
 # Sutton's osx-vm-templates project.
