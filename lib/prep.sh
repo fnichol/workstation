@@ -422,10 +422,12 @@ install_rust() {
     "$cargo" --version | indent
   fi
 
-  if ! "$cargo" install --list | grep -q rustfmt; then
-    info "Installing rustfmt"
-    "$cargo" install rustfmt 2>&1 | indent
-  fi
+  for plugin in rustfmt cargo-watch; do
+    if ! "$cargo" install --list | grep -q "$plugin"; then
+      info "Installing $plugin"
+      "$cargo" install "$plugin" 2>&1 | indent
+    fi
+  done
 }
 
 install_ruby() {
