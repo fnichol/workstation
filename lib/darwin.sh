@@ -161,6 +161,17 @@ darwin_install_iterm2_settings() {
     | bash | indent
 }
 
+darwin_symlink_macvim() {
+  need_cmd ln
+
+  for b in vim view; do
+    if [ ! -L "/usr/local/bin/$b" ]; then
+      info "Symlinking /usr/local/bin/$b to /usr/local/bin/mvim"
+      { cd /usr/local/bin && ln -s mvim "$b"; }
+    fi
+  done
+}
+
 darwin_set_preferences() {
   need_cmd defaults
 
