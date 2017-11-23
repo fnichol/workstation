@@ -60,7 +60,7 @@ get_sudo() {
   need_cmd hostname
   need_cmd sudo
 
-  sudo -p "[sudo required for some tasks] Password for %u@$(hostname): " -v
+  sudo -p "[sudo required for some tasks] Password for %u@$(hostname): " echo
 }
 
 header() {
