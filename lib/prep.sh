@@ -445,6 +445,9 @@ install_rust() {
     "$cargo" --version | indent
   fi
 
+  rustup self update
+  rustup update
+
   for plugin in rustfmt cargo-watch; do
     if ! "$cargo" install --list | grep -q "$plugin"; then
       info "Installing $plugin"
