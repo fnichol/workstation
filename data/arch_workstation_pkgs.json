@@ -2,6 +2,7 @@
   "ack",
   "axel",
   "base-devel",
+  "cmake",
   "libyaml",
   "rsync"
 ]

@@ -2,6 +2,7 @@
   "ack",
   "axel",
   "build-essential",
+  "cmake",
   "direnv",
   "flac",
   "graphviz",

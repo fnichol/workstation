@@ -2,6 +2,7 @@
   "autoconf",
   "bison",
   "bzip2",
+  "cmake",
   "flac",
   "flex",
   "gcc",
