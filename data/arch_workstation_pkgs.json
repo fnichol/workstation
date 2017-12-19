@@ -3,6 +3,7 @@
   "axel",
   "base-devel",
   "cmake",
+  "ctags",
   "libyaml",
   "rsync"
 ]
