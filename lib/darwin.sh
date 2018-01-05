@@ -10,7 +10,7 @@ darwin_check_tmux() {
 # Sutton's osx-vm-templates project.
 #
 # Source: https://github.com/chef-cookbooks/build-essential/blob/a4f9621020e930a0e4fa0ccb5b7957dbef8ab347/libraries/xcode_command_line_tools.rb#L182-L188
-# Source: https://github.com/timsutton/osx-vm-templates/blob/b001475df54a9808d3d56d06e71b8fa3001fff42/scripts/xcode-cli-tools.sh
+# Source: https://github.com/timsutton/osx-vm-templates/blob/d029e89e04871b6c7a6c1cd0ec5beb7fa976f345/scripts/xcode-cli-tools.sh
 darwin_install_xcode_cli_tools() {
   need_cmd pkgutil
 
@@ -37,7 +37,7 @@ darwin_install_xcode_cli_tools() {
   # Find the CLI Tools update
   product="$(softwareupdate -l \
     | grep "\*.*Command Line" \
-    | head -n 1 \
+    | tail -n 1 \
     | awk -F"*" '{print $2}' \
     | sed -e 's/^ *//' \
     | tr -d '\n')"
