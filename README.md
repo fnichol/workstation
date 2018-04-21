@@ -7,6 +7,8 @@ Currently, the following platforms are supported (older and newer version may al
 * CentOS (CentOS 7)
 * macOS (10.12)
 * Ubuntu Linux (17.10)
+* Windows Subsystem for Linux on Windows 10 (Ubuntu)
+* Windows 10 (1709)
 
 ## Installation
 
