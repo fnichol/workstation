@@ -448,7 +448,10 @@ install_rust() {
   rustup self update
   rustup update
 
-  for plugin in rustfmt cargo-watch; do
+  rustup component add rust-src
+  rustup component add rustfmt-preview
+
+  for plugin in cargo-watch; do
     if ! "$cargo" install --list | grep -q "$plugin"; then
       info "Installing $plugin"
       "$cargo" install "$plugin" 2>&1 | indent
