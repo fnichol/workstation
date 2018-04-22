@@ -2,12 +2,5 @@ language: shell
 
 sudo: false
 
-addons:
-  apt:
-    sources:
-    - debian-sid
-    packages:
-    - shellcheck
-
 script:
 - shellcheck -x bin/prep
