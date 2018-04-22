@@ -92,6 +92,15 @@ function Set-Preferences {
 function Install-WorkstationPackages {
   Write-HeaderLine "Installing workstation packages"
   Install-PkgsFromJson "$dataPath\windows_workstation_pkgs.json"
+
+  $wslInstalled = Get-WindowsOptionalFeature -Online `
+    -FeatureName Microsoft-Windows-Subsystem-Linux
+
+  if (-not $wslInstalled) {
+    Write-InfoLine "Installing 'Microsoft-Windows-Subsystem-Linux'"
+    Enable-WindowsOptionalFeature -Online `
+      -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
+  }
 }
 
 function Install-Habitat {
