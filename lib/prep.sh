@@ -426,6 +426,7 @@ install_habitat() {
 install_rust() {
   local rustc="$HOME/.cargo/bin/rustc"
   local cargo="$HOME/.cargo/bin/cargo"
+  local rustup="$HOME/.cargo/bin/rustup"
 
   header "Setting up Rust"
 
@@ -445,11 +446,11 @@ install_rust() {
     "$cargo" --version | indent
   fi
 
-  rustup self update
-  rustup update
+  "$rustup" self update
+  "$rustup" update
 
-  rustup component add rust-src
-  rustup component add rustfmt-preview
+  "$rustup" component add rust-src
+  "$rustup" component add rustfmt-preview
 
   for plugin in cargo-watch; do
     if ! "$cargo" install --list | grep -q "$plugin"; then
