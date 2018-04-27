@@ -370,7 +370,9 @@ install_dot_configs() {
 
   info "Updating dotfile configurations links for '$USER'"
   bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
-    && homeshick --force link" 2>&1 | indent
+    && homeshick --batch --force pull" 2>&1 | indent
+  bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
+    && homeshick --batch --force link" 2>&1 | indent
 }
 
 install_workstation_packages() {
