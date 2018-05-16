@@ -26,13 +26,18 @@ main() {
   install_bashrc
   install_dot_configs
 
-  if [ "${_base_only:-}" != "true" ]; then
+  if [ -z "${_skip_workstation:-}" ]; then
     install_workstation_packages
     install_habitat
     install_rust
     install_ruby
     install_go
     install_node
+  fi
+
+  if [ -z "${_skip_x:-}" ]; then
+    install_x_packages
+    install_x_dot_configs
   fi
 
   finish

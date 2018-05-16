@@ -10,8 +10,9 @@ USAGE:
         $_program [FLAGS] [OPTIONS] [<FQDN>]
 
 FLAGS:
-    -b  Only sets up base system (not extra workstation setup)
     -h  Prints this message
+    -W  Skip workstation and X setups
+    -X  Skip X setup
 
 ARGS:
     <FQDN>    The name for this workstation
@@ -22,14 +23,18 @@ HELP
 parse_cli_args() {
   OPTIND=1
   # Parse command line flags and options
-  while getopts ":hb" opt; do
+  while getopts ":hWX" opt; do
     case $opt in
-      b)
-        _base_only=true
-        ;;
       h)
         print_help
         exit 0
+        ;;
+      W)
+        _skip_workstation=true
+        _skip_x=true
+        ;;
+      X)
+        _skip_x=true
         ;;
       \?)
         print_help
@@ -601,6 +606,51 @@ install_node() {
     info "Installing current stable version of Node"
     bash -c '. $HOME/.nvm/nvm.sh && nvm install --lts 2>&1' | indent
   fi
+}
+
+install_x_packages() {
+  header "Installing X workstation packages"
+
+  case "$_os" in
+    Alpine)
+      # Nothing to do yet
+      ;;
+    Arch)
+      install_pkgs_from_json "$_data_path/arch_x_pkgs.json"
+      ;;
+    Darwin)
+      # TODO fn: factor out macOS packages
+      ;;
+    RedHat)
+      # Nothing to do yet
+      ;;
+    Ubuntu)
+      # Nothing to do yet
+      ;;
+    *)
+      warn "Installing packages on $_os not yet supported, skipping"
+      ;;
+  esac
+}
+
+install_x_dot_configs() {
+  header "Installing X dot configs"
+
+  cat "$_data_path/homesick_x_repos.json" | jq -r .[] | while read -r repo; do
+    repo_dir="$HOME/.homesick/repos/$(echo "$repo" | cut -d '/' -f 2)"
+
+    if [ ! -d "$repo_dir" ]; then
+      info "Installing repo $repo for '$USER'"
+      bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
+        && homeshick --batch clone $repo" 2>&1 | indent
+    fi
+  done
+
+  info "Updating dotfile configurations links for '$USER'"
+  bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
+    && homeshick --batch --force pull" 2>&1 | indent
+  bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
+    && homeshick --batch --force link" 2>&1 | indent
 }
 
 finish() {
