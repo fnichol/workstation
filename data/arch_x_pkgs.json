@@ -1,9 +1,13 @@
 [
+  "alsa-utils",
   "chromium",
   "compton",
   "feh",
   "firefox",
   "i3",
+  "mopidy",
+  "mpc",
+  "ncmpcpp",
   "otf-overpass",
   "rofi",
   "termite",
