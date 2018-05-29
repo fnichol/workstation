@@ -39,6 +39,15 @@ arch_install_pkg() {
   local pkg="$1"
 
   if pacman -Qi "$pkg" > /dev/null 2>&1; then
+    # This is a package and it is installed
+    return 0
+  fi
+
+  if pacman -Qg "$pkg" > /dev/null 2>&1; then
+    # This is a package group, so ensure each package is installed
+    pacman -Qg "$pkg" \
+      | cut -d ' ' -f 2 \
+      | while read -r p; do arch_install_pkg "$p" || return 1; done
     return 0
   fi
 
