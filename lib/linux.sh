@@ -83,18 +83,6 @@ arch_install_aur_pkgs_from_json() {
   done
 }
 
-arch_setup_fonts() {
-  need_cmd ln
-  need_cmd sudo
-
-  sudo ln -svf /etc/fonts/conf.avail/11-lcdfilter-default.conf \
-    /etc/fonts/conf.d
-  sudo ln -svf /etc/fonts/conf.avail/10-sub-pixel-rgb.conf \
-    /etc/fonts/conf.d
-  sudo ln -svf /etc/fonts/conf.avail/30-infinality-aliases.conf \
-    /etc/fonts/conf.d
-}
-
 linux_install_chruby() {
   if [ -f /usr/local/share/chruby/chruby.sh ]; then
     return 0
