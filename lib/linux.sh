@@ -19,7 +19,8 @@ arch_build_yay() {
     return 0
   fi
 
-  need_cmd git
+  install_pkg git
+
   need_cmd makepkg
   need_cmd mktemp
 
