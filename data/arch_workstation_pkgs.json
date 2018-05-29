@@ -4,6 +4,7 @@
   "base-devel",
   "cmake",
   "ctags",
+  "docker",
   "libyaml",
   "rsync"
 ]
