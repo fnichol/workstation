@@ -26,6 +26,7 @@ arch_build_yay() {
   local build_dir
   build_dir="$(mktemp -d /tmp/yay.XXXXXXXX)"
 
+  info "Building yay package"
   git clone https://aur.archlinux.org/yay.git "$build_dir/yay"
   (cd "$build_dir/yay" && makepkg --syncdeps --install --noconfirm --clean)
 
