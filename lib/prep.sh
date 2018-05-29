@@ -350,9 +350,9 @@ install_bashrc() {
 install_dot_configs() {
   need_cmd cut
   need_cmd git
+  need_cmd jq
 
-  local repo
-  local repo_dir
+  local repo repo_dir castle
 
   header "Installing dot configs"
 
@@ -363,20 +363,8 @@ install_dot_configs() {
   fi
 
   cat "$_data_path/homesick_repos.json" | jq -r .[] | while read -r repo; do
-    repo_dir="$HOME/.homesick/repos/$(echo "$repo" | cut -d '/' -f 2)"
-
-    if [ ! -d "$repo_dir" ]; then
-      info "Installing repo $repo for '$USER'"
-      bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
-        && homeshick --batch clone $repo" 2>&1 | indent
-    fi
+    manage_homesick_repo "$repo"
   done
-
-  info "Updating dotfile configurations links for '$USER'"
-  bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
-    && homeshick --batch --force pull" 2>&1 | indent
-  bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
-    && homeshick --batch --force link" 2>&1 | indent
 }
 
 install_workstation_packages() {
@@ -635,27 +623,15 @@ install_x_packages() {
 }
 
 install_x_dot_configs() {
-  need_cmd bash
-  need_cmd cut
+  local repo
+
   need_cmd jq
 
   header "Installing X dot configs"
 
   cat "$_data_path/homesick_x_repos.json" | jq -r .[] | while read -r repo; do
-    repo_dir="$HOME/.homesick/repos/$(echo "$repo" | cut -d '/' -f 2)"
-
-    if [ ! -d "$repo_dir" ]; then
-      info "Installing repo $repo for '$USER'"
-      bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
-        && homeshick --batch clone $repo" 2>&1 | indent
-    fi
+    manage_homesick_repo "$repo"
   done
-
-  info "Updating dotfile configurations links for '$USER'"
-  bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
-    && homeshick --batch --force pull" 2>&1 | indent
-  bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
-    && homeshick --batch --force link" 2>&1 | indent
 }
 
 finalize_x_setup() {
@@ -727,4 +703,24 @@ install_pkgs_from_json() {
   cat "$json" | jq -r .[] | while read -r pkg; do
     install_pkg "$pkg"
   done
+}
+
+manage_homesick_repo() {
+  local repo="$1"
+  local repo_dir castle
+
+  need_cmd bash
+  need_cmd cut
+
+  castle="$(echo "$repo" | cut -d '/' -f 2)"
+  repo_dir="$HOME/.homesick/repos/$castle"
+
+  if [ ! -d "$repo_dir" ]; then
+    info "Installing repo $repo for '$USER'"
+    bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
+      && homeshick --batch clone $repo" 2>&1 | indent
+  fi
+
+  bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
+    && homeshick --batch pull $castle && homeshick --batch link $castle" 2>&1 | indent
 }
