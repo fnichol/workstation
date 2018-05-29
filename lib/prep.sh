@@ -207,7 +207,6 @@ setup_package_system() {
       ;;
     Arch)
       sudo pacman -Syy --noconfirm | indent
-      arch_build_yay
       ;;
     Darwin)
       darwin_install_xcode_cli_tools
@@ -616,6 +615,7 @@ install_x_packages() {
       # Nothing to do yet
       ;;
     Arch)
+      arch_build_yay
       install_pkgs_from_json "$_data_path/arch_x_pkgs.json"
       arch_install_aur_pkgs_from_json "$_data_path/arch_aur_pkgs.json"
       ;;

@@ -19,9 +19,7 @@ arch_build_yay() {
     return 0
   fi
 
-  install_pkg git
-  install_pkg base-devel
-
+  need_cmd git
   need_cmd makepkg
   need_cmd mktemp
 
