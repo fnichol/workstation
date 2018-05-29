@@ -12,21 +12,28 @@ alpine_install_pkg() {
   sudo apk add "$pkg" 2>&1 | indent
 }
 
-arch_add_repos() {
-  if ! grep -q '^\[archlinuxfr\]$' /etc/pacman.conf; then
-    info "Adding repository for Yaourt"
-    cat <<'EOF' | sudo tee -a /etc/pacman.conf > /dev/null
+arch_build_yay() {
+  need_cmd pacman
 
-[archlinuxfr]
-SigLevel = Never
-Server = http://repo.archlinux.fr/$arch
-EOF
+  if pacman -Qi yay > /dev/null 2>&1; then
+    return 0
   fi
+
+  need_cmd git
+  need_cmd makepkg
+  need_cmd mktemp
+
+  local build_dir
+  build_dir="$(mktemp -d /tmp/yay.XXXXXXXX)"
+
+  git clone https://aur.archlinux.org/yay.git "$build_dir/yay"
+  (cd "$build_dir/yay" && makepkg --syncdeps --install --noconfirm --clean)
+
+  rm -rf "$build_dir"
 }
 
 arch_install_pkg() {
   need_cmd pacman
-  need_cmd sudo
 
   local pkg="$1"
 
@@ -34,8 +41,48 @@ arch_install_pkg() {
     return 0
   fi
 
+  need_cmd sudo
+
   info "Installing package '$pkg'"
   sudo pacman -S --noconfirm "$pkg" 2>&1 | indent
+}
+
+arch_install_aur_pkg() {
+  need_cmd pacman
+
+  local pkg="$1"
+
+  if pacman -Qi "$pkg" > /dev/null 2>&1; then
+    return 0
+  fi
+
+  need_cmd sudo
+  need_cmd yay
+
+  info "Installing package '$pkg'"
+  sudo yay -Si -R --noconfirm "$pkg" 2>&1 | indent
+}
+
+arch_install_aur_pkgs_from_json() {
+  need_cmd jq
+
+  local json="$1"
+
+  cat "$json" | jq -r .[] | while read -r pkg; do
+    arch_install_aur_pkg "$pkg"
+  done
+}
+
+arch_setup_fonts() {
+  need_cmd ln
+  need_cmd sudo
+
+  sudo ln -svf /etc/fonts/conf.avail/11-lcdfilter-default.conf \
+    /etc/fonts/conf.d
+  sudo ln -svf /etc/fonts/conf.avail/10-sub-pixel-rgb.conf \
+    /etc/fonts/conf.d
+  sudo ln -svf /etc/fonts/conf.avail/30-infinality-aliases.conf \
+    /etc/fonts/conf.d
 }
 
 linux_install_chruby() {

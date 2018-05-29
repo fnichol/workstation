@@ -206,8 +206,8 @@ setup_package_system() {
       sudo apk update | indent
       ;;
     Arch)
-      arch_add_repos
       sudo pacman -Syy --noconfirm | indent
+      arch_build_yay
       ;;
     Darwin)
       darwin_install_xcode_cli_tools
@@ -617,6 +617,7 @@ install_x_packages() {
       ;;
     Arch)
       install_pkgs_from_json "$_data_path/arch_x_pkgs.json"
+      arch_install_aur_pkgs_from_json "$_data_path/arch_aur_pkgs.json"
       ;;
     Darwin)
       # TODO fn: factor out macOS packages
@@ -634,6 +635,10 @@ install_x_packages() {
 }
 
 install_x_dot_configs() {
+  need_cmd bash
+  need_cmd cut
+  need_cmd jq
+
   header "Installing X dot configs"
 
   cat "$_data_path/homesick_x_repos.json" | jq -r .[] | while read -r repo; do
@@ -651,6 +656,31 @@ install_x_dot_configs() {
     && homeshick --batch --force pull" 2>&1 | indent
   bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
     && homeshick --batch --force link" 2>&1 | indent
+}
+
+finalize_x_setup() {
+  header "Finalizing X setup"
+
+  case "$_os" in
+    Alpine)
+      # Nothing to do yet
+      ;;
+    Arch)
+      arch_setup_fonts
+      ;;
+    Darwin)
+      # Nothing to do yet
+      ;;
+    RedHat)
+      # Nothing to do yet
+      ;;
+    Ubuntu)
+      # Nothing to do yet
+      ;;
+    *)
+      warn "Finalizing X setup on $_os not yet supported, skipping"
+      ;;
+  esac
 }
 
 finish() {

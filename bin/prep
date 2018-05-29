@@ -38,6 +38,7 @@ main() {
   if [ -z "${_skip_x:-}" ]; then
     install_x_packages
     install_x_dot_configs
+    finalize_x_setup
   fi
 
   finish
