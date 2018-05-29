@@ -60,8 +60,8 @@ arch_install_aur_pkg() {
   need_cmd sudo
   need_cmd yay
 
-  info "Installing package '$pkg'"
-  yay -Si -R --noconfirm "$pkg" 2>&1 | indent
+  info "Installing AUR package '$pkg'"
+  yay -S --noconfirm "$pkg" 2>&1 | indent
 }
 
 arch_install_aur_pkgs_from_json() {
