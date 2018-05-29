@@ -20,6 +20,7 @@ arch_build_yay() {
   fi
 
   install_pkg git
+  install_pkg make
 
   need_cmd makepkg
   need_cmd mktemp
