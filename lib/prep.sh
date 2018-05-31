@@ -657,6 +657,27 @@ finalize_x_setup() {
         /etc/fonts/conf.d
       sudo ln -snf /etc/fonts/conf.avail/30-infinality-aliases.conf \
         /etc/fonts/conf.d
+
+      if [ "$(cat /sys/class/dmi/id/product_name)" = "XPS 13 9370" ]; then
+        # Setup power management
+        install_pkg powertop
+        if [ ! -f /etc/systemd/system/powertop.service ]; then
+          info "Setting up Powertop for power management tuning"
+          cat <<'_EOF_' | sudo tee /etc/systemd/system/powertop.service > /dev/null
+[Unit]
+Description=Powertop tunings
+
+[Service]
+ExecStart=/usr/bin/powertop --auto-tune
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
+_EOF_
+          sudo systemctl enable powertop
+          sudo systemctl start powertop
+        fi
+      fi
       ;;
     Darwin)
       # Nothing to do yet
