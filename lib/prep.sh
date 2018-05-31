@@ -606,6 +606,12 @@ install_x_packages() {
       arch_build_yay
       install_pkgs_from_json "$_data_path/arch_x_pkgs.json"
       arch_install_aur_pkgs_from_json "$_data_path/arch_aur_pkgs.json"
+      if [ "$(cat /sys/class/dmi/id/product_name)" = "XPS 13 9370" ]; then
+        # Support customizing touchpad on Dell XPS 13-inch 9370
+        install_pkg libinput
+        install_pkg xf86-input-libinput
+        install_pkg xorg-xinput
+      fi
       ;;
     Darwin)
       # TODO fn: factor out macOS packages
