@@ -663,6 +663,9 @@ finalize_x_setup() {
         need_cmd getent
         need_cmd grep
 
+        # Battery status
+        install_pkg acpi
+
         # Setup power management
         install_pkg powertop
         if [ ! -f /etc/systemd/system/powertop.service ]; then
