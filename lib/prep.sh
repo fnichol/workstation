@@ -659,9 +659,15 @@ finalize_x_setup() {
         /etc/fonts/conf.d
 
       if [ "$(cat /sys/class/dmi/id/product_name)" = "XPS 13 9370" ]; then
+        need_cmd cut
+        need_cmd getent
+        need_cmd grep
+
         # Setup power management
         install_pkg powertop
         if [ ! -f /etc/systemd/system/powertop.service ]; then
+          need_cmd systemctl
+
           info "Setting up Powertop for power management tuning"
           cat <<'_EOF_' | sudo tee /etc/systemd/system/powertop.service > /dev/null
 [Unit]
@@ -677,6 +683,24 @@ _EOF_
           sudo systemctl enable powertop
           sudo systemctl start powertop
         fi
+
+        if [ ! -f /etc/udev/rules.d/backlight.rules ]; then
+          info "Setting up udev backlight rule"
+          cat <<'_EOF_' | sudo tee /etc/udev/rules.d/backlight.rules > /dev/null
+ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="intel_backlight", RUN+="/bin/chgrp video /sys/class/backlight/%k/brightness"
+ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="intel_backlight", RUN+="/bin/chmod g+w /sys/class/backlight/%k/brightness"
+_EOF_
+        fi
+
+        if ! getent group video | cut -d : -f 4 | grep -q "$USER"; then
+          need_cmd sudo
+          need_cmd usermod
+
+          info "Adding $USER to the video group"
+          sudo usermod --append --groups video "$USER"
+        fi
+
+        arch_install_aur_pkg light
       fi
       ;;
     Darwin)
