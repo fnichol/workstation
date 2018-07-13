@@ -5,6 +5,10 @@
   "cmake",
   "ctags",
   "docker",
+  "ffmpeg",
+  "flac",
+  "lame",
   "libyaml",
-  "rsync"
+  "rsync",
+  "shellcheck"
 ]
