@@ -1,0 +1,15 @@
+[
+  "bash",
+  "bash-completion",
+  "curl",
+  "git",
+  "htop",
+  "mg",
+  "mosh",
+  "openssh-portable",
+  "screen",
+  "tmux",
+  "tree",
+  "wget",
+  "vim-console"
+]

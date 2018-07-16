@@ -90,9 +90,17 @@ init() {
       # shellcheck source=lib/darwin.sh
       . "$lib_path/darwin.sh"
       ;;
+    FreeBSD)
+      # shellcheck source=lib/freebsd.sh
+      . "$lib_path/freebsd.sh"
+      # shellcheck source=lib/unix.sh
+      . "$lib_path/unix.sh"
+      ;;
     Linux)
       # shellcheck source=lib/linux.sh
       . "$lib_path/linux.sh"
+      # shellcheck source=lib/unix.sh
+      . "$lib_path/unix.sh"
       ;;
   esac
 
@@ -212,6 +220,9 @@ setup_package_system() {
       darwin_install_xcode_cli_tools
       darwin_install_homebrew
       ;;
+    FreeBSD)
+      sudo pkg update | indent
+      ;;
     RedHat)
       # Nothing to do
       ;;
@@ -237,6 +248,9 @@ update_system() {
     Darwin)
       softwareupdate --install --all 2>&1 | indent
       env HOMEBREW_NO_AUTO_UPDATE=true brew upgrade --cleanup
+      ;;
+    FreeBSD)
+      sudo pkg upgrade --yes --no-repo-update | indent
       ;;
     RedHat)
       # Nothing to do
@@ -266,6 +280,10 @@ install_base_packages() {
       install_pkg jq
       install_pkgs_from_json "$_data_path/darwin_base_pkgs.json"
       ;;
+    FreeBSD)
+      install_pkg jq
+      install_pkgs_from_json "$_data_path/freebsd_base_pkgs.json"
+      ;;
     RedHat)
       redhat_install_jq
       install_pkgs_from_json "$_data_path/redhat_base_pkgs.json"
@@ -293,6 +311,9 @@ set_preferences() {
     Darwin)
       darwin_set_preferences "$_data_path/darwin_prefs.json"
       darwin_install_iterm2_settings
+      ;;
+    FreeBSD)
+      # Nothing to do
       ;;
     RedHat)
       # Nothing to do
@@ -386,6 +407,9 @@ install_workstation_packages() {
       killall Dock
       killall Finder
       ;;
+    FreeBSD)
+      install_pkgs_from_json "$_data_path/freebsd_workstation_pkgs.json"
+      ;;
     RedHat)
       install_pkgs_from_json "$_data_path/redhat_workstation_pkgs.json"
       ;;
@@ -410,6 +434,10 @@ install_habitat() {
   case "$_os" in
     Darwin)
       curl -sSf "$url" | sh 2>&1 | indent
+      ;;
+    FreeBSD)
+      info "Habitat not yet supported on FreeBSD"
+      return 0
       ;;
     *)
       curl -sSf "$url" | sudo sh 2>&1 | indent
@@ -440,11 +468,11 @@ install_rust() {
     "$cargo" --version | indent
   fi
 
-  "$rustup" self update
-  "$rustup" update
+  "$rustup" self update | indent
+  "$rustup" update | indent
 
-  "$rustup" component add rust-src
-  "$rustup" component add rustfmt-preview
+  "$rustup" component add rust-src | indent
+  "$rustup" component add rustfmt-preview | indent
 
   for plugin in cargo-watch; do
     if ! "$cargo" install --list | grep -q "$plugin"; then
@@ -467,9 +495,13 @@ install_ruby() {
       install_pkg chruby
       install_pkg ruby-install
       ;;
+    FreeBSD)
+      unix_install_chruby
+      unix_install_ruby_install
+      ;;
     Linux)
-      linux_install_chruby
-      linux_install_ruby_install
+      unix_install_chruby
+      unix_install_ruby_install
       ;;
     *)
       warn "Installing Ruby on $_os not yet supported, skipping"
@@ -541,7 +573,7 @@ install_go() {
   machine="$(uname -m)"
 
   case "$machine" in
-    x86_64)
+    x86_64|amd64)
       arch="amd64"
       ;;
     i686)
@@ -570,10 +602,16 @@ install_node() {
 
   header "Setting up Node"
 
-  if [ "$_os" = Alpine ]; then
-    warn "Alpine Linux not supported, skipping Node installation"
-    return 0
-  fi
+  case "$_os" in
+    Alpine)
+      warn "Alpine Linux not supported, skipping Node installation"
+      return 0
+      ;;
+    FreeBSD)
+      warn "FreeBSD not yet supported, skipping Node installation"
+      return 0
+      ;;
+  esac
 
   local url version
 
@@ -615,6 +653,9 @@ install_x_packages() {
       ;;
     Darwin)
       # TODO fn: factor out macOS packages
+      ;;
+    FreeBSD)
+      # Nothing to do yet
       ;;
     RedHat)
       # Nothing to do yet
@@ -709,6 +750,9 @@ _EOF_
     Darwin)
       # Nothing to do yet
       ;;
+    FreeBSD)
+      # Nothing to do yet
+      ;;
     RedHat)
       # Nothing to do yet
       ;;
@@ -735,6 +779,9 @@ install_pkg() {
       ;;
     Darwin)
       darwin_install_pkg "$@"
+      ;;
+    FreeBSD)
+      freebsd_install_pkg "$@"
       ;;
     RedHat)
       redhat_install_pkg "$@"
