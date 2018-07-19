@@ -5,6 +5,7 @@ Currently, the following platforms are supported (older and newer version may al
 * Alpine Linux (3.6)
 * Arch Linux (circa November 2017)
 * CentOS (CentOS 7)
+* FreeBSD (FreeBSD 11.1)
 * macOS (10.12)
 * Ubuntu Linux (17.10)
 * Windows Subsystem for Linux on Windows 10 (Ubuntu)
