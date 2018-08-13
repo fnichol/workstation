@@ -10,5 +10,6 @@
   "lame",
   "libyaml",
   "rsync",
-  "shellcheck"
+  "shellcheck",
+  "weechat"
 ]
