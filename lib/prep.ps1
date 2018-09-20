@@ -93,13 +93,36 @@ function Install-WorkstationPackages {
   Write-HeaderLine "Installing workstation packages"
   Install-PkgsFromJson "$dataPath\windows_workstation_pkgs.json"
 
-  $wslInstalled = Get-WindowsOptionalFeature -Online `
-    -FeatureName Microsoft-Windows-Subsystem-Linux
+  $wslstate = (Get-WindowsOptionalFeature -Online `
+    -FeatureName Microsoft-Windows-Subsystem-Linux).State
 
-  if (-not $wslInstalled) {
+  # Install Windows Subsystem for Linux if it is disabled
+  if ($wslstate -eq "Disabled") {
     Write-InfoLine "Installing 'Microsoft-Windows-Subsystem-Linux'"
     Enable-WindowsOptionalFeature -Online `
       -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
+  }
+
+  $wsldistro = "wsl-ubuntu-1804"
+  $wslroot = "$env:SystemDrive\Distros"
+  $wsldst = "$wslroot\$wsldistro"
+
+  # Download and install the Linux distribution if not found
+  if (-not (Test-Path "$wsldst")) {
+    $wslzip = "$env:TEMP\$wsldistro.zip"
+
+    Write-InfoLine "Downloading '$wsldistro'"
+    # Disable download progress bar which slows the download
+    $ProgressPreference = 'silentlyContinue'
+    Invoke-WebRequest -Uri "https://aka.ms/$wsldistro" `
+      -OutFile "$wslzip" -UseBasicParsing
+    $ProgressPreference = 'Continue'
+    if (-not (Test-Path "$wslroot")) {
+      New-Item -ItemType directory -Path "$wslroot"
+    }
+    Write-InfoLine "Extracting '$wsldistro' into $wsldst"
+    Expand-Archive "$wslzip" "$wsldst"
+    Remove-Item "$wslzip"
   }
 }
 
