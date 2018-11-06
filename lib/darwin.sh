@@ -24,12 +24,15 @@ darwin_install_xcode_cli_tools() {
   need_cmd rm
   need_cmd sed
   need_cmd softwareupdate
+  need_cmd sw_vers
   need_cmd touch
   need_cmd tr
 
-  local product
+  local product os_vers
 
   info "Installing Xcode CLI Tools"
+
+  os_vers="$(sw_vers -productVersion | awk -F. '{print $1"."$2}')"
 
   # Create the placeholder file that's checked by the CLI Tools update .dist
   # code in Apple's SUS catalog
@@ -37,6 +40,7 @@ darwin_install_xcode_cli_tools() {
   # Find the CLI Tools update
   product="$(softwareupdate -l \
     | grep "\*.*Command Line" \
+    | grep "$os_vers" \
     | tail -n 1 \
     | awk -F"*" '{print $2}' \
     | sed -e 's/^ *//' \
