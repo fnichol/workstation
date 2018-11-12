@@ -9,10 +9,15 @@ main() {
   _version="0.5.0"
   _author="Fletcher Nichol <fnichol@nichol.ca>"
 
+  # shellcheck source=lib/realpath.sh
+  . "${0%/*}/../lib/realpath.sh"
+
+  _root="$(realpath "${0%/*}/..")"
+
   # shellcheck source=lib/common.sh
-  . "${0%/*}/../lib/common.sh"
+  . "$_root/lib/common.sh"
   # shellcheck source=lib/prep.sh
-  . "${0%/*}/../lib/prep.sh"
+  . "$_root/lib/prep.sh"
 
   parse_cli_args "$@"
 

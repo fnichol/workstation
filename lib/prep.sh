@@ -63,13 +63,13 @@ init() {
   need_cmd hostname
   need_cmd uname
 
-  local lib_path="${0%/*}/../lib"
+  local lib_path="$_root/lib"
   local hostname
   hostname="$(hostname)"
 
   _system="$(uname -s)"
 
-  _data_path="${0%/*}/../data"
+  _data_path="$_root/data"
 
   if [ "$_system" != "Linux" ]; then
     _os="$_system"
