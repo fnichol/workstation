@@ -473,7 +473,7 @@ install_rust() {
   "$rustup" component add rust-src | indent
   "$rustup" component add rustfmt | indent
 
-  for plugin in cargo-watch; do
+  for plugin in cargo-watch cargo-edit cargo-outdated; do
     if ! "$cargo" install --list | grep -q "$plugin"; then
       info "Installing $plugin"
       "$cargo" install "$plugin" 2>&1 | indent
