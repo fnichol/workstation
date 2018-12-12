@@ -161,9 +161,9 @@ function Install-Rust {
   & "$rustup" update
 
   & "$rustup" component add rust-src
-  & "$rustup" component add rustfmt-preview
+  & "$rustup" component add rustfmt
 
-  foreach ($plugin in @("cargo-watch")) {
+  foreach ($plugin in @("cargo-watch","cargo-edit","cargo-outdated")) {
     if (-not (& "$cargo" install --list | Select-String -Pattern "$plugin")) {
       Write-InfoLine "Installing $plugin"
       & "$cargo" install "$plugin"
