@@ -403,7 +403,6 @@ install_workstation_packages() {
       darwin_install_cask_pkgs_from_json "$_data_path/darwin_cask_pkgs.json"
       darwin_install_apps_from_json "$_data_path/darwin_apps.json"
       install_pkgs_from_json "$_data_path/darwin_workstation_pkgs.json"
-      darwin_symlink_macvim
       killall Dock
       killall Finder
       ;;
