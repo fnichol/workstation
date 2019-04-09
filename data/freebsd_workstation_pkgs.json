@@ -21,6 +21,7 @@
   "qemu",
   "rsnapshot",
   "rsync",
+  "shfmt",
   "sqlite3",
   "unrar"
 ]
