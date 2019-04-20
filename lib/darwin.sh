@@ -139,17 +139,6 @@ darwin_install_cask_pkgs_from_json() {
   done
 }
 
-darwin_add_homebrew_taps() {
-  need_cmd brew
-  need_cmd grep
-
-  if brew tap | grep -q '^caskroom/fonts$'; then
-    return 0
-  fi
-
-  brew tap caskroom/fonts 2>&1 | indent
-}
-
 darwin_install_iterm2_settings() {
   need_cmd bash
   need_cmd curl

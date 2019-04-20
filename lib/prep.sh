@@ -406,7 +406,6 @@ install_workstation_packages() {
       install_pkgs_from_json "$_data_path/arch_workstation_pkgs.json"
       ;;
     Darwin)
-      darwin_add_homebrew_taps
       darwin_install_cask_pkgs_from_json "$_data_path/darwin_cask_pkgs.json"
       darwin_install_apps_from_json "$_data_path/darwin_apps.json"
       install_pkgs_from_json "$_data_path/darwin_workstation_pkgs.json"
