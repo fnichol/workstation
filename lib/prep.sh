@@ -390,7 +390,7 @@ install_dot_configs() {
       "$HOME/.homesick/repos/homeshick" | indent
   fi
 
-  cat "$_data_path/homesick_repos.json" | jq -r .[] | while read -r repo; do
+  jq -r .[] "$_data_path/homesick_repos.json" | while read -r repo; do
     manage_homesick_repo "$repo"
   done
 }
@@ -681,7 +681,7 @@ install_x_dot_configs() {
 
   header "Installing X dot configs"
 
-  cat "$_data_path/homesick_x_repos.json" | jq -r .[] | while read -r repo; do
+  jq -r .[] "$_data_path/homesick_x_repos.json" | while read -r repo; do
     manage_homesick_repo "$repo"
   done
 }
@@ -806,7 +806,7 @@ install_pkgs_from_json() {
 
   local json="$1"
 
-  cat "$json" | jq -r .[] | while read -r pkg; do
+  jq -r .[] "$json" | while read -r pkg; do
     install_pkg "$pkg"
   done
 }
