@@ -1,5 +1,5 @@
 print_help() {
-  cat<<HELP
+  cat <<HELP
 $_program $_version
 
 $_author
@@ -50,8 +50,8 @@ parse_cli_args() {
   fi
 
   if [ "$(uname -s)" = "Darwin" ] \
-      && [ "${_base_only:-}" != "true" ] \
-      && [ ! -f "$HOME/Library/Preferences/com.apple.appstore.plist" ]; then
+    && [ "${_base_only:-}" != "true" ] \
+    && [ ! -f "$HOME/Library/Preferences/com.apple.appstore.plist" ]; then
     printf -- "Not logged into App Store, please login and try again.\n\n"
     print_help
     exit_with "Must be logged into App Store" 2
@@ -144,7 +144,7 @@ set_hostname() {
       old_hostname="$(hostname -f)"
 
       if [ "$old_hostname" != "$name" ]; then
-        echo "$name" | sudo tee /etc/hostname > /dev/null
+        echo "$name" | sudo tee /etc/hostname >/dev/null
         sudo hostname "$name"
         if ! grep -q -w "$fqdn" /etc/hosts; then
           sudo sed -i "1i 127.0.0.1\\t${fqdn}\\t${name}" /etc/hosts
@@ -184,7 +184,7 @@ set_hostname() {
       old_hostname="$(hostname -f)"
 
       if [ "$old_hostname" != "$name" ]; then
-        echo "$name" | sudo tee /etc/hostname > /dev/null
+        echo "$name" | sudo tee /etc/hostname >/dev/null
         sudo hostname -F /etc/hostname
         if ! grep -q -w "$fqdn" /etc/hosts; then
           sudo sed -i "1i 127.0.0.1\\t${fqdn}\\t${name}" /etc/hosts
@@ -424,7 +424,7 @@ install_workstation_packages() {
 install_habitat() {
   header "Installing Habitat"
 
-  if command -v hab > /dev/null; then
+  if command -v hab >/dev/null; then
     return 0
   fi
 
@@ -509,7 +509,7 @@ install_ruby() {
   esac
 
   # shellcheck disable=SC2012
-  if [ "$(ls -1 "$HOME/.rubies" 2> /dev/null | wc -l)" -eq 0 ]; then
+  if [ "$(ls -1 "$HOME/.rubies" 2>/dev/null | wc -l)" -eq 0 ]; then
     info "Building curent stable version of Ruby"
     ruby-install --cleanup --src-dir /tmp/ruby-src ruby 2>&1
   fi
@@ -518,7 +518,7 @@ install_ruby() {
 
   if [ ! -f /etc/profile.d/chruby.sh ]; then
     info "Creating /etc/profile.d/chruby.sh"
-    cat <<_CHRUBY_ | sudo tee /etc/profile.d/chruby.sh > /dev/null
+    cat <<_CHRUBY_ | sudo tee /etc/profile.d/chruby.sh >/dev/null
 source /usr/local/share/chruby/chruby.sh
 source /usr/local/share/chruby/auto.sh
 _CHRUBY_
@@ -572,7 +572,7 @@ install_go() {
   machine="$(uname -m)"
 
   case "$machine" in
-    x86_64|amd64)
+    x86_64 | amd64)
       arch="amd64"
       ;;
     i686)
@@ -626,7 +626,7 @@ install_node() {
   fi
 
   # shellcheck disable=SC2012
-  if [ "$(ls -1 "$HOME/.nvm/versions/node" 2> /dev/null | wc -l)" -eq 0 ]; then
+  if [ "$(ls -1 "$HOME/.nvm/versions/node" 2>/dev/null | wc -l)" -eq 0 ]; then
     info "Installing current stable version of Node"
     bash -c '. $HOME/.nvm/nvm.sh && nvm install --lts 2>&1' | indent
   fi
@@ -712,7 +712,7 @@ finalize_x_setup() {
           need_cmd systemctl
 
           info "Setting up Powertop for power management tuning"
-          cat <<'_EOF_' | sudo tee /etc/systemd/system/powertop.service > /dev/null
+          cat <<'_EOF_' | sudo tee /etc/systemd/system/powertop.service >/dev/null
 [Unit]
 Description=Powertop tunings
 
@@ -729,7 +729,7 @@ _EOF_
 
         if [ ! -f /etc/udev/rules.d/backlight.rules ]; then
           info "Setting up udev backlight rule"
-          cat <<'_EOF_' | sudo tee /etc/udev/rules.d/backlight.rules > /dev/null
+          cat <<'_EOF_' | sudo tee /etc/udev/rules.d/backlight.rules >/dev/null
 ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="intel_backlight", RUN+="/bin/chgrp video /sys/class/backlight/%k/brightness"
 ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="intel_backlight", RUN+="/bin/chmod g+w /sys/class/backlight/%k/brightness"
 _EOF_
