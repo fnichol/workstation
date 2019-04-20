@@ -77,7 +77,11 @@ init() {
   if [ "$_system" != "Linux" ]; then
     _os="$_system"
   elif [ -f /etc/lsb-release ]; then
-    _os="$(. /etc/lsb-release; echo $DISTRIB_ID)"
+    _os="$(
+      # shellcheck source=/dev/null
+      . /etc/lsb-release
+      echo "$DISTRIB_ID"
+    )"
   elif [ -f /etc/alpine-release ]; then
     _os="Alpine"
   elif [ -f /etc/arch-release ]; then
