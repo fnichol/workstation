@@ -59,7 +59,7 @@ darwin_install_homebrew() {
     local url="https://raw.githubusercontent.com/Homebrew/install/master/install"
 
     info "Installing Homebrew"
-    ruby -e "$(curl -fsSL "$url")" < /dev/null | indent
+    ruby -e "$(curl -fsSL "$url")" </dev/null | indent
   fi
 
   brew update | indent
@@ -84,7 +84,7 @@ darwin_install_cask_pkg() {
 
   local pkg="$1"
 
-  if [ $(brew cask list --versions $pkg 2> /dev/null | wc -l) -ne 0 ]; then
+  if [ $(brew cask list --versions $pkg 2>/dev/null | wc -l) -ne 0 ]; then
     return 0
   fi
 
@@ -122,11 +122,11 @@ darwin_install_apps_from_json() {
   fi
 
   cat "$json" \
-      | jq -r '. | to_entries | .[] | @sh "app=\(.key); id=\(.value)"' \
-      | while read -r vars; do
-    eval "$vars"
-    darwin_install_app "$app" "$id"
-  done
+    | jq -r '. | to_entries | .[] | @sh "app=\(.key); id=\(.value)"' \
+    | while read -r vars; do
+      eval "$vars"
+      darwin_install_app "$app" "$id"
+    done
 }
 
 darwin_install_cask_pkgs_from_json() {
@@ -174,7 +174,6 @@ darwin_set_preferences() {
   info "Disable screen saver hot corner (top right)"
   defaults write com.apple.dock wvous-tr-corner -int 6
 
-
   info "Automatically show and hide the Dock"
   defaults write com.apple.dock autohide -bool true
 
@@ -187,11 +186,9 @@ darwin_set_preferences() {
   info "Enable Dock magnification"
   defaults write com.apple.dock magnification -bool true
 
-
   info "Enable password immediately after screen saver starts"
   defaults write com.apple.screensaver askForPassword -int 1
   defaults write com.apple.screensaver askForPasswordDelay -int 0
-
 
   info "Disable press-and-hold for keys in favor of key repeat"
   defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
@@ -208,7 +205,6 @@ darwin_set_preferences() {
   defaults write com.apple.sound.beep feedback -int 0
   defaults write com.apple.systemsound com.apple.sound.uiaudio.enabled -int 0
 
-
   info "Set the menu bar date format"
   defaults write com.apple.menuextra.clock DateFormat -string "HH:mm::ss"
   defaults write com.apple.menuextra.clock FlashDateSeparators -bool false
@@ -221,7 +217,6 @@ darwin_set_preferences() {
     TimeAnnouncementsIntervalIdentifier -string "EveryHourInterval" \
     TimeAnnouncementsPhraseIdentifier -string "ShortTime"
 
-
   info "Save to disk (not to iCloud) by default"
   defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
 
@@ -232,7 +227,6 @@ darwin_set_preferences() {
   info "Expand Print panel by default"
   defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
   defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
-
 
   info "Save screenshots to the desktop"
   defaults write com.apple.screencapture location -string "\$HOME/Desktop"
@@ -254,7 +248,6 @@ darwin_set_preferences() {
 
   info "Check for software updates daily"
   defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
-
 
   info "Show icons for external hard drives on the Desktop"
   defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
