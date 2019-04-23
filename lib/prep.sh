@@ -68,6 +68,7 @@ init() {
   need_cmd hostname
   need_cmd uname
 
+  # shellcheck disable=SC2154
   local lib_path="$_root/lib"
   local hostname
   hostname="$(hostname)"
