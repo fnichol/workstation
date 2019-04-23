@@ -74,7 +74,7 @@ darwin_install_pkg() {
 
   local pkg="$1"
 
-  if [ $(brew list --versions $pkg | wc -l) -ne 0 ]; then
+  if [ "$(brew list --versions "$pkg" | wc -l)" -ne 0 ]; then
     return 0
   fi
 
@@ -88,7 +88,7 @@ darwin_install_cask_pkg() {
 
   local pkg="$1"
 
-  if [ $(brew cask list --versions $pkg 2>/dev/null | wc -l) -ne 0 ]; then
+  if [ "$(brew cask list --versions "$pkg" 2>/dev/null | wc -l)" -ne 0 ]; then
     return 0
   fi
 
