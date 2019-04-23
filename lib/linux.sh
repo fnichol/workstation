@@ -81,7 +81,7 @@ arch_install_aur_pkgs_from_json() {
 
   local json="$1"
 
-  cat "$json" | jq -r .[] | while read -r pkg; do
+  jq -r .[] "$json" | while read -r pkg; do
     arch_install_aur_pkg "$pkg"
   done
 }
