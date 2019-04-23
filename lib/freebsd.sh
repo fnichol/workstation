@@ -1,3 +1,6 @@
+#!/usr/bin/env sh
+# shellcheck disable=SC2039
+
 freebsd_install_pkg() {
   need_cmd pkg
 
