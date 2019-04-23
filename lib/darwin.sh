@@ -125,8 +125,7 @@ darwin_install_apps_from_json() {
     exit_with "Not logged into App Store" 16
   fi
 
-  cat "$json" \
-    | jq -r '. | to_entries | .[] | @sh "app=\(.key); id=\(.value)"' \
+  jq -r '. | to_entries | .[] | @sh "app=\(.key); id=\(.value)"' "$json" \
     | while read -r vars; do
       eval "$vars"
       darwin_install_app "$app" "$id"
@@ -138,7 +137,7 @@ darwin_install_cask_pkgs_from_json() {
 
   local json="$1"
 
-  cat "$json" | jq -r .[] | while read -r pkg; do
+  jq -r .[] "$json" | while read -r pkg; do
     darwin_install_cask_pkg "$pkg"
   done
 }
