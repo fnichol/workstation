@@ -1,3 +1,6 @@
+#!/usr/bin/env sh
+# shellcheck disable=SC2039
+
 darwin_check_tmux() {
   if [ -n "${TMUX:-}" ]; then
     warn "$_program must not be run under tmux for mas to work correctly."
