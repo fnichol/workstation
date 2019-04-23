@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 # shellcheck disable=SC2039
 
+# shellcheck disable=SC2154
 print_help() {
   cat <<HELP
 $_program $_version
