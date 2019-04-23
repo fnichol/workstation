@@ -99,12 +99,14 @@ keep_sudo() {
   need_cmd sudo
 
   while true; do
-    sudo -n true; sleep 60; kill -0 "$$" || exit
+    sudo -n true
+    sleep 60
+    kill -0 "$$" || exit
   done 2>/dev/null &
 }
 
 need_cmd() {
-  if ! command -v "$1" > /dev/null 2>&1; then
+  if ! command -v "$1" >/dev/null 2>&1; then
     exit_with "Required command '$1' not found on PATH" 127
   fi
 }
