@@ -4,7 +4,7 @@ download() {
   local code
 
   # Attempt to download with wget, if found. If successful, quick return
-  if command -v wget > /dev/null; then
+  if command -v wget >/dev/null; then
     info "Downlading via wget: ${url}"
     wget -q -O "${dst}" "${url}"
     code="$?"
@@ -18,7 +18,7 @@ download() {
   fi
 
   # Attempt to download with curl, if found. If successful, quick return
-  if command -v curl > /dev/null; then
+  if command -v curl >/dev/null; then
     info "Downlading via curl: ${url}"
     curl -sSfL "${url}" -o "${dst}"
     code="$?"
