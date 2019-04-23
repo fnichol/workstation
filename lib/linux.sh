@@ -4,7 +4,7 @@ alpine_install_pkg() {
 
   local pkg="$1"
 
-  if apk info | grep -q "^${pkg}$" > /dev/null 2>&1; then
+  if apk info | grep -q "^${pkg}$" >/dev/null 2>&1; then
     return 0
   fi
 
@@ -15,7 +15,7 @@ alpine_install_pkg() {
 arch_build_yay() {
   need_cmd pacman
 
-  if pacman -Qi yay > /dev/null 2>&1; then
+  if pacman -Qi yay >/dev/null 2>&1; then
     return 0
   fi
 
@@ -38,12 +38,12 @@ arch_install_pkg() {
 
   local pkg="$1"
 
-  if pacman -Qi "$pkg" > /dev/null 2>&1; then
+  if pacman -Qi "$pkg" >/dev/null 2>&1; then
     # This is a package and it is installed
     return 0
   fi
 
-  if pacman -Qg "$pkg" > /dev/null 2>&1; then
+  if pacman -Qg "$pkg" >/dev/null 2>&1; then
     # This is a package group, so ensure each package is installed
     pacman -Qg "$pkg" \
       | cut -d ' ' -f 2 \
@@ -62,7 +62,7 @@ arch_install_aur_pkg() {
 
   local pkg="$1"
 
-  if pacman -Qi "$pkg" > /dev/null 2>&1; then
+  if pacman -Qi "$pkg" >/dev/null 2>&1; then
     return 0
   fi
 
@@ -100,7 +100,7 @@ redhat_install_jq() {
 redhat_install_pkg() {
   local pkg="$1"
 
-  if sudo yum list installed "$pkg" > /dev/null 2>&1; then
+  if sudo yum list installed "$pkg" >/dev/null 2>&1; then
     return 0
   fi
 
@@ -115,7 +115,7 @@ ubuntu_install_pkg() {
 
   local pkg="$1"
 
-  if dpkg -l "$pkg" > /dev/null 2>&1; then
+  if dpkg -l "$pkg" >/dev/null 2>&1; then
     return 0
   fi
 
