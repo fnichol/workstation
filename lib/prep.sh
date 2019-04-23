@@ -457,6 +457,7 @@ install_rust() {
   local rustc="$HOME/.cargo/bin/rustc"
   local cargo="$HOME/.cargo/bin/cargo"
   local rustup="$HOME/.cargo/bin/rustup"
+  local installed_plugins
 
   header "Setting up Rust"
 
@@ -482,8 +483,9 @@ install_rust() {
   "$rustup" component add rust-src | indent
   "$rustup" component add rustfmt | indent
 
+  installed_plugins="$("$cargo" install --list | grep ':$' | cut -d ' ' -f 1)"
   for plugin in cargo-watch cargo-edit cargo-outdated; do
-    if ! "$cargo" install --list | grep -q "$plugin"; then
+    if ! echo "$installed_plugins" | grep -q "^$plugin\$"; then
       info "Installing $plugin"
       "$cargo" install "$plugin" 2>&1 | indent
     fi
