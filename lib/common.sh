@@ -42,6 +42,7 @@ ensure_not_root() {
   need_cmd id
 
   if [ "$(id -u)" -eq 0 ]; then
+    # shellcheck disable=SC2154
     warn "$_program must be run as a non-root user, please re-run to try again."
     exit_with "Program run with root permissions" 1
   fi
