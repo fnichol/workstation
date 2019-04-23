@@ -257,7 +257,7 @@ update_system() {
       ;;
     Darwin)
       softwareupdate --install --all 2>&1 | indent
-      env HOMEBREW_NO_AUTO_UPDATE=true brew upgrade
+      env HOMEBREW_NO_AUTO_UPDATE=true brew upgrade | indent
       ;;
     FreeBSD)
       sudo pkg upgrade --yes --no-repo-update | indent
