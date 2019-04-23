@@ -1,3 +1,6 @@
+#!/usr/bin/env sh
+# shellcheck disable=SC2039
+
 download() {
   local url="$1"
   local dst="$2"
