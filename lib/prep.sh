@@ -33,10 +33,12 @@ parse_cli_args() {
         exit 0
         ;;
       W)
+        # shellcheck disable=SC2034
         _skip_workstation=true
         _skip_x=true
         ;;
       X)
+        # shellcheck disable=SC2034
         _skip_x=true
         ;;
       \?)
