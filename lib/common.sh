@@ -49,15 +49,18 @@ ensure_not_root() {
 }
 
 exit_with() {
+  local msg="$1"
+
   case "${TERM:-}" in
     *term | xterm-* | rxvt | screen | screen-*)
-      printf -- "\n\033[1;31mERROR: \033[1;37m${1:-}\033[0m\n\n" >&2
+      printf -- "\n\033[1;31;40mERROR: \033[1;37;40m%s\033[0m\n\n" "$msg" >&2
       ;;
     *)
-      printf -- "\nERROR: ${1:-}\n\n" >&2
+      printf -- "\nERROR: %s\n\n" "$msg" >&2
       ;;
   esac
-  exit "${2:-10}"
+
+  exit "${2:-99}"
 }
 
 get_sudo() {
@@ -68,12 +71,14 @@ get_sudo() {
 }
 
 header() {
+  local msg="$1"
+
   case "${TERM:-}" in
     *term | xterm-* | rxvt | screen | screen-*)
-      printf -- "\033[1;36m-----> \033[1;37m\033[40m${*}\033[0m\n"
+      printf -- "\033[1;36;40m-----> \033[1;37;40m%s\033[0m\n" "$msg"
       ;;
     *)
-      printf -- "-----> $*\n"
+      printf -- "-----> %s\n" "$msg"
       ;;
   esac
 }
@@ -85,10 +90,10 @@ indent() {
 info() {
   case "${TERM:-}" in
     *term | xterm-* | rxvt | screen | screen-*)
-      printf -- "       \033[1;37m\033[40m${*:-}\033[0m\n"
+      printf -- "       \033[1;37;40m%s\033[0m\n" "$msg"
       ;;
     *)
-      printf -- "       ${*:-}\n"
+      printf -- "       %s\n" "$msg"
       ;;
   esac
 }
@@ -112,12 +117,14 @@ need_cmd() {
 }
 
 warn() {
+  local msg="$1"
+
   case "${TERM:-}" in
     *term | xterm-* | rxvt | screen | screen-*)
-      printf -- "\033[1;31m !!!   \033[1;37m\033[40m${*:-}\033[0m\n" >&2
+      printf -- "\033[1;31;40mm !!!   \033[1;37;40m%s\033[0m\n" "$msg" >&2
       ;;
     *)
-      printf -- " !!!   ${*:-}\n" >&2
+      printf -- " !!!   %s\n" "$msg" >&2
       ;;
   esac
 }
