@@ -1,3 +1,6 @@
+#!/usr/bin/env sh
+# shellcheck disable=SC2039
+
 unix_install_chruby() {
   if [ -f /usr/local/share/chruby/chruby.sh ]; then
     return 0
