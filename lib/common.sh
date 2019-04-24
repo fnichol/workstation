@@ -99,8 +99,35 @@ header() {
   esac
 }
 
+# Indent the output from a command while preserving the command's exit code.
+#
+# In minimal/POSIX shells there is no support for `set -o pipefail` which means
+# that the exit code of the first command in a shell pipeline won't be
+# addressable in an easy way. This implementation uses a temp file to ferry the
+# original command's exit code from a subshell back into the main function. The
+# output can be aligned with a pipe to `sed` as before but now we have an
+# implementation which mimicks a `set -o pipefail` which should work on all
+# Bourne shells. Note that the `set -o errexit` is disabled during the
+# command's invocation so that its exit code can be captured.
+#
+# Based on implementation from: https://stackoverflow.com/a/54931544
 indent() {
-  sed 's/^/       /'
+  need_cmd cat
+  need_cmd sed
+
+  local ecfile ec
+  ecfile="$(mktemp_file)"
+  cleanup_file "$ecfile"
+
+  set +e
+  {
+    "$@" 2>&1
+    echo "$?" >"$ecfile"
+  } | sed 's/^/       /'
+  ec="$(cat "$ecfile")"
+  set -e
+
+  return "${ec:-5}"
 }
 
 info() {

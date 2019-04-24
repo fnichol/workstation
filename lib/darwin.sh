@@ -50,7 +50,7 @@ darwin_install_xcode_cli_tools() {
     | sed -e 's/^ *//' \
     | tr -d '\n')"
   # Install the update
-  softwareupdate -i "$product" --verbose | indent
+  indent softwareupdate -i "$product" --verbose
   # Remove the placeholder to prevent perpetual appearance in the update
   # utility
   rm -f /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
@@ -63,10 +63,10 @@ darwin_install_homebrew() {
     local url="https://raw.githubusercontent.com/Homebrew/install/master/install"
 
     info "Installing Homebrew"
-    ruby -e "$(curl -fsSL "$url")" </dev/null | indent
+    indent ruby -e "$(curl -fsSL "$url")" </dev/null
   fi
 
-  brew update | indent
+  indent brew update
 }
 
 darwin_install_pkg() {
@@ -79,7 +79,7 @@ darwin_install_pkg() {
   fi
 
   info "Installing package '$pkg'"
-  env HOMEBREW_NO_AUTO_UPDATE=true brew install "$pkg" 2>&1 | indent
+  indent env HOMEBREW_NO_AUTO_UPDATE=true brew install "$pkg"
 }
 
 darwin_install_cask_pkg() {
@@ -93,7 +93,7 @@ darwin_install_cask_pkg() {
   fi
 
   info "Installing cask package '$pkg'"
-  env HOMEBREW_NO_AUTO_UPDATE=true brew cask install "$pkg" 2>&1 | indent
+  indent env HOMEBREW_NO_AUTO_UPDATE=true brew cask install "$pkg"
 }
 
 darwin_install_app() {
@@ -104,12 +104,32 @@ darwin_install_app() {
   local pkg="$1"
   local id="$2"
 
-  if mas list | cut -d ' ' -f 1 | grep -q "^${id}$"; then
+  if [ -n "${3:-}" ]; then
+    need_cmd grep
+
+    # Cache file was provided
+    local cache="$3"
+
+    if [ ! -f "$cache" ]; then
+      # If cache file doesn't exist, then populate it
+      mas list | cut -d ' ' -f 1 >"$cache"
+    fi
+
+    if grep -E -q "^${id}$" "$cache"; then
+      # If an installed package was found in the cache, early return
+      return 0
+    else
+      # About to install a package, so invalidate cache to ensure it is
+      # repopulated on next call
+      rm -f "$cache"
+    fi
+  elif mas list | cut -d ' ' -f 1 | grep -q "^${id}$"; then
+    # No cache file, but an installed package was found, so early return
     return 0
   fi
 
   info "Installing App '$pkg' ($id)"
-  mas install "$id" 2>&1 | indent
+  indent mas install "$id"
 }
 
 darwin_install_apps_from_json() {
@@ -154,7 +174,7 @@ darwin_install_iterm2_settings() {
 
   info "Installing iTerm2 settings"
   curl -sSf https://raw.githubusercontent.com/fnichol/macosx-iterm2-settings/master/contrib/install-settings.sh \
-    | bash | indent
+    | indent bash
 }
 
 darwin_set_preferences() {

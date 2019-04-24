@@ -222,23 +222,23 @@ setup_package_system() {
 
   case "$_os" in
     Alpine)
-      sudo apk update | indent
+      indent sudo apk update
       ;;
     Arch)
-      sudo pacman -Syy --noconfirm | indent
+      indent sudo pacman -Syy --noconfirm
       ;;
     Darwin)
       darwin_install_xcode_cli_tools
       darwin_install_homebrew
       ;;
     FreeBSD)
-      sudo pkg update | indent
+      indent sudo pkg update
       ;;
     RedHat)
       # Nothing to do
       ;;
     Ubuntu)
-      sudo apt-get update | indent
+      indent sudo apt-get update
       ;;
     *)
       warn "Setting up package system on $_os not yet supported, skipping"
@@ -251,23 +251,23 @@ update_system() {
 
   case "$_os" in
     Alpine)
-      sudo apk upgrade | indent
+      indent sudo apk upgrade
       ;;
     Arch)
-      sudo pacman -Su --noconfirm | indent
+      indent sudo pacman -Su --noconfirm
       ;;
     Darwin)
-      softwareupdate --install --all 2>&1 | indent
-      env HOMEBREW_NO_AUTO_UPDATE=true brew upgrade | indent
+      indent softwareupdate --install --all
+      indent env HOMEBREW_NO_AUTO_UPDATE=true brew upgrade
       ;;
     FreeBSD)
-      sudo pkg upgrade --yes --no-repo-update | indent
+      indent sudo pkg upgrade --yes --no-repo-update
       ;;
     RedHat)
       # Nothing to do
       ;;
     Ubuntu)
-      sudo apt-get -y dist-upgrade | indent
+      indent sudo apt-get -y dist-upgrade
       ;;
     *)
       warn "Setting up package system on $_os not yet supported, skipping"
@@ -375,7 +375,7 @@ install_bashrc() {
   header "Installing fnichol/bashrc"
   download https://raw.githubusercontent.com/fnichol/bashrc/master/contrib/install-system-wide \
     /tmp/install.sh
-  sudo bash /tmp/install.sh | indent
+  indent sudo bash /tmp/install.sh
   rm -f /tmp/install.sh
 }
 
@@ -390,8 +390,8 @@ install_dot_configs() {
 
   if [ ! -f "$HOME/.homesick/repos/homeshick/homeshick.sh" ]; then
     info "Installing homeshick for '$USER'"
-    git clone --depth 1 git://github.com/andsens/homeshick.git \
-      "$HOME/.homesick/repos/homeshick" | indent
+    indent git clone --depth 1 git://github.com/andsens/homeshick.git \
+      "$HOME/.homesick/repos/homeshick"
   fi
 
   jq -r .[] "$_data_path/homesick_repos.json" | while read -r repo; do
@@ -442,14 +442,14 @@ install_habitat() {
 
   case "$_os" in
     Darwin)
-      curl -sSf "$url" | sh 2>&1 | indent
+      curl -sSf "$url" | indent sh
       ;;
     FreeBSD)
       info "Habitat not yet supported on FreeBSD"
       return 0
       ;;
     *)
-      curl -sSf "$url" | sudo sh 2>&1 | indent
+      curl -sSf "$url" | indent sudo sh
       ;;
   esac
 }
@@ -472,23 +472,22 @@ install_rust() {
 
     info "Installing Rust"
     curl -sSf https://sh.rustup.rs \
-      | sh -s -- -y --default-toolchain stable 2>&1 \
-      | indent
-    "$rustc" --version | indent
-    "$cargo" --version | indent
+      | indent sh -s -- -y --default-toolchain stable 2>&1
+    indent "$rustc" --version
+    indent "$cargo" --version
   fi
 
-  "$rustup" self update | indent
-  "$rustup" update | indent
+  indent "$rustup" self update
+  indent "$rustup" update
 
-  "$rustup" component add rust-src | indent
-  "$rustup" component add rustfmt | indent
+  indent "$rustup" component add rust-src
+  indent "$rustup" component add rustfmt
 
   installed_plugins="$("$cargo" install --list | grep ':$' | cut -d ' ' -f 1)"
   for plugin in cargo-watch cargo-edit cargo-outdated; do
     if ! echo "$installed_plugins" | grep -q "^$plugin\$"; then
       info "Installing $plugin"
-      "$cargo" install "$plugin" 2>&1 | indent
+      indent "$cargo" install "$plugin"
     fi
   done
 }
@@ -633,12 +632,13 @@ install_node() {
     url="https://raw.githubusercontent.com/creationix/nvm/$version/install.sh"
 
     touch "$HOME/.bash_profile"
-    curl -sSf "$url" | env PROFILE="$HOME/.bash_profile" bash 2>&1 | indent
+    curl -sSf "$url" | indent env PROFILE="$HOME/.bash_profile" bash
   fi
 
   if [ "$(find "$HOME/.nvm/versions/node" -depth 1 | wc -l)" -eq 0 ]; then
     info "Installing current stable version of Node"
-    bash -c '. $HOME/.nvm/nvm.sh && nvm install --lts 2>&1' | indent
+    # shellcheck disable=SC2016
+    indent bash -c '. $HOME/.nvm/nvm.sh && nvm install --lts 2>&1'
   fi
 }
 
@@ -827,10 +827,10 @@ manage_homesick_repo() {
 
   if [ ! -d "$repo_dir" ]; then
     info "Installing repo $repo for '$USER'"
-    bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
-      && homeshick --batch clone $repo" 2>&1 | indent
+    indent bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
+      && homeshick --batch clone $repo"
   fi
 
-  bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
-    && homeshick --batch pull $castle && homeshick --batch link $castle" 2>&1 | indent
+  indent bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
+    && homeshick --batch pull $castle && homeshick --batch link $castle"
 }

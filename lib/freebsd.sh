@@ -11,5 +11,5 @@ freebsd_install_pkg() {
   fi
 
   info "Installing package '$pkg'"
-  sudo pkg install --yes --no-repo-update "$pkg" 2>&1 | indent
+  indent sudo pkg install --yes --no-repo-update "$pkg"
 }

@@ -12,7 +12,7 @@ alpine_install_pkg() {
   fi
 
   info "Installing package '$pkg'"
-  sudo apk add "$pkg" 2>&1 | indent
+  indent sudo apk add "$pkg"
 }
 
 arch_build_yay() {
@@ -57,7 +57,7 @@ arch_install_pkg() {
   need_cmd sudo
 
   info "Installing package '$pkg'"
-  sudo pacman -S --noconfirm "$pkg" 2>&1 | indent
+  indent sudo pacman -S --noconfirm "$pkg"
 }
 
 arch_install_aur_pkg() {
@@ -73,7 +73,7 @@ arch_install_aur_pkg() {
   need_cmd yay
 
   info "Installing AUR package '$pkg'"
-  yay -S --noconfirm "$pkg" 2>&1 | indent
+  indent yay -S --noconfirm "$pkg"
 }
 
 arch_install_aur_pkgs_from_json() {
@@ -108,7 +108,7 @@ redhat_install_pkg() {
   fi
 
   info "Installing package '$pkg'"
-  sudo yum install -y "$pkg" 2>&1 | indent
+  indent sudo yum install -y "$pkg"
 }
 
 ubuntu_install_pkg() {
@@ -123,5 +123,5 @@ ubuntu_install_pkg() {
   fi
 
   info "Installing package '$pkg'"
-  sudo apt-get install -y "$pkg" 2>&1 | indent
+  indent sudo apt-get install -y "$pkg"
 }
