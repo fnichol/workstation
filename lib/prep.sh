@@ -781,22 +781,22 @@ finish() {
 install_pkg() {
   case "$_os" in
     Alpine)
-      alpine_install_pkg "$@"
+      alpine_install_pkg "$1"
       ;;
     Arch)
-      arch_install_pkg "$@"
+      arch_install_pkg "$1"
       ;;
     Darwin)
       darwin_install_pkg "$@"
       ;;
     FreeBSD)
-      freebsd_install_pkg "$@"
+      freebsd_install_pkg "$1"
       ;;
     RedHat)
-      redhat_install_pkg "$@"
+      redhat_install_pkg "$1"
       ;;
     Ubuntu)
-      ubuntu_install_pkg "$@"
+      ubuntu_install_pkg "$1"
       ;;
     *)
       warn "Installing package on $_os not yet supported, skipping..."
