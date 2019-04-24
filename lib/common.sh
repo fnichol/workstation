@@ -88,6 +88,8 @@ indent() {
 }
 
 info() {
+  local msg="$1"
+
   case "${TERM:-}" in
     *term | xterm-* | rxvt | screen | screen-*)
       printf -- "       \033[1;37;40m%s\033[0m\n" "$msg"
