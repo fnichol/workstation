@@ -3,7 +3,8 @@
 
 main() {
   set -eu
-  if [ -n "${DEBUG:-}" ]; then set -x; fi
+  if [ -n "${DEBUG:-}" ]; then set -v; fi
+  if [ -n "${TRACE:-}" ]; then set -xv; fi
 
   _program="$(basename "$0")"
   _version="0.5.0"
