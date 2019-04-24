@@ -520,8 +520,7 @@ install_ruby() {
       ;;
   esac
 
-  # shellcheck disable=SC2012
-  if [ "$(ls -1 "$HOME/.rubies" 2>/dev/null | wc -l)" -eq 0 ]; then
+  if [ "$(find "$HOME/.rubies" -depth 1 | wc -l)" -eq 0 ]; then
     info "Building curent stable version of Ruby"
     ruby-install --cleanup --src-dir /tmp/ruby-src ruby 2>&1
   fi
@@ -637,8 +636,7 @@ install_node() {
     curl -sSf "$url" | env PROFILE="$HOME/.bash_profile" bash 2>&1 | indent
   fi
 
-  # shellcheck disable=SC2012
-  if [ "$(ls -1 "$HOME/.nvm/versions/node" 2>/dev/null | wc -l)" -eq 0 ]; then
+  if [ "$(find "$HOME/.nvm/versions/node" -depth 1 | wc -l)" -eq 0 ]; then
     info "Installing current stable version of Node"
     bash -c '. $HOME/.nvm/nvm.sh && nvm install --lts 2>&1' | indent
   fi
