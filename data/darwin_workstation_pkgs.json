@@ -8,7 +8,7 @@
   "ffmpeg",
   "flac",
   "gnu-tar",
-  "gpg",
+  "gnupg",
   "graphviz",
   "jo",
   "kubernetes-cli",
