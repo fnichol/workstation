@@ -22,6 +22,16 @@ main() {
 
   parse_cli_args "$@"
 
+  # Very nice, portable signal handling thanks to:
+  # https://unix.stackexchange.com/a/240736
+  for sig in HUP INT QUIT ALRM TERM; do
+    trap "
+      trap_cleanup
+      trap - $sig EXIT
+      kill -s $sig "'"$$"' "$sig"
+  done
+  trap trap_cleanup EXIT
+
   init
   set_hostname
   setup_package_system

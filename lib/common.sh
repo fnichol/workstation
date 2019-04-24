@@ -1,6 +1,22 @@
 #!/usr/bin/env sh
 # shellcheck disable=SC2039
 
+cleanup_file() {
+  local file="$1"
+
+  # If a tempfile hasn't been setup yet, create it
+  if [ -z "${__cleanup_files:-}" ]; then
+    __cleanup_files="$(mktemp_file __cleanup_files)"
+
+    # If the result string is empty, tempfile wasn't created so report failure
+    if [ -z "$__cleanup_files" ]; then
+      return 1
+    fi
+  fi
+
+  echo "$file" >>"$__cleanup_files"
+}
+
 download() {
   local url="$1"
   local dst="$2"
@@ -112,9 +128,28 @@ keep_sudo() {
   done 2>/dev/null &
 }
 
+# Looks like the maximally portable way of calling `mktemp` to create a file is
+# to provide no arguments (therefore having no control over the naming). All
+# tested invocations will create a file in each platform's suitable temporary
+# directory.
+mktemp_file() {
+  mktemp
+}
+
 need_cmd() {
   if ! command -v "$1" >/dev/null 2>&1; then
     exit_with "Required command '$1' not found on PATH" 127
+  fi
+}
+
+trap_cleanup() {
+  set +e
+
+  if [ -n "${__cleanup_files:-}" ] && [ -f "$__cleanup_files" ]; then
+    while read -r file; do
+      rm -f "$file"
+    done <"$__cleanup_files"
+    rm -f "$__cleanup_files"
   fi
 }
 
