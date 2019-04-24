@@ -6,7 +6,7 @@ cleanup_file() {
 
   # If a tempfile hasn't been setup yet, create it
   if [ -z "${__cleanup_files:-}" ]; then
-    __cleanup_files="$(mktemp_file __cleanup_files)"
+    __cleanup_files="$(mktemp_file)"
 
     # If the result string is empty, tempfile wasn't created so report failure
     if [ -z "$__cleanup_files" ]; then
