@@ -71,10 +71,31 @@ darwin_install_homebrew() {
 
 darwin_install_pkg() {
   need_cmd brew
+  need_cmd wc
 
   local pkg="$1"
 
-  if [ "$(brew list --versions "$pkg" | wc -l)" -ne 0 ]; then
+  if [ -n "${2:-}" ]; then
+    need_cmd grep
+
+    # Cache file was provided
+    local cache="$2"
+
+    if [ ! -f "$cache" ]; then
+      # If cache file doesn't exist, then populate it
+      brew list --versions >"$cache"
+    fi
+
+    if grep -E -q "^$pkg\s+" "$cache"; then
+      # If an installed package was found in the cache, early return
+      return 0
+    else
+      # About to install a package, so invalidate cache to ensure it is
+      # repopulated on next call
+      rm -f "$cache"
+    fi
+  elif [ "$(brew list --versions "$pkg" | wc -l)" -ne 0 ]; then
+    # No cache file, but an installed package was found, so early return
     return 0
   fi
 
@@ -88,7 +109,27 @@ darwin_install_cask_pkg() {
 
   local pkg="$1"
 
-  if [ "$(brew cask list --versions "$pkg" 2>/dev/null | wc -l)" -ne 0 ]; then
+  if [ -n "${2:-}" ]; then
+    need_cmd grep
+
+    # Cache file was provided
+    local cache="$2"
+
+    if [ ! -f "$cache" ]; then
+      # If cache file doesn't exist, then populate it
+      brew cask list --versions >"$cache"
+    fi
+
+    if grep -E -q "^$pkg\s+" "$cache"; then
+      # If an installed package was found in the cache, early return
+      return 0
+    else
+      # About to install a package, so invalidate cache to ensure it is
+      # repopulated on next call
+      rm -f "$cache"
+    fi
+  elif [ "$(brew cask list --versions "$pkg" | wc -l)" -ne 0 ]; then
+    # No cache file, but an installed package was found, so early return
     return 0
   fi
 
@@ -105,8 +146,6 @@ darwin_install_app() {
   local id="$2"
 
   if [ -n "${3:-}" ]; then
-    need_cmd grep
-
     # Cache file was provided
     local cache="$3"
 
@@ -138,6 +177,11 @@ darwin_install_apps_from_json() {
   local app
   local id
   local json="$1"
+  local cache
+  cache="$(mktemp_file appcache)"
+  cleanup_file "$cache"
+  # Ensure no file exists
+  rm -f "$cache"
 
   install_pkg mas
 
@@ -148,7 +192,7 @@ darwin_install_apps_from_json() {
   jq -r '. | to_entries | .[] | @sh "app=\(.key); id=\(.value)"' "$json" \
     | while read -r vars; do
       eval "$vars"
-      darwin_install_app "$app" "$id"
+      darwin_install_app "$app" "$id" "$cache"
     done
 }
 
@@ -156,9 +200,14 @@ darwin_install_cask_pkgs_from_json() {
   need_cmd jq
 
   local json="$1"
+  local cache
+  cache="$(mktemp_file caskcache)"
+  cleanup_file "$cache"
+  # Ensure no file exists
+  rm -f "$cache"
 
   jq -r .[] "$json" | while read -r pkg; do
-    darwin_install_cask_pkg "$pkg"
+    darwin_install_cask_pkg "$pkg" "$cache"
   done
 }
 

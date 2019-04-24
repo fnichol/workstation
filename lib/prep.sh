@@ -805,13 +805,17 @@ install_pkg() {
 }
 
 install_pkgs_from_json() {
-  need_cmd cat
   need_cmd jq
 
   local json="$1"
+  local cache
+  cache="$(mktemp_file pkgcache)"
+  cleanup_file "$cache"
+  # Ensure no file exists
+  rm -f "$cache"
 
   jq -r .[] "$json" | while read -r pkg; do
-    install_pkg "$pkg"
+    install_pkg "$pkg" "$cache"
   done
 }
 
