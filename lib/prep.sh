@@ -557,12 +557,13 @@ install_go() {
 
   # https://golang.org/dl/
   local ver
-  ver="1.12.4"
+  ver="$(latest_go_version)"
 
   if [ -f /usr/local/go/VERSION ]; then
     local installed_ver
     installed_ver="$(cat /usr/local/go/VERSION)"
     if [ "$installed_ver" = "go${ver}" ]; then
+      info "Current version '$ver' is installed"
       return 0
     else
       info "Uninstalling Go $installed_ver"
@@ -837,4 +838,18 @@ manage_homesick_repo() {
 
   indent bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
     && homeshick --batch pull $castle && homeshick --batch link $castle"
+}
+
+# Prints the latest stable release of Go, using the tags from the Git
+# sourcetree.
+#
+# Is it just me, or shouldn't there be a much better way than this??
+latest_go_version() {
+  need_cmd awk
+  need_cmd git
+
+  git ls-remote --tags --sort=version:refname https://go.googlesource.com/go \
+    | awk -F/ '
+      ($NF ~ /^go[0-9]+\./ && $NF !~ /(beta|rc)[0-9]+$/) { last = $NF }
+      END { sub(/^go/, "", last); print last }'
 }
