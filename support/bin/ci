@@ -1,0 +1,32 @@
+#!/usr/bin/env sh
+# shellcheck disable=SC2039
+
+main() {
+  set -eu
+  if [ -n "${DEBUG:-}" ]; then set -v; fi
+  if [ -n "${TRACE:-}" ]; then set -xv; fi
+
+  local program version author
+  program="$(basename "$0")"
+  version="0.1.0"
+  author="Fletcher Nichol <fnichol@nichol.ca>"
+
+  # shellcheck source=lib/realpath.sh
+  . "${0%/*}/../../lib/realpath.sh"
+
+  ROOT="$(realpath "${0%/*}/..")"
+
+  # shellcheck source=support/lib/cli.sh
+  . "$ROOT/lib/cli.sh"
+
+  cli__invoke_main "$program" "$version" "$author" "$@"
+}
+
+fail() {
+  echo "" >&2
+  echo "xxx $1" >&2
+  echo "" >&2
+  return 1
+}
+
+main "$@"

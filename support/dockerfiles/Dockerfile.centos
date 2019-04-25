@@ -1,0 +1,18 @@
+ARG VERSION=7
+FROM centos:$VERSION
+
+ARG VERSION
+ARG USER=jdoe
+ARG GROUP=$USER
+
+RUN yum install -y sudo \
+  && echo "%adm ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/01_adm \
+  && groupadd --gid 1001 "$GROUP" \
+  && useradd --create-home --shell /bin/sh --groups adm --gid "$GROUP" --uid 1001 "$USER" \
+  && echo "${USER}:${GROUP}" | chpasswd
+
+USER ${USER}:${GROUP}
+ENV USER="$USER"
+WORKDIR /home/$USER
+
+CMD ["/bin/sh", "-l"]
