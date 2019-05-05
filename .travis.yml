@@ -1,6 +1,0 @@
-language: shell
-
-sudo: false
-
-script:
-- shellcheck -x bin/prep
