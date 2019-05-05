@@ -520,10 +520,10 @@ install_ruby() {
       ;;
   esac
 
-  if [ "$(find "$HOME/.rubies" -depth 1 | wc -l)" -eq 0 ]; then
-    info "Building curent stable version of Ruby"
-    ruby-install --cleanup --src-dir /tmp/ruby-src ruby 2>&1
-  fi
+  # Update list of Ruby versions
+  indent ruby-install --latest
+  # Install latest stable version of Ruby
+  indent ruby-install --no-reinstall ruby
 
   sudo mkdir -p /etc/profile.d
 
