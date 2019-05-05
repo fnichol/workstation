@@ -408,6 +408,7 @@ install_workstation_packages() {
       ;;
     Arch)
       install_pkgs_from_json "$_data_path/arch_workstation_pkgs.json"
+      arch_install_aur_pkgs_from_json "$_data_path/arch_workstation_aur_pkgs.json"
       ;;
     Darwin)
       darwin_install_cask_pkgs_from_json "$_data_path/darwin_cask_pkgs.json"
@@ -653,7 +654,7 @@ install_x_packages() {
     Arch)
       arch_build_yay
       install_pkgs_from_json "$_data_path/arch_x_pkgs.json"
-      arch_install_aur_pkgs_from_json "$_data_path/arch_aur_pkgs.json"
+      arch_install_aur_pkgs_from_json "$_data_path/arch_x_aur_pkgs.json"
       if [ "$(cat /sys/class/dmi/id/product_name)" = "XPS 13 9370" ]; then
         # Support customizing touchpad on Dell XPS 13-inch 9370
         install_pkg libinput

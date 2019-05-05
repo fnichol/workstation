@@ -16,7 +16,7 @@
   "nitrogen",
   "otf-overpass",
   "playerctl",
-  "pulsaudio-alsa",
+  "pulseaudio-alsa",
   "pulsemixer",
   "rofi",
   "rxvt-unicode",
