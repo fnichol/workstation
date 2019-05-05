@@ -1,0 +1,20 @@
+ARG VERSION=19.04
+FROM ubuntu:$VERSION
+
+ARG VERSION
+ARG USER=jdoe
+ARG GROUP=$USER
+
+RUN apt-get update \
+  && apt-get install -y sudo \
+  && echo "%staff ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/01_staff \
+  && addgroup --gid 1001 "$GROUP" \
+  && adduser --disabled-password --gecos "$USER" --shell /bin/sh --gid 1001 --uid 1001 "$USER" \
+  && adduser "$USER" staff \
+  && echo "${USER}:${GROUP}" | chpasswd
+
+USER ${USER}:${GROUP}
+ENV USER="$USER"
+WORKDIR /home/$USER
+
+CMD ["/bin/sh", "-l"]

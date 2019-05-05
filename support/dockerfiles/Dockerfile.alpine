@@ -1,0 +1,19 @@
+ARG VERSION=3.9
+FROM alpine:$VERSION
+
+ARG VERSION
+ARG USER=jdoe
+ARG GROUP=$USER
+
+RUN apk add --no-cache sudo \
+  && echo "%wheel ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/01_wheel \
+  && addgroup -g 1001 "$GROUP" \
+  && adduser -D -s /bin/sh -G "$GROUP" -u 1001 "$USER" \
+  && adduser "$USER" wheel \
+  && echo "${USER}:${GROUP}" | chpasswd
+
+USER ${USER}:${GROUP}
+ENV USER="$USER"
+WORKDIR /home/$USER
+
+CMD ["/bin/sh", "-l"]
