@@ -22,7 +22,7 @@ shfmt: checktools ## Checks shell scripts for consistent formatting
 
 checktools: ## Checks that required tools are found on PATH
 	@echo "--- $@"
-	$(foreach tool, $(TOOLS), $(if $(shell command -v $(tool)),, \
+	$(foreach tool, $(TOOLS), $(if $(shell which $(tool)),, \
 		$(error "Required tool '$(tool)' not found on PATH")))
 .PHONY: checktools
 
