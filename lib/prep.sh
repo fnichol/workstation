@@ -352,7 +352,7 @@ generate_keys() {
     mkdir -p "$HOME/.ssh"
     ssh-keygen \
       -N '' \
-      -C "${USER}@$(hostname -f)-$(date +%FT%T%z)" \
+      -C "${USER}@$(hostname -f)-$(date -u +%FT%TZ)" \
       -t rsa \
       -b 4096 \
       -a 100 \
