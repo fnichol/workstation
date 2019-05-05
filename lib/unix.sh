@@ -35,7 +35,7 @@ unix_install_ruby_install() {
   local version url
 
   info "Installing ruby-install"
-  version="v0.6.1"
+  version="v0.7.0"
   url="https://github.com/postmodern/ruby-install/archive/${version}.tar.gz"
   download "$url" "/tmp/ruby-install-${version#v}.tar.gz"
   (cd /tmp && tar -xf "/tmp/ruby-install-${version#v}.tar.gz")
