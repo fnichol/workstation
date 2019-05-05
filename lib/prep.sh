@@ -637,11 +637,8 @@ install_node() {
     curl -sSfL "$url" | indent env PROFILE="$HOME/.bash_profile" bash
   fi
 
-  if [ "$(find "$HOME/.nvm/versions/node" -depth 1 | wc -l)" -eq 0 ]; then
-    info "Installing current stable version of Node"
-    # shellcheck disable=SC2016
-    indent bash -c '. $HOME/.nvm/nvm.sh && nvm install --lts 2>&1'
-  fi
+  # Install latest LTS version of Node
+  indent bash -c ". $HOME/.nvm/nvm.sh && nvm install --lts 2>&1"
 }
 
 install_x_packages() {
