@@ -443,14 +443,14 @@ install_habitat() {
 
   case "$_os" in
     Darwin)
-      curl -sSf "$url" | indent sh
+      curl -sSfL "$url" | indent sh
       ;;
     FreeBSD)
       info "Habitat not yet supported on FreeBSD"
       return 0
       ;;
     *)
-      curl -sSf "$url" | indent sudo sh
+      curl -sSfL "$url" | indent sudo sh
       ;;
   esac
 }
@@ -472,7 +472,7 @@ install_rust() {
     need_cmd curl
 
     info "Installing Rust"
-    curl -sSf https://sh.rustup.rs \
+    curl -sSfL https://sh.rustup.rs \
       | indent sh -s -- -y --default-toolchain stable 2>&1
     indent "$rustc" --version
     indent "$cargo" --version
@@ -628,13 +628,13 @@ install_node() {
 
   if [ ! -f "$HOME/.nvm/nvm.sh" ]; then
     info "Installing nvm"
-    version="$(curl -sSf \
+    version="$(curl -sSfL \
       https://api.github.com/repos/creationix/nvm/releases/latest \
       | jq -r .tag_name)"
     url="https://raw.githubusercontent.com/creationix/nvm/$version/install.sh"
 
     touch "$HOME/.bash_profile"
-    curl -sSf "$url" | indent env PROFILE="$HOME/.bash_profile" bash
+    curl -sSfL "$url" | indent env PROFILE="$HOME/.bash_profile" bash
   fi
 
   if [ "$(find "$HOME/.nvm/versions/node" -depth 1 | wc -l)" -eq 0 ]; then
