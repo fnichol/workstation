@@ -5,6 +5,7 @@
   "direnv",
   "flac",
   "graphviz",
+  "hadolint",
   "jo",
   "lame",
   "libxml2",
