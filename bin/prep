@@ -44,7 +44,6 @@ main() {
 
   if [ -z "${_skip_workstation:-}" ]; then
     install_workstation_packages
-    install_habitat
     install_rust
     install_ruby
     install_go

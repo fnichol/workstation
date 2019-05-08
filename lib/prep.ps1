@@ -126,11 +126,6 @@ function Install-WorkstationPackages {
   }
 }
 
-function Install-Habitat {
-  Write-HeaderLine "Installing Habitat"
-  Install-Package "habitat"
-}
-
 function Install-Rust {
   $rustc = "$env:HOMEPATH\.cargo\bin\rustc.exe"
   $cargo = "$env:HOMEPATH\.cargo\bin\cargo.exe"

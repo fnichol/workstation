@@ -29,7 +29,6 @@ function main {
 
   if (!$baseOnly) {
     Install-WorkstationPackages
-    Install-Habitat
     Install-Rust
     Install-Ruby
     Install-Go
