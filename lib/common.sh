@@ -185,7 +185,7 @@ warn() {
 
   case "${TERM:-}" in
     *term | xterm-* | rxvt | screen | screen-*)
-      printf -- "\033[1;31;40mm!!! \033[1;37;40m%s\033[0m\n" "$msg" >&2
+      printf -- "\033[1;31;40m!!! \033[1;37;40m%s\033[0m\n" "$msg" >&2
       ;;
     *)
       printf -- "!!! %s\n" "$msg" >&2
