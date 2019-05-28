@@ -5,7 +5,7 @@
   "astropad",
   "disk-inventory-x",
   "divvy",
-  "docker",
+  "homebrew/cask-versions/docker-edge",
   "dropbox",
   "firefox",
   "font-inconsolata",
