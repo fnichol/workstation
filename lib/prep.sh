@@ -470,7 +470,7 @@ install_rust() {
   indent "$rustup" component add rustfmt
 
   installed_plugins="$("$cargo" install --list | grep ':$' | cut -d ' ' -f 1)"
-  for plugin in cargo-watch cargo-edit cargo-outdated; do
+  jq -r .[] "$_data_path/rust_workstation_plugins.json" | while read -r plugin; do
     if ! echo "$installed_plugins" | grep -q "^$plugin\$"; then
       info "Installing $plugin"
       indent "$cargo" install "$plugin"
