@@ -58,12 +58,18 @@ darwin_install_xcode_cli_tools() {
 
 darwin_install_homebrew() {
   if ! command -v brew >/dev/null; then
+    need_cmd cat
     need_cmd ruby
 
-    local url="https://raw.githubusercontent.com/Homebrew/install/master/install"
+    local install_rb
+    install_rb="$(mktemp_file)"
+    cleanup_file "$install_rb"
 
     info "Installing Homebrew"
-    indent ruby -e "$(curl -fsSL "$url")" </dev/null
+    download \
+      https://raw.githubusercontent.com/Homebrew/install/master/install \
+      "$install_rb"
+    indent ruby -e "$(cat "$install_rb")" </dev/null
   fi
 
   indent brew update
@@ -213,17 +219,21 @@ darwin_install_cask_pkgs_from_json() {
 
 darwin_install_iterm2_settings() {
   need_cmd bash
-  need_cmd curl
 
   local plist="$HOME/Library/Preferences/com.googlecode.iterm2.plist"
-
   if [ -f "$plist" ]; then
     return 0
   fi
 
+  local install_sh
+  install_sh="$(mktemp_file)"
+  cleanup_file "$install_sh"
+
   info "Installing iTerm2 settings"
-  curl -sSf https://raw.githubusercontent.com/fnichol/macosx-iterm2-settings/master/contrib/install-settings.sh \
-    | indent bash
+  download \
+    https://raw.githubusercontent.com/fnichol/macosx-iterm2-settings/master/contrib/install-settings.sh \
+    "$install_sh"
+  indent bash "$install_sh"
 }
 
 darwin_set_preferences() {

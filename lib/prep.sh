@@ -372,11 +372,16 @@ install_bashrc() {
     return 0
   fi
 
+  local install_sh
+  install_sh="$(mktemp_file)"
+  cleanup_file "$install_sh"
+
   header "Installing fnichol/bashrc"
-  download https://raw.githubusercontent.com/fnichol/bashrc/master/contrib/install-system-wide \
-    /tmp/install.sh
-  indent sudo bash /tmp/install.sh
-  rm -f /tmp/install.sh
+  download \
+    https://raw.githubusercontent.com/fnichol/bashrc/master/contrib/install-system-wide \
+    "$install_sh"
+  info "Running installer"
+  indent sudo bash "$install_sh"
 }
 
 install_dot_configs() {
@@ -446,11 +451,14 @@ install_rust() {
   fi
 
   if [ ! -x "$rustc" ]; then
-    need_cmd curl
+    local install_sh
+    install_sh="$(mktemp_file)"
+    cleanup_file "$install_sh"
 
     info "Installing Rust"
-    curl -sSfL https://sh.rustup.rs \
-      | indent sh -s -- -y --default-toolchain stable 2>&1
+    download https://sh.rustup.rs "$install_sh"
+    indent sh "$install_sh" -y --default-toolchain stable
+
     indent "$rustc" --version
     indent "$cargo" --version
   fi
@@ -513,11 +521,15 @@ _CHRUBY_
   fi
 
   if [ ! -f /etc/profile.d/renv.sh ]; then
+    local renv_sh
+    renv_sh="$(mktemp_file)"
+    cleanup_file "$renv_sh"
+
     info "Creating /etc/profile.d/renv.sh"
-    download https://raw.githubusercontent.com/fnichol/renv/master/renv.sh \
-      /tmp/renv.sh
-    sudo cp /tmp/renv.sh /etc/profile.d/renv.sh
-    rm -f /tmp/renv.sh
+    download \
+      https://raw.githubusercontent.com/fnichol/renv/master/renv.sh \
+      "$renv_sh"
+    sudo cp "$renv_sh" /etc/profile.d/renv.sh
   fi
 }
 
@@ -553,12 +565,11 @@ install_go() {
   need_cmd mkdir
   need_cmd tar
 
-  local arch
-  local kernel
-  local machine
-  local url
+  local arch kernel machine tar
   kernel="$(uname -s | tr '[:upper:]' '[:lower:]')"
   machine="$(uname -m)"
+  tar="$(mktemp_file)"
+  cleanup_file "$tar"
 
   case "$machine" in
     x86_64 | amd64)
@@ -572,18 +583,16 @@ install_go() {
       ;;
   esac
 
-  url="https://storage.googleapis.com/golang/go${ver}.${kernel}-${arch}.tar.gz"
-
   info "Installing Go $ver"
   sudo mkdir -p /usr/local
-  download "$url" "/tmp/$(basename "$url")"
-  sudo tar xf "/tmp/$(basename "$url")" -C /usr/local
-  rm -f "/tmp/$(basename "$url")"
+  download \
+    "https://storage.googleapis.com/golang/go${ver}.${kernel}-${arch}.tar.gz" \
+    "$tar"
+  sudo tar xf "$tar" -C /usr/local
 }
 
 install_node() {
   need_cmd bash
-  need_cmd curl
   need_cmd env
   need_cmd jq
   need_cmd touch
@@ -601,17 +610,24 @@ install_node() {
       ;;
   esac
 
-  local url version
-
   if [ ! -f "$HOME/.nvm/nvm.sh" ]; then
+    local api_latest install_sh version
+    api_latest="$(mktemp_file)"
+    cleanup_file "$api_latest"
+    install_sh="$(mktemp_file)"
+    cleanup_file "$install_sh"
+
     info "Installing nvm"
-    version="$(curl -sSfL \
+    download \
       https://api.github.com/repos/creationix/nvm/releases/latest \
-      | jq -r .tag_name)"
-    url="https://raw.githubusercontent.com/creationix/nvm/$version/install.sh"
+      "$api_latest"
+    version="$(jq -r .tag_name "$api_latest")"
 
     touch "$HOME/.bash_profile"
-    curl -sSfL "$url" | indent env PROFILE="$HOME/.bash_profile" bash
+    download \
+      "https://raw.githubusercontent.com/creationix/nvm/$version/install.sh" \
+      "$install_sh"
+    indent env PROFILE="$HOME/.bash_profile" bash "$install_sh"
   fi
 
   # Install latest LTS version of Node

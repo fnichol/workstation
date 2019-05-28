@@ -90,13 +90,16 @@ redhat_install_jq() {
   install_pkg wget
 
   if [ ! -f /usr/local/bin/jq ]; then
+    local jq_bin
+    jq_bin="$(mktemp_file)"
+    cleanup_file "$jq_bin"
+
     info "Installing jq"
     download \
-      "https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64" \
-      /tmp/jq
-    sudo cp /tmp/jq /usr/local/bin/jq
+      https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 \
+      "$jq_bin"
+    sudo cp "$jq_bin" /usr/local/bin/jq
     sudo chmod 0755 /usr/local/bin/jq
-    rm -f /tmp/jq
   fi
 }
 
