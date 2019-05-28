@@ -1,19 +1,21 @@
 # Workstation Preparation
 
-Currently, the following platforms are supported (older and newer version may also work):
+Currently, the following platforms are supported (older and newer version may
+also work):
 
-* Alpine Linux (3.6)
-* Arch Linux (circa November 2017)
-* CentOS (CentOS 7)
-* FreeBSD (FreeBSD 11.1)
-* macOS (10.12)
-* Ubuntu Linux (17.10)
-* Windows Subsystem for Linux on Windows 10 (Ubuntu)
-* Windows 10 (1709)
+- Alpine Linux (3.6)
+- Arch Linux (circa November 2017)
+- CentOS (CentOS 7)
+- FreeBSD (FreeBSD 11.1)
+- macOS (10.12)
+- Ubuntu Linux (17.10)
+- Windows Subsystem for Linux on Windows 10 (Ubuntu)
+- Windows 10 (1709)
 
 ## Installation
 
-There are probably 2 use cases: running on a brand new system (before Git is even installed), and on an existing system (presumably with Git installed).
+There are probably 2 use cases: running on a brand new system (before Git is
+even installed), and on an existing system (presumably with Git installed).
 
 ### New System
 
@@ -38,7 +40,8 @@ cd workstation
 
 ## Usage
 
-To run the workstation prep and set a hostname, provide your FQDN as the argument:
+To run the workstation prep and set a hostname, provide your FQDN as the
+argument:
 
 ```sh
 bin/prep <FQDN>
@@ -93,7 +96,6 @@ docker run -v $(pwd):/src -ti centos:7 bash -c '\
 ### macOS
 
 Vagrant with VMware Fusion is used to boot a macOS virtual machine.
-
 
 ### Ubuntu Linux
 
