@@ -350,7 +350,7 @@ generate_keys() {
   if [ ! -f "$HOME/.ssh/id_rsa" ]; then
     info "Generating SSH key for '$USER' on this system"
     mkdir -p "$HOME/.ssh"
-    ssh-keygen \
+    indent ssh-keygen \
       -N '' \
       -C "${USER}@$(hostname -f)-$(date -u +%FT%TZ)" \
       -t rsa \
