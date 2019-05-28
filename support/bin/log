@@ -58,6 +58,8 @@ cli_invoke() {
   author="$1"
   shift
 
+  VERBOSE=""
+
   OPTIND=1
   while getopts "hp:vV-:" arg; do
     case "$arg" in
@@ -121,11 +123,7 @@ cli_invoke() {
   local program="$1"
   shift
 
-  if [ -z "${VERBOSE:-}" ]; then
-    VERBOSE=""
-  fi
-
-  if [ -z "$prefix" ]; then
+  if [ -z "${prefix:-}" ]; then
     prefix="$(basename "$program")"
   fi
 
