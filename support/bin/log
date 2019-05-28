@@ -145,6 +145,7 @@ log_program() {
     set -x
   fi
 
+  mkdir -p "$ROOT/log"
   exec script "$ROOT/log/${prefix}-$timestamp.log" "$program" "$@"
 }
 
