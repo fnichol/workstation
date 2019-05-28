@@ -41,7 +41,9 @@ _process_version() {
   local force="$4"
 
   if [ "_" = "$variant" ]; then
-    for variant in pre min nox full; do
+    # Reverse list of variants so that all derivatives are removed before the
+    # "pre" image
+    for variant in $(docker__variants | _reverse_lines); do
       _clean "$distro" "$version" "$variant" "$force"
     done
   else
@@ -104,4 +106,10 @@ _confirm() {
         ;;
     esac
   done
+}
+
+# Reverse order of lines (emulating `tac`)
+# Thanks to "Handy One-Liners for Awk": http://tiny.cc/daxe6y
+_reverse_lines() {
+  awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }'
 }
