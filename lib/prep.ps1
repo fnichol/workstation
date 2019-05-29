@@ -1,34 +1,6 @@
-function Write-Help {
-  Write-Host @"
-$program $version
-
-$author
-
-Workstation Setup
-
-USAGE:
-        $program [FLAGS] [OPTIONS] [<FQDN>]
-
-FLAGS:
-    -b  Only sets up base system (not extra workstation setup)
-    -h  Prints this message
-
-ARGS:
-    <FQDN>    The name for this workstation
-
-"@
-}
-
-function Parse-CLIArguments {
-  if ($help) {
-    Write-Help
-    exit
-  }
-}
-
 function Init {
-  if ($hostname) {
-    $name = "$hostname"
+  if ($Hostname) {
+    $name = "$Hostname"
   } else {
     $name = (Get-WmiObject win32_computersystem).DNSHostName +
       "." +
@@ -43,7 +15,7 @@ function Init {
 }
 
 function Set-Hostname {
-  if (-not $hostname) {
+  if (-not $Hostname) {
     return
   }
 
