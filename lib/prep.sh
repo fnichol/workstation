@@ -369,7 +369,7 @@ install_bashrc() {
 
   if [ -f /etc/bash/bashrc.local ]; then
     header "Updating fnichol/bashrc"
-    bash -c "source /etc/bash/bashrc && bashrc update"
+    indent bash -c "source /etc/bash/bashrc && bashrc update"
   else
     local install_sh
     install_sh="$(mktemp_file)"
