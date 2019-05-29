@@ -4,26 +4,13 @@ function Ensure-AdministratorPrivileges {
   if (!$currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-WarnLine "$program must be run in a PowerShell session with administrator privileges."
     Write-WarnLine "Please re-run to try again."
-    Exit-With "Program run without administrator privileges" 1
+    Write-Failure "Program run without administrator privileges"
   }
 }
 
-function Exit-With {
-  [CmdletBinding()]
-  Param(
-    [Parameter(Mandatory=$True)]
-    [string]
-    $Message,
-
-    [Parameter(Mandatory=$True)]
-    [int32]
-    $ExitCode
-  )
-
-  process {
-    Write-Error "ERROR: $Message"
-    exit $ExitCode
-  }
+function Write-Failure([Parameter(Mandatory=$True)] [string]$Message) {
+  Write-Error "ERROR: $Message"
+  throw
 }
 
 function Write-HeaderLine($Message) {
