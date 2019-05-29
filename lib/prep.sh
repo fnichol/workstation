@@ -365,23 +365,24 @@ generate_keys() {
 
 install_bashrc() {
   need_cmd bash
-  need_cmd rm
   need_cmd sudo
 
   if [ -f /etc/bash/bashrc.local ]; then
-    return 0
+    header "Updating fnichol/bashrc"
+    bash -c "source /etc/bash/bashrc && bashrc update"
+  else
+    local install_sh
+    install_sh="$(mktemp_file)"
+    cleanup_file "$install_sh"
+
+    header "Installing fnichol/bashrc"
+    download \
+      https://raw.githubusercontent.com/fnichol/bashrc/master/contrib/install-system-wide \
+      "$install_sh"
+    info "Running installer"
+    indent sudo bash "$install_sh"
   fi
 
-  local install_sh
-  install_sh="$(mktemp_file)"
-  cleanup_file "$install_sh"
-
-  header "Installing fnichol/bashrc"
-  download \
-    https://raw.githubusercontent.com/fnichol/bashrc/master/contrib/install-system-wide \
-    "$install_sh"
-  info "Running installer"
-  indent sudo bash "$install_sh"
 }
 
 install_dot_configs() {
