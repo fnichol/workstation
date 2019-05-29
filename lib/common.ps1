@@ -9,18 +9,20 @@ function Ensure-AdministratorPrivileges {
 }
 
 function Write-Failure([Parameter(Mandatory=$True)] [string]$Message) {
-  Write-Error "ERROR: $Message"
+  Write-Error "$Message"
   throw
 }
 
 function Write-HeaderLine($Message) {
-  Write-Host "-----> $Message" -ForegroundColor Cyan
+  Write-Host "--- " -ForegroundColor Cyan -NoNewline
+  Write-Host "$Message" -ForegroundColor White
 }
 
 function Write-InfoLine($Message) {
-  Write-Host "       $Message" -ForegroundColor Cyan
+  Write-Host "  - " -ForegroundColor Cyan -NoNewline
+  Write-Host "$Message" -ForegroundColor White
 }
 
 function Write-WarnLine($Message) {
-  Write-Warning " !!!   $Message" -ForegroundColor Yellow
+  Write-Warning "$Message"
 }
