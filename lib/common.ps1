@@ -1,9 +1,11 @@
 function Ensure-AdministratorPrivileges {
-  $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+  $currentPrincipal = New-Object Security.Principal.WindowsPrincipal(
+    [Security.Principal.WindowsIdentity]::GetCurrent())
+  $admin = [Security.Principal.WindowsBuiltInRole]::Administrator
 
-  if (!$currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-WarnLine "$program must be run in a PowerShell session with administrator privileges."
-    Write-WarnLine "Please re-run to try again."
+  if (!$currentPrincipal.IsInRole($admin)) {
+    Write-WarnLine "$program must be run in a PowerShell session with " +
+      "administrator privileges. Please re-run to try again."
     Write-Failure "Program run without administrator privileges"
   }
 }
