@@ -1,18 +1,10 @@
 [
-  "1password",
-  "cmder",
-  "divvy",
+  "cmake",
   "docker-for-windows",
-  "dropbox",
-  "Firefox",
-  "GoogleChrome",
-  "Inconsolata",
-  "iTunes",
-  "lastfmscrobbler",
-  "launchy",
-  "putty",
-  "slack",
-  "steam",
-  "vlc",
-  "zoom"
+  "fd",
+  "fzf",
+  "protoc",
+  "ripgrep",
+  "visualstudio2019buildtools",
+  "visualstudio2019-workload-vctools"
 ]
