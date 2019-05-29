@@ -155,6 +155,11 @@ function Install-Node {
   Install-Package "nodejs-lts"
 }
 
+function Install-GraphicalPackages {
+  Write-HeaderLine "Installing graphical workstation packages"
+  Install-PkgsFromJson "$dataPath\windows_graphical_pkgs.json"
+}
+
 function Finish {
   Write-HeaderLine "Finished setting up workstation, enjoy!"
 }

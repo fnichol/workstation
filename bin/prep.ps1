@@ -37,6 +37,8 @@ function main {
     Install-Ruby
     Install-Go
     Install-Node
+
+    Install-GraphicalPackages
   }
 
   Finish
