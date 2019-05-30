@@ -160,7 +160,7 @@ function Install-PkgsFromJson($Json) {
   }
 }
 
-function Install-Package($Pkg, $OtherArgs) {
+function Install-Package($Pkg) {
   $installed = @(
     @(choco list --limit-output --local-only) |
       ForEach-Object { $_.split('|')[0] }
@@ -171,9 +171,5 @@ function Install-Package($Pkg, $OtherArgs) {
   }
 
   Write-InfoLine "Installing package '$Pkg'"
-  if ($OtherArgs) {
-    Invoke-Expression "choco install -y $Pkg $OtherArgs"
-  } else {
-    choco install -y "$Pkg"
-  }
+  choco install -y "$Pkg"
 }
