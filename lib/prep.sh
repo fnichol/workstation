@@ -711,11 +711,8 @@ install_headless_packages() {
       arch_install_aur_pkgs_from_json "$_data_path/arch_headless_aur_pkgs.json"
       ;;
     Darwin)
-      darwin_install_cask_pkgs_from_json "$_data_path/darwin_cask_pkgs.json"
-      darwin_install_apps_from_json "$_data_path/darwin_apps.json"
       install_pkgs_from_json "$_data_path/darwin_headless_pkgs.json"
-      killall Dock
-      killall Finder
+      darwin_install_cask_pkgs_from_json "$_data_path/darwin_headless_cask_pkgs.json"
       ;;
     FreeBSD)
       install_pkgs_from_json "$_data_path/freebsd_headless_pkgs.json"
@@ -945,7 +942,10 @@ install_graphical_packages() {
       fi
       ;;
     Darwin)
-      # TODO fn: factor out macOS packages
+      darwin_install_cask_pkgs_from_json "$_data_path/darwin_graphical_cask_pkgs.json"
+      darwin_install_apps_from_json "$_data_path/darwin_graphical_apps.json"
+      killall Dock
+      killall Finder
       ;;
     FreeBSD)
       # Nothing to do yet

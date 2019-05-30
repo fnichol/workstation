@@ -1,0 +1,12 @@
+[
+  "homebrew/cask-versions/docker-edge",
+  "dropshare",
+  "google-cloud-sdk",
+  "java",
+  "minikube",
+  "ngrok",
+  "vagrant",
+  "vagrant-vmware-utility",
+  "virtualbox",
+  "vmware-fusion"
+]
