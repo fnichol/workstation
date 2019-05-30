@@ -10,6 +10,14 @@ function Ensure-AdministratorPrivileges {
   }
 }
 
+function Test-InvokeTask([string]$Task) {
+  if ($Only.Length -gt 0) {
+    (($Only.Contains($Task)) -and (-not ($Skip.Contains($Task))))
+  } else {
+    -not ($Skip.Contains($Task))
+  }
+}
+
 function Write-Failure([Parameter(Mandatory=$True)] [string]$Message) {
   Write-Error "$Message"
   throw
