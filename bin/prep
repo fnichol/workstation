@@ -6,57 +6,22 @@ main() {
   if [ -n "${DEBUG:-}" ]; then set -v; fi
   if [ -n "${TRACE:-}" ]; then set -xv; fi
 
-  _program="$(basename "$0")"
-  _version="0.5.0"
-  _author="Fletcher Nichol <fnichol@nichol.ca>"
+  local program version author root
+  program="$(basename "$0")"
+  version="0.5.0"
+  author="Fletcher Nichol <fnichol@nichol.ca>"
 
   # shellcheck source=lib/realpath.sh
   . "${0%/*}/../lib/realpath.sh"
 
-  _root="$(realpath "${0%/*}/..")"
+  root="$(realpath "${0%/*}/..")"
 
   # shellcheck source=lib/common.sh
-  . "$_root/lib/common.sh"
+  . "$root/lib/common.sh"
   # shellcheck source=lib/prep.sh
-  . "$_root/lib/prep.sh"
+  . "$root/lib/prep.sh"
 
-  parse_cli_args "$@"
-
-  # Very nice, portable signal handling thanks to:
-  # https://unix.stackexchange.com/a/240736
-  for sig in HUP INT QUIT ALRM TERM; do
-    trap "
-      trap_cleanup
-      trap - $sig EXIT
-      kill -s $sig "'"$$"' "$sig"
-  done
-  trap trap_cleanup EXIT
-
-  init
-  set_hostname
-  setup_package_system
-  update_system
-  install_base_packages
-  set_preferences
-  generate_keys
-  install_bashrc
-  install_dot_configs
-
-  if [ -z "${_skip_workstation:-}" ]; then
-    install_workstation_packages
-    install_rust
-    install_ruby
-    install_go
-    install_node
-  fi
-
-  if [ -z "${_skip_x:-}" ]; then
-    install_x_packages
-    install_x_dot_configs
-    finalize_x_setup
-  fi
-
-  finish
+  invoke_cli "$program" "$version" "$author" "$root" "$@"
 }
 
 main "$@" || exit 99

@@ -79,6 +79,21 @@ exit_with() {
   exit "${2:-99}"
 }
 
+fail() {
+  local msg="$1"
+
+  case "${TERM:-}" in
+    *term | xterm-* | rxvt | screen | screen-*)
+      printf -- "\n\033[1;31;40mxxx \033[1;37;40m%s\033[0m\n\n" "$msg" >&2
+      ;;
+    *)
+      printf -- "\nxxx %s\n\n" "$msg" >&2
+      ;;
+  esac
+
+  return 1
+}
+
 get_sudo() {
   need_cmd hostname
   need_cmd sudo
@@ -166,6 +181,42 @@ mktemp_file() {
 need_cmd() {
   if ! command -v "$1" >/dev/null 2>&1; then
     exit_with "Required command '$1' not found on PATH" 127
+  fi
+}
+
+# Inspired by Cargo's version implementation, see: https://git.io/fjsOh
+print_version() {
+  local program="$1"
+  local version="$2"
+  local verbose="$3"
+
+  if command -v git >/dev/null; then
+    local date sha
+    date="$(git show -s --format=%cd --date=short)"
+    sha="$(git show -s --format=%h)"
+    if ! git diff-index --quiet HEAD --; then
+      sha="${sha}-dirty"
+    fi
+
+    echo "$program $version ($sha $date)"
+
+    if [ -n "$verbose" ]; then
+      local long_sha
+      long_sha="$(git show -s --format=%H)"
+      case "$sha" in
+        *-dirty) long_sha="${long_sha}-dirty" ;;
+      esac
+
+      echo "release: $version"
+      echo "commit-hash: $long_sha"
+      echo "commit-date: $date"
+    fi
+  else
+    echo "$program $version"
+
+    if [ -n "$verbose" ]; then
+      echo "release: $version"
+    fi
   fi
 }
 

@@ -1,54 +1,170 @@
 #!/usr/bin/env sh
 # shellcheck disable=SC2039
 
-# shellcheck disable=SC2154
-print_help() {
-  cat <<HELP
-$_program $_version
+print_usage() {
+  local program="$1"
+  local version="$2"
+  local author="$3"
 
-$_author
+  echo "$program $version
 
-Workstation Setup
+    Workstation Setup
 
-USAGE:
-        $_program [FLAGS] [OPTIONS] [<FQDN>]
+    USAGE:
+        $program [FLAGS] [OPTIONS] [--] [<FQDN>]
 
-FLAGS:
-    -h  Prints this message
-    -W  Skip workstation and X setups
-    -X  Skip X setup
+    FLAGS:
+        -h, --help      Prints help information
+        -V, --version   Prints version information
+        -v, --verbose   Prints verbose output
 
-ARGS:
-    <FQDN>    The name for this workstation
+    OPTIONS:
+        -p, --profile=<PROFILE> Setup profile name
+                                [values: base, headless, graphical]
+                                [default: graphical]
+        -o, --only=<T>[,<T>..]  Only run specific tasks
+                                [values: hostname, pkg-init, update-system,
+                                base-pkgs, preferences, keys, bashrc,
+                                dot-configs, headless-pkgs, rust, ruby, go,
+                                node, graphical-pkgs, graphical-dot-configs]
+        -s, --skip=<T>[,<T>..]  Skip specific tasks
+                                [values: hostname, pkg-init, update-system,
+                                base-pkgs, preferences, keys, bashrc,
+                                dot-configs, headless-pkgs, rust, ruby, go,
+                                node, graphical-pkgs, graphical-dot-configs]
 
-HELP
+    ARGS:
+        <FQDN>  The name for this workstation
+        <T>     Task name to include or skip
+
+    AUTHOR:
+        $author
+    " | sed 's/^ \{1,4\}//g'
 }
 
-parse_cli_args() {
+invoke_cli() {
+  local program version author root
+  program="$1"
+  shift
+  version="$1"
+  shift
+  author="$1"
+  shift
+  root="$1"
+  shift
+
+  VERBOSE=""
+  onlys=""
+  profile="graphical"
+  skips=""
+
   OPTIND=1
-  # Parse command line flags and options
-  while getopts ":hWX" opt; do
-    case $opt in
+  while getopts "ho:p:s:vV-:" arg; do
+    case "$arg" in
       h)
-        print_help
-        exit 0
+        print_usage "$program" "$version" "$author"
+        return 0
         ;;
-      W)
-        # shellcheck disable=SC2034
-        _skip_workstation=true
-        _skip_x=true
+      o)
+        if are_onlys_valid "$program" "$version" "$author" "$OPTARG"; then
+          onlys="$OPTARG"
+        else
+          return 1
+        fi
         ;;
-      X)
-        # shellcheck disable=SC2034
-        _skip_x=true
+      p)
+        if is_profile_valid "$OPTARG"; then
+          profile="$OPTARG"
+        else
+          print_usage "$program" "$version" "$author" >&2
+          fail "invalid profile name $OPTARG"
+          return 1
+        fi
+        ;;
+      s)
+        if are_skips_valid "$program" "$version" "$author" "$OPTARG"; then
+          skips="$OPTARG"
+        else
+          return 1
+        fi
+        ;;
+      v)
+        VERBOSE=true
+        ;;
+      V)
+        print_version "$program" "$version" "${VERBOSE:-}"
+        return 0
+        ;;
+      -)
+        long_optarg="${OPTARG#*=}"
+        case "$OPTARG" in
+          help)
+            print_usage "$program" "$version" "$author"
+            return 0
+            ;;
+          only=?*)
+            if are_onlys_valid "$program" "$version" "$author" "$long_optarg"; then
+              onlys="$long_optarg"
+            else
+              return 1
+            fi
+            ;;
+          only*)
+            print_usage "$program" "$version" "$author" >&2
+            fail "missing required argument for --$OPTARG option"
+            return 1
+            ;;
+          profile=?*)
+            if is_profile_valid "$long_optarg"; then
+              profile="$long_optarg"
+            else
+              print_usage "$program" "$version" "$author" >&2
+              fail "invalid profile name '$long_optarg'"
+              return 1
+            fi
+            ;;
+          profile*)
+            print_usage "$program" "$version" "$author" >&2
+            fail "missing required argument for --$OPTARG option"
+            return 1
+            ;;
+          skip=?*)
+            if are_skips_valid "$program" "$version" "$author" "$long_optarg"; then
+              skips="$long_optarg"
+            else
+              return 1
+            fi
+            ;;
+          skip*)
+            print_usage "$program" "$version" "$author" >&2
+            fail "missing required argument for --$OPTARG option"
+            return 1
+            ;;
+          verbose)
+            VERBOSE=true
+            ;;
+          version)
+            print_version "$program" "$version" "${VERBOSE:-}"
+            return 0
+            ;;
+          '')
+            # "--" terminates argument processing
+            break
+            ;;
+          *)
+            print_usage "$program" "$version" "$author" >&2
+            fail "invalid argument --$OPTARG"
+            return 1
+            ;;
+        esac
         ;;
       \?)
-        print_help
-        exit_with "Invalid option:  -$OPTARG" 1
+        print_usage "$program" "$version" "$author" >&2
+        fail "invalid argument; arg=-$OPTARG"
+        return 1
         ;;
     esac
   done
-  # Shift off all parsed token in `$*` so that the subcommand is now `$1`.
   shift "$((OPTIND - 1))"
 
   if [ -n "${1:-}" ]; then
@@ -56,11 +172,189 @@ parse_cli_args() {
   fi
 
   if [ "$(uname -s)" = "Darwin" ] \
-    && [ "${_base_only:-}" != "true" ] \
+    && [ "$profile" = "graphical" ] \
     && [ ! -f "$HOME/Library/Preferences/com.apple.appstore.plist" ]; then
     printf -- "Not logged into App Store, please login and try again.\n\n"
     print_help
     exit_with "Must be logged into App Store" 2
+  fi
+
+  prepare_workstation "$root" "$profile" "$skips" "$onlys"
+}
+
+prepare_workstation() {
+  local root="$1"
+  local profile="$2"
+  local skips="$3"
+  local onlys="$4"
+
+  if [ -n "$VERBOSE" ]; then
+    echo "root: $root"
+    echo "profile: $profile"
+    echo "skip: $skips"
+    echo "only: $onlys"
+  fi
+
+  # Very nice, portable signal handling thanks to:
+  # https://unix.stackexchange.com/a/240736
+  for sig in HUP INT QUIT ALRM TERM; do
+    trap "
+      trap_cleanup
+      trap - $sig EXIT
+      kill -s $sig "'"$$"' "$sig"
+  done
+  trap trap_cleanup EXIT
+
+  init "$root"
+  if should_run_task "hostname" "$skips" "$onlys"; then
+    set_hostname
+  fi
+  if should_run_task "pkg-init" "$skips" "$onlys"; then
+    setup_package_system
+  fi
+  if should_run_task "update-system" "$skips" "$onlys"; then
+    update_system
+  fi
+  if should_run_task "base-pkgs" "$skips" "$onlys"; then
+    install_base_packages
+  fi
+  if should_run_task "preferences" "$skips" "$onlys"; then
+    set_preferences
+  fi
+  if should_run_task "keys" "$skips" "$onlys"; then
+    generate_keys
+  fi
+  if should_run_task "bashrc" "$skips" "$onlys"; then
+    install_bashrc
+  fi
+  if should_run_task "dot-configs" "$skips" "$onlys"; then
+    install_dot_configs
+  fi
+
+  if [ "$profile" = "headless" ] || [ "$profile" = "graphical" ]; then
+    if should_run_task "headless-pkgs" "$skips" "$onlys"; then
+      install_workstation_packages
+    fi
+    if should_run_task "rust" "$skips" "$onlys"; then
+      install_rust
+    fi
+    if should_run_task "ruby" "$skips" "$onlys"; then
+      install_ruby
+    fi
+    if should_run_task "go" "$skips" "$onlys"; then
+      install_go
+    fi
+    if should_run_task "node" "$skips" "$onlys"; then
+      install_node
+    fi
+  fi
+
+  if [ "$profile" = "graphical" ]; then
+    if should_run_task "graphical-pkgs" "$skips" "$onlys"; then
+      install_x_packages
+    fi
+    if should_run_task "graphical-dot-configs" "$skips" "$onlys"; then
+      install_x_dot_configs
+    fi
+    finalize_x_setup
+  fi
+
+  finish
+}
+
+are_onlys_valid() {
+  need_cmd tr
+
+  local program="$1"
+  local version="$2"
+  local author="$3"
+  local onlys="$4"
+
+  for only in $(echo "$onlys" | tr ',' ' '); do
+    if ! is_task_valid "$only"; then
+      print_usage "$program" "$version" "$author" >&2
+      fail "invalid only task: $only"
+      return 1
+    fi
+  done
+}
+
+are_skips_valid() {
+  need_cmd tr
+
+  local program="$1"
+  local version="$2"
+  local author="$3"
+  local skips="$4"
+
+  for skip in $(echo "$skips" | tr ',' ' '); do
+    if ! is_task_valid "$skip"; then
+      print_usage "$program" "$version" "$author" >&2
+      fail "invalid skip task: $skip"
+      return 1
+    fi
+  done
+}
+
+is_profile_valid() {
+  local profile="$1"
+
+  case "$profile" in
+    base | headless | graphical)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+is_task_valid() {
+  local task="$1"
+
+  case "$task" in
+    hostname | pkg-init | update-system | base-pkgs | preferences | keys | \
+      bashrc | dot-configs | headless-pkgs | rust | ruby | go | node | \
+      graphical-pkgs | graphical-dot-configs)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+should_run_task() {
+  local task="$1"
+  local skips="$2"
+  local onlys="$3"
+
+  if [ -n "$onlys" ]; then
+    if is_task_in "$task" "$onlys" && ! is_task_in "$task" "$skips"; then
+      return 0
+    else
+      return 1
+    fi
+  else
+    if ! is_task_in "$task" "$skips"; then
+      return 0
+    else
+      return 1
+    fi
+  fi
+}
+
+is_task_in() {
+  need_cmd grep
+  need_cmd tr
+
+  local task="$1"
+  local tasks="$2"
+
+  if echo "$tasks" | tr ',' '\n' | grep -q -E "^$task$"; then
+    return 0
+  else
+    return 1
   fi
 }
 
@@ -69,14 +363,14 @@ init() {
   need_cmd hostname
   need_cmd uname
 
-  # shellcheck disable=SC2154
-  local lib_path="$_root/lib"
+  local root="$1"
+  local lib_path="$root/lib"
   local hostname
   hostname="$(hostname)"
 
   _system="$(uname -s)"
 
-  _data_path="$_root/data"
+  _data_path="$root/data"
 
   if [ "$_system" != "Linux" ]; then
     _os="$_system"
