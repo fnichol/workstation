@@ -451,7 +451,7 @@ install_rust() {
     return 0
   fi
 
-  if [ ! -x "$rustc" ]; then
+  if [ ! -x "$rustup" ]; then
     local install_sh
     install_sh="$(mktemp_file)"
     cleanup_file "$install_sh"
@@ -459,9 +459,6 @@ install_rust() {
     info "Installing Rust"
     download https://sh.rustup.rs "$install_sh"
     indent sh "$install_sh" -y --default-toolchain stable
-
-    indent "$rustc" --version
-    indent "$cargo" --version
   fi
 
   indent "$rustup" self update
