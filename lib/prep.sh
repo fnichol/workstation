@@ -439,9 +439,9 @@ install_workstation_packages() {
 }
 
 install_rust() {
-  local rustc="$HOME/.cargo/bin/rustc"
-  local cargo="$HOME/.cargo/bin/cargo"
-  local rustup="$HOME/.cargo/bin/rustup"
+  local cargo_home="$HOME/.cargo"
+  local cargo="$cargo_home/bin/cargo"
+  local rustup="$cargo_home/bin/rustup"
   local installed_plugins
 
   header "Setting up Rust"
