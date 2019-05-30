@@ -2,3 +2,17 @@ check_task:
   container:
     image: fnichol/check-shell:latest
   check_script: make check
+
+task:
+  env:
+    matrix:
+      - PROFILE: base
+      - PROFILE: headless
+
+  matrix:
+    - name: profile_${PROFILE}_windows
+      windows_container:
+        dockerfile: .ci/Dockerfile.windowsservercore
+        os_version: 2019
+      run_script:
+        - ps: .\bin\prep.ps1 -Profile "$env:PROFILE"
