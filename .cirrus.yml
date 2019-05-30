@@ -10,9 +10,25 @@ task:
       - PROFILE: headless
 
   matrix:
-    - name: profile_${PROFILE}_windows
+    - name: profile_${PROFILE}_windows_servercore
       windows_container:
         dockerfile: .ci/Dockerfile.windowsservercore
         os_version: 2019
       run_script:
         - ps: .\bin\prep.ps1 -Profile "$env:PROFILE"
+    - env:
+        matrix:
+          - DISTRO: alpine
+            VERSION: 3.9
+          - DISTRO: arch
+            VERSION: latest
+          - DISTRO: centos
+            VERSION: 7.6.1810
+          - DISTRO: ubuntu
+            VERSION: 19.04
+      name: profile_${PROFILE}_${DISTRO}_${VERSION}
+      container:
+        dockerfile: support/dockerfiles/Dockerfile.$DISTRO
+        docker_arguments:
+          VERSION: $VERSION
+      run_script: ./bin/prep "--profile=$PROFILE"
