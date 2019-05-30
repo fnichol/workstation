@@ -20,7 +20,7 @@ function Set-Hostname {
   }
 
   # TODO fn: implement!
-  Write-Host "Set-Hostname not implemented yet"
+  Write-Output "Set-Hostname not implemented yet"
 }
 
 function Init-PackageSystem {
