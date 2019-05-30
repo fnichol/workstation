@@ -41,7 +41,7 @@ _process_version() {
   local force="$4"
 
   if [ "_" = "$variant" ]; then
-    for variant in pre min nox full; do
+    for variant in $(docker__variants); do
       _build "$distro" "$version" "$variant" "$force"
     done
   else
@@ -103,7 +103,7 @@ _build_variant() {
     _build_pre "$distro" "$version" "$force"
   fi
 
-  local img_pre img args
+  local img_pre img
   img_pre="$(docker__img_pre_name "$distro" "$version")"
   img="$(docker__img_variant_name "$distro" "$version" "$variant")"
 
@@ -112,28 +112,12 @@ _build_variant() {
     return 0
   fi
 
-  case "$variant" in
-    min)
-      args="-W myhost"
-      ;;
-    nox)
-      args="-X myhost"
-      ;;
-    full)
-      args="myhost"
-      ;;
-    *)
-      echo "panic! unreachable; variant=variant" >&2
-      return 10
-      ;;
-  esac
-
   echo "--- Running workstation; variant=$variant, img_pre=$img_pre"
   cid="$(docker container run \
     --detach \
     --volume="$(pwd)":/usr/src:ro \
     "$img_pre" \
-    /usr/src/bin/prep $args)"
+    /usr/src/bin/prep "--profile=$variant")"
   docker container attach "$cid"
 
   echo "--- Building image; img=$img"

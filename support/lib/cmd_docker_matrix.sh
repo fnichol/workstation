@@ -38,7 +38,7 @@ _process_version() {
   local variant="$3"
 
   if [ "_" = "$variant" ]; then
-    for variant in pre min nox full; do
+    for variant in $(docker__variants); do
       _print "$distro" "$version" "$variant"
     done
   else

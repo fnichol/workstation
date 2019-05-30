@@ -73,7 +73,7 @@ docker__valid_variants() {
 
 docker__variants() {
   echo "pre"
-  echo "min"
-  echo "nox"
-  echo "full"
+  echo "base"
+  echo "headless"
+  echo "graphical"
 }

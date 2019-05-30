@@ -8,6 +8,8 @@ _print_usage_docker_run() {
 
   local distros
   distros="$(docker__valid_distros | tr '\n' ',' | sed -e 's/,$//' -e 's/,/, /g')"
+  local variants
+  variants="$(docker__valid_variants | tr '\n' ',' | sed -e 's/,$//' -e 's/,/, /g')"
 
   echo "${program}-docker-run $version
 
@@ -28,7 +30,7 @@ _print_usage_docker_run() {
         <DISTRO>    Name of Linux distribution
                     [values: $distros]
         <VARIANT>   Variant of workstation setup
-                    [values: _, pre, min, nox, full]
+                    [values: $variants]
         <VERSION>   Release version of a Linux distribution
 
     AUTHOR:
