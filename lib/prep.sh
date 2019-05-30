@@ -251,12 +251,12 @@ prepare_workstation() {
 
   if [ "$profile" = "graphical" ]; then
     if should_run_task "graphical-pkgs" "$skips" "$onlys"; then
-      install_x_packages
+      install_graphical_packages
     fi
     if should_run_task "graphical-dot-configs" "$skips" "$onlys"; then
-      install_x_dot_configs
+      install_graphical_dot_configs
     fi
-    finalize_x_setup
+    finalize_graphical_setup
   fi
 
   finish
@@ -926,8 +926,8 @@ install_node() {
   indent bash -c ". $HOME/.nvm/nvm.sh && nvm install --lts 2>&1"
 }
 
-install_x_packages() {
-  header "Installing X workstation packages"
+install_graphical_packages() {
+  header "Installing graphical packages"
 
   case "$_os" in
     Alpine)
@@ -935,8 +935,8 @@ install_x_packages() {
       ;;
     Arch)
       arch_build_yay
-      install_pkgs_from_json "$_data_path/arch_x_pkgs.json"
-      arch_install_aur_pkgs_from_json "$_data_path/arch_x_aur_pkgs.json"
+      install_pkgs_from_json "$_data_path/arch_graphical_pkgs.json"
+      arch_install_aur_pkgs_from_json "$_data_path/arch_graphical_aur_pkgs.json"
       if [ "$(cat /sys/class/dmi/id/product_name)" = "XPS 13 9370" ]; then
         # Support customizing touchpad on Dell XPS 13-inch 9370
         install_pkg libinput
@@ -957,25 +957,25 @@ install_x_packages() {
       # Nothing to do yet
       ;;
     *)
-      warn "Installing packages on $_os not yet supported, skipping"
+      warn "Installing graphical packages on $_os not yet supported, skipping"
       ;;
   esac
 }
 
-install_x_dot_configs() {
+install_graphical_dot_configs() {
   local repo
 
   need_cmd jq
 
-  header "Installing X dot configs"
+  header "Installing graphical dot configs"
 
-  jq -r .[] "$_data_path/homesick_x_repos.json" | while read -r repo; do
+  jq -r .[] "$_data_path/homesick_graphical_repos.json" | while read -r repo; do
     manage_homesick_repo "$repo"
   done
 }
 
-finalize_x_setup() {
-  header "Finalizing X setup"
+finalize_graphical_setup() {
+  header "Finalizing graphical setup"
 
   case "$_os" in
     Alpine)
@@ -1053,7 +1053,7 @@ _EOF_
       # Nothing to do yet
       ;;
     *)
-      warn "Finalizing X setup on $_os not yet supported, skipping"
+      warn "Finalizing graphical setup on $_os not yet supported, skipping"
       ;;
   esac
 }
