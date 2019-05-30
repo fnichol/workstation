@@ -61,8 +61,8 @@ function Set-Preferences {
   Write-Host "Set-Preferences not implemented yet"
 }
 
-function Install-WorkstationPackages {
-  Write-HeaderLine "Installing workstation packages"
+function Install-HeadlessPackages {
+  Write-HeaderLine "Installing headless packages"
   Install-PkgsFromJson "$dataPath\windows_workstation_pkgs.json"
 
   $wslstate = (Get-WindowsOptionalFeature -Online `
@@ -144,7 +144,7 @@ function Install-Node {
 }
 
 function Install-GraphicalPackages {
-  Write-HeaderLine "Installing graphical workstation packages"
+  Write-HeaderLine "Installing graphical packages"
   Install-PkgsFromJson "$dataPath\windows_graphical_pkgs.json"
 }
 

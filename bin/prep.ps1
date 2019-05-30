@@ -1,47 +1,68 @@
 <#
 .SYNOPSIS
-Workstation setup
+    Workstation setup
 
 .DESCRIPTION
-This program sets up a workstation
+    This program sets up a workstation
 
-.EXAMPLE
-.\bin\prep.ps1 mydevhost
+.PARAMETER Profile
+    Setup profile
+    [values: Base, Headless, Graphical]
+    [default: Graphical]
+
+.PARAMETER Skip
+    Tasks to skip
+    [values:  Hostname, PkgInit, UpdateSystem, BasePkgs, Preferences,
+              HeadlessPkgs, Rust, Ruby, Go, Node, GraphicalPkgs]
+
+.PARAMETER Only
+    Single tasks to run
+    [values:  Hostname, PkgInit, UpdateSystem, BasePkgs, Preferences,
+              HeadlessPkgs, Rust, Ruby, Go, Node, GraphicalPkgs]
 #>
 
 param (
-  # Only sets up base system (not extra workstation setup)
-  [switch]$BaseOnly,
+  [ValidateSet("Base", "Headless", "Graphical")]
+  [string]$Profile = "Graphical",
 
-  # The name for this workstation
-  [parameter(Position=0)]
-  [string]$Hostname
+  [ValidateSet("Hostname", "PkgInit", "UpdateSystem", "BasePkgs", "Preferences",
+    "HeadlessPkgs", "Rust", "Ruby", "Go", "Node", "GraphicalPkgs")]
+  [AllowEmptyCollection()]
+  [string[]]$Skip = @(),
+
+  [ValidateSet("Hostname", "PkgInit", "UpdateSystem", "BasePkgs", "Preferences",
+    "HeadlessPkgs", "Rust", "Ruby", "Go", "Node", "GraphicalPkgs")]
+  [AllowEmptyCollection()]
+  [string[]]$Only = @()
 )
 
-function main {
+function Invoke-Main {
   $script:program = "prep"
 
   . "$PSScriptRoot\..\lib\common.ps1"
   . "$PSScriptRoot\..\lib\prep.ps1"
 
   Init
-  Set-Hostname
-  Setup-PackageSystem
-  Update-System
-  Install-BasePackages
-  Set-Preferences
 
-  if (!$BaseOnly) {
-    Install-WorkstationPackages
-    Install-Rust
-    Install-Ruby
-    Install-Go
-    Install-Node
+  if (Test-InvokeTask "Hostname")     { Set-Hostname }
+  if (Test-InvokeTask "PkgInit")      { Setup-PackageSystem }
+  if (Test-InvokeTask "UpdateSystem") { Update-System }
+  if (Test-InvokeTask "BasePkgs")     { Install-BasePackages }
+  if (Test-InvokeTask "Preferences")  { Set-Preferences }
 
-    Install-GraphicalPackages
+  if (($Profile -eq "Headless") -or ($Profile -eq "Graphical")) {
+    if (Test-InvokeTask "HeadlessPkgs") { Install-HeadlessPackages }
+    if (Test-InvokeTask "Rust")         { Install-Rust }
+    if (Test-InvokeTask "Ruby")         { Install-Ruby }
+    if (Test-InvokeTask "Go")           { Install-Go }
+    if (Test-InvokeTask "Node")         { Install-Node }
+  }
+
+  if ($Profile -eq "Graphical") {
+    if (Test-InvokeTask "GraphicalPkgs") { Install-GraphicalPackages }
   }
 
   Finish
 }
 
-main
+Invoke-Main
