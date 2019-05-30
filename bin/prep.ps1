@@ -45,7 +45,7 @@ function Invoke-Main {
   Init
 
   if (Test-InvokeTask "Hostname")     { Set-Hostname }
-  if (Test-InvokeTask "PkgInit")      { Setup-PackageSystem }
+  if (Test-InvokeTask "PkgInit")      { Init-PackageSystem }
   if (Test-InvokeTask "UpdateSystem") { Update-System }
   if (Test-InvokeTask "BasePkgs")     { Install-BasePackages }
   if (Test-InvokeTask "Preferences")  { Set-Preferences }

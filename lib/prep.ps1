@@ -23,7 +23,7 @@ function Set-Hostname {
   Write-Host "Set-Hostname not implemented yet"
 }
 
-function Setup-PackageSystem {
+function Init-PackageSystem {
   Write-HeaderLine "Setting up package system"
 
   if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
