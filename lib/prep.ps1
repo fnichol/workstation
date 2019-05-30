@@ -99,29 +99,17 @@ function Install-WorkstationPackages {
 }
 
 function Install-Rust {
-  $rustc = "$env:HOMEPATH\.cargo\bin\rustc.exe"
-  $cargo = "$env:HOMEPATH\.cargo\bin\cargo.exe"
-  $rustup = "$env:HOMEPATH\.cargo\bin\rustup.exe"
+  $cargo_home = "$env:USERPROFILE\.cargo"
+  $rustup = "$cargo_home\bin\rustup.exe"
+  $cargo = "$cargo_home\bin\cargo.exe"
 
   Write-HeaderLine "Setting up Rust"
 
-  # Need the Visual C 2013 Runtime for the Win32 ABI Rust
-  Install-Package "vcredist2013" "--allowemptychecksum"
-
-   # Need the Visual C++ tools to build Rust crates (provides a
-   # compiler and linker)
-  Install-Package "visualcppbuildtools" "--version '14.0.25123' --allowemptychecksum"
-
-  if (-not (Test-Path "$rustc")) {
+  if (-not (Test-Path "$rustup")) {
     Write-InfoLine "Installing Rust"
-    Push-Location "$env:TEMP"
-    try {
-      Invoke-RestMethod -UseBasicParsing -OutFile "rustup-init.exe" `
-        'https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe'
-      .\rustup-init.exe -y --default-toolchain stable
-      Remove-Item .\rustup-init.exe -Force
-    }
-    finally { Pop-Location }
+    & ([scriptblock]::Create((New-Object System.Net.WebClient).DownloadString(
+      'https://gist.github.com/fnichol/699d3c2930649a9932f71bab8a315b31/raw/rustup-init.ps1')
+      )) -y --default-toolchain stable
   }
 
   & "$rustup" self update
