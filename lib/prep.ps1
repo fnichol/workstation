@@ -162,7 +162,8 @@ function Install-PkgsFromJson($Json) {
 
 function Install-Package($Pkg, $OtherArgs) {
   $installed = @(
-    @(choco list --limit-output --local-only) | % { $_.split('|')[0] }
+    @(choco list --limit-output --local-only) |
+      ForEach-Object { $_.split('|')[0] }
   )
 
   if ($installed -contains "$Pkg") {
