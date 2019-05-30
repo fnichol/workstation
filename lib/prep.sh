@@ -25,13 +25,13 @@ print_usage() {
         -o, --only=<T>[,<T>..]  Only run specific tasks
                                 [values: hostname, pkg-init, update-system,
                                 base-pkgs, preferences, keys, bashrc,
-                                dot-configs, headless-pkgs, rust, ruby, go,
-                                node, graphical-pkgs, graphical-dot-configs]
+                                base-dot-configs, headless-pkgs, rust, ruby,
+                                go, node, graphical-pkgs, graphical-dot-configs]
         -s, --skip=<T>[,<T>..]  Skip specific tasks
                                 [values: hostname, pkg-init, update-system,
                                 base-pkgs, preferences, keys, bashrc,
-                                dot-configs, headless-pkgs, rust, ruby, go,
-                                node, graphical-pkgs, graphical-dot-configs]
+                                base-dot-configs, headless-pkgs, rust, ruby,
+                                go, node, graphical-pkgs, graphical-dot-configs]
 
     ARGS:
         <FQDN>  The name for this workstation
@@ -227,8 +227,8 @@ prepare_workstation() {
   if should_run_task "bashrc" "$skips" "$onlys"; then
     install_bashrc
   fi
-  if should_run_task "dot-configs" "$skips" "$onlys"; then
-    install_dot_configs
+  if should_run_task "base-dot-configs" "$skips" "$onlys"; then
+    install_base_dot_configs
   fi
 
   if [ "$profile" = "headless" ] || [ "$profile" = "graphical" ]; then
@@ -314,7 +314,7 @@ is_task_valid() {
 
   case "$task" in
     hostname | pkg-init | update-system | base-pkgs | preferences | keys | \
-      bashrc | dot-configs | headless-pkgs | rust | ruby | go | node | \
+      bashrc | base-dot-configs | headless-pkgs | rust | ruby | go | node | \
       graphical-pkgs | graphical-dot-configs)
       return 0
       ;;
@@ -679,14 +679,14 @@ install_bashrc() {
 
 }
 
-install_dot_configs() {
+install_base_dot_configs() {
   need_cmd cut
   need_cmd git
   need_cmd jq
 
   local repo repo_dir castle
 
-  header "Installing dot configs"
+  header "Installing base dot configs"
 
   if [ ! -f "$HOME/.homesick/repos/homeshick/homeshick.sh" ]; then
     info "Installing homeshick for '$USER'"
@@ -694,7 +694,7 @@ install_dot_configs() {
       "$HOME/.homesick/repos/homeshick"
   fi
 
-  jq -r .[] "$_data_path/homesick_repos.json" | while read -r repo; do
+  jq -r .[] "$_data_path/homesick_base_repos.json" | while read -r repo; do
     manage_homesick_repo "$repo"
   done
 }
