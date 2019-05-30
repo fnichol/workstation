@@ -699,35 +699,35 @@ install_dot_configs() {
   done
 }
 
-install_workstation_packages() {
-  header "Installing workstation packages"
+install_headless_packages() {
+  header "Installing headless packages"
 
   case "$_os" in
     Alpine)
-      install_pkgs_from_json "$_data_path/alpine_workstation_pkgs.json"
+      install_pkgs_from_json "$_data_path/alpine_headless_pkgs.json"
       ;;
     Arch)
-      install_pkgs_from_json "$_data_path/arch_workstation_pkgs.json"
-      arch_install_aur_pkgs_from_json "$_data_path/arch_workstation_aur_pkgs.json"
+      install_pkgs_from_json "$_data_path/arch_headless_pkgs.json"
+      arch_install_aur_pkgs_from_json "$_data_path/arch_headless_aur_pkgs.json"
       ;;
     Darwin)
       darwin_install_cask_pkgs_from_json "$_data_path/darwin_cask_pkgs.json"
       darwin_install_apps_from_json "$_data_path/darwin_apps.json"
-      install_pkgs_from_json "$_data_path/darwin_workstation_pkgs.json"
+      install_pkgs_from_json "$_data_path/darwin_headless_pkgs.json"
       killall Dock
       killall Finder
       ;;
     FreeBSD)
-      install_pkgs_from_json "$_data_path/freebsd_workstation_pkgs.json"
+      install_pkgs_from_json "$_data_path/freebsd_headless_pkgs.json"
       ;;
     RedHat)
-      install_pkgs_from_json "$_data_path/redhat_workstation_pkgs.json"
+      install_pkgs_from_json "$_data_path/redhat_headless_pkgs.json"
       ;;
     Ubuntu)
-      install_pkgs_from_json "$_data_path/ubuntu_workstation_pkgs.json"
+      install_pkgs_from_json "$_data_path/ubuntu_headless_pkgs.json"
       ;;
     *)
-      warn "Installing packages on $_os not yet supported, skipping"
+      warn "Installing headless packages on $_os not yet supported, skipping"
       ;;
   esac
 }

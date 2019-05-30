@@ -63,7 +63,7 @@ function Set-Preferences {
 
 function Install-HeadlessPackages {
   Write-HeaderLine "Installing headless packages"
-  Install-PkgsFromJson "$dataPath\windows_workstation_pkgs.json"
+  Install-PkgsFromJson "$dataPath\windows_headless_pkgs.json"
 
   $wslstate = (Get-WindowsOptionalFeature -Online `
     -FeatureName Microsoft-Windows-Subsystem-Linux).State
