@@ -762,7 +762,7 @@ install_rust() {
   indent "$rustup" component add rustfmt
 
   installed_plugins="$("$cargo" install --list | grep ':$' | cut -d ' ' -f 1)"
-  jq -r .[] "$_data_path/rust_workstation_plugins.json" | while read -r plugin; do
+  jq -r .[] "$_data_path/rust_cargo_plugins.json" | while read -r plugin; do
     if ! echo "$installed_plugins" | grep -q "^$plugin\$"; then
       info "Installing $plugin"
       indent "$cargo" install "$plugin"

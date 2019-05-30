@@ -118,7 +118,7 @@ function Install-Rust {
   & "$rustup" component add rust-src
   & "$rustup" component add rustfmt
 
-  $plugins = Get-Content "$dataPath\rust_workstation_plugins.json" `
+  $plugins = Get-Content "$dataPath\rust_cargo_plugins.json" `
     | ConvertFrom-Json
   foreach ($plugin in $plugins) {
     if (-not (& "$cargo" install --list | Select-String -Pattern "$plugin")) {
