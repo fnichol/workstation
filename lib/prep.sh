@@ -233,7 +233,7 @@ prepare_workstation() {
 
   if [ "$profile" = "headless" ] || [ "$profile" = "graphical" ]; then
     if should_run_task "headless-pkgs" "$skips" "$onlys"; then
-      install_workstation_packages
+      install_headless_packages
     fi
     if should_run_task "rust" "$skips" "$onlys"; then
       install_rust
