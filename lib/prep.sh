@@ -708,6 +708,7 @@ install_headless_packages() {
       ;;
     Arch)
       install_pkgs_from_json "$_data_path/arch_headless_pkgs.json"
+      arch_build_yay
       arch_install_aur_pkgs_from_json "$_data_path/arch_headless_aur_pkgs.json"
       ;;
     Darwin)
@@ -931,7 +932,6 @@ install_graphical_packages() {
       # Nothing to do yet
       ;;
     Arch)
-      arch_build_yay
       install_pkgs_from_json "$_data_path/arch_graphical_pkgs.json"
       arch_install_aur_pkgs_from_json "$_data_path/arch_graphical_aur_pkgs.json"
       if [ "$(cat /sys/class/dmi/id/product_name)" = "XPS 13 9370" ]; then
