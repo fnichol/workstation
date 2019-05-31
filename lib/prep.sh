@@ -827,7 +827,7 @@ install_go() {
   header "Setting up Go"
 
   if [ "$_os" = Alpine ]; then
-    warn "Alpine Linux not supported, skipping Go installation"
+    install_pkg "go"
     return 0
   fi
 
