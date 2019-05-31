@@ -1131,8 +1131,30 @@ latest_go_version() {
   need_cmd awk
   need_cmd git
 
-  git ls-remote --tags --sort=version:refname https://go.googlesource.com/go \
-    | awk -F/ '
+  {
+    # The `--sort` option on `git ls-remote` was introduced in Git 2.18.0, so
+    # if it's older then we'll have to use GNU/sort's `--version-sort` to help.
+    # Oi
+    local version
+    version="$(git --version | awk '{ print $NF }')"
+    if version_ge "$version" 2 18; then
+      git ls-remote --tags --sort=version:refname https://go.googlesource.com/go
+    else
+      need_cmd sort
+
+      git ls-remote --tags https://go.googlesource.com/go \
+        | sort --field-separator='/' --key=3 --version-sort
+    fi
+  } | awk -F/ '
       ($NF ~ /^go[0-9]+\./ && $NF !~ /(beta|rc)[0-9]+$/) { last = $NF }
       END { sub(/^go/, "", last); print last }'
+}
+
+version_ge() {
+  local version="$1"
+  local maj="$2"
+  local min="$3"
+
+  [ "$(echo "$version" | awk -F'.' '{ print $1 }')" -ge "$maj" ] \
+    && [ "$(echo "$version" | awk -F'.' '{ print $2 }')" -ge "$min" ]
 }
