@@ -3,7 +3,6 @@
   "axel",
   "base-devel",
   "cmake",
-  "direnv",
   "docker",
   "fd",
   "ffmpeg",
