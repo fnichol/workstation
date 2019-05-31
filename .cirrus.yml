@@ -32,3 +32,7 @@ task:
         docker_arguments:
           VERSION: $VERSION
       run_script: ./bin/prep "--profile=$PROFILE"
+    - name: profile_${PROFILE}_macos_10.14
+      osx_instance:
+        image: mojave-base
+      run_script: ./bin/prep "--profile=$PROFILE"
