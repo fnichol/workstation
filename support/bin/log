@@ -141,12 +141,14 @@ log_program() {
 
   exec 2>&1
 
-  if [ -n "$VERBOSE" ]; then
-    set -x
-  fi
-
   mkdir -p "$ROOT/log"
-  exec script "$ROOT/log/${prefix}-$timestamp.log" "$program" "$@"
+  if { script -h || true; } 2>&1 | grep -q '\-c[, \t]'; then
+    if [ -n "$VERBOSE" ]; then set -x; fi
+    exec script -c "$program $*" "$ROOT/log/${prefix}-$timestamp.log"
+  else
+    if [ -n "$VERBOSE" ]; then set -x; fi
+    exec script "$ROOT/log/${prefix}-$timestamp.log" "$program" "$@"
+  fi
 }
 
 # Inspired by Cargo's version implementation, see: https://git.io/fjsOh
