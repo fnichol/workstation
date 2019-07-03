@@ -5,13 +5,13 @@ check_task:
   check_script: make check
 
 task:
+  name: profile-${PROFILE}-${DISTRO}-${VERSION}
   env:
     matrix:
       - PROFILE: base
       - PROFILE: headless
   matrix:
-    - name: profile-${PROFILE}-${DISTRO}-${VERSION}
-      matrix:
+    - matrix:
         - env:
             matrix:
               - DISTRO: alpine
@@ -32,9 +32,22 @@ task:
           osx_instance:
             image: catalina-base
       run_script: ./bin/prep "--profile=$PROFILE"
-    - name: profile-${PROFILE}-windows-servercore
+    - env:
+        DISTRO: freebsd
+        VERSION: 12-1
+        USER: jdoe
+      freebsd_instance:
+        image_family: ${DISTRO}-${VERSION}
+      prepare_script: ./support/bin/freebsd-setup.sh "--user=$USER"
+      bash_script: pkg install --yes bash
+      run_script: |
+        sudo --preserve-env --non-interactive --set-home "--user=$USER" \
+          ./bin/prep "--profile=$PROFILE"
+    - env:
+        DISTRO: windows
+        VERSION: servercore
+        CIRRUS_SHELL: powershell
       windows_container:
         dockerfile: .ci/Dockerfile.windowsservercore
         os_version: 2019
-      run_script:
-        - ps: .\bin\prep.ps1 -Profile "$env:PROFILE"
+      run_script: .\bin\prep.ps1 -Profile "$env:PROFILE"
