@@ -26,12 +26,12 @@ param (
   [string]$Profile = "Graphical",
 
   [ValidateSet("Hostname", "PkgInit", "UpdateSystem", "BasePkgs", "Preferences",
-    "HeadlessPkgs", "Rust", "Ruby", "Go", "Node", "GraphicalPkgs")]
+    "SSH", "HeadlessPkgs", "Rust", "Ruby", "Go", "Node", "GraphicalPkgs")]
   [AllowEmptyCollection()]
   [string[]]$Skip = @(),
 
   [ValidateSet("Hostname", "PkgInit", "UpdateSystem", "BasePkgs", "Preferences",
-    "HeadlessPkgs", "Rust", "Ruby", "Go", "Node", "GraphicalPkgs")]
+    "SSH", "HeadlessPkgs", "Rust", "Ruby", "Go", "Node", "GraphicalPkgs")]
   [AllowEmptyCollection()]
   [string[]]$Only = @()
 )
@@ -51,6 +51,7 @@ function Invoke-Main {
   if (Test-InvokeTask "Preferences")  { Set-Preferences }
 
   if (($Profile -eq "Headless") -or ($Profile -eq "Graphical")) {
+    if (Test-InvokeTask "SSH")          { Install-SSH }
     if (Test-InvokeTask "HeadlessPkgs") { Install-HeadlessPackages }
     if (Test-InvokeTask "Rust")         { Install-Rust }
     if (Test-InvokeTask "Ruby")         { Install-Ruby }
