@@ -61,6 +61,26 @@ function Set-Preferences {
   Write-Host "Set-Preferences not implemented yet"
 }
 
+function Install-SSH {
+  Write-HeaderLine "Setting up SSH"
+
+  if (-not (Test-Path $env:SystemDrive\Windows\System32\OpenSSH)) {
+    Write-InfoLine "Installing OpenSSH.Client"
+    Add-WindowsCapability -Online -Name OpenSSH.Client*
+    Write-InfoLine "Installing OpenSSH.Client"
+    Add-WindowsCapability -Online -Name OpenSSH.Server*
+
+    Write-InfoLine "Starting and enabling sshd service"
+    Start-Service -Name sshd
+    Set-Service -Name sshd -StartupType 'Automatic'
+
+    Write-InfoLine "Setting default shell to PowerShell for OpenSSH"
+    New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell `
+      -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" `
+      -PropertyType String -Force
+  }
+}
+
 function Install-HeadlessPackages {
   Write-HeaderLine "Installing headless packages"
   Install-PkgsFromJson "$dataPath\windows_headless_pkgs.json"
