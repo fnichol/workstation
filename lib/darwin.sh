@@ -217,6 +217,14 @@ darwin_install_cask_pkgs_from_json() {
   done
 }
 
+darwin_install_beets() {
+  install_pkg python
+  install_pkg ffmpeg
+  install_pkg lame
+
+  install_beets_pip_pkgs
+}
+
 darwin_install_iterm2_settings() {
   need_cmd bash
 

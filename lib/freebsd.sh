@@ -13,3 +13,12 @@ freebsd_install_pkg() {
   info "Installing package '$pkg'"
   indent sudo pkg install --yes --no-repo-update "$pkg"
 }
+
+freebsd_install_beets() {
+  install_pkg py36-pip
+  install_pkg py36-gdbm
+  install_pkg ffmpeg
+  install_pkg lame
+
+  install_beets_pip_pkgs
+}
