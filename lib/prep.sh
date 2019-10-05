@@ -765,7 +765,7 @@ install_rust() {
   jq -r .[] "$_data_path/rust_cargo_plugins.json" | while read -r plugin; do
     if ! echo "$installed_plugins" | grep -q "^$plugin\$"; then
       info "Installing $plugin"
-      indent "$cargo" install "$plugin"
+      indent "$cargo" install --verbose "$plugin"
     fi
   done
 }

@@ -143,7 +143,7 @@ function Install-Rust {
   foreach ($plugin in $plugins) {
     if (-not (& "$cargo" install --list | Select-String -Pattern "$plugin")) {
       Write-InfoLine "Installing $plugin"
-      & "$cargo" install "$plugin"
+      & "$cargo" install --verbose "$plugin"
     }
   }
 }
