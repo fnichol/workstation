@@ -714,9 +714,11 @@ install_headless_packages() {
     Darwin)
       install_pkgs_from_json "$_data_path/darwin_headless_pkgs.json"
       darwin_install_cask_pkgs_from_json "$_data_path/darwin_headless_cask_pkgs.json"
+      darwin_install_beets
       ;;
     FreeBSD)
       install_pkgs_from_json "$_data_path/freebsd_headless_pkgs.json"
+      freebsd_install_beets
       ;;
     RedHat)
       install_pkgs_from_json "$_data_path/redhat_headless_pkgs.json"
@@ -1088,6 +1090,42 @@ install_pkg() {
   esac
 }
 
+install_pip3_pkg() {
+  need_cmd jq
+
+  local pkg="$1"
+  local pip_cmd use_sudo
+
+  case "$_os" in
+    Darwin)
+      pip_cmd=pip3
+      use_sudo=false
+      ;;
+    FreeBSD)
+      pip_cmd=pip-3.6
+      use_sudo=true
+      ;;
+    *)
+      warn "Installing a pip package on $_os not yet supported, skipping..."
+      return 1
+      ;;
+  esac
+
+  need_cmd "$pip_cmd"
+
+  if env PIP_FORMAT=json "$pip_cmd" list \
+    | jq -r '.[] | .name' | grep -q "^${pkg}$" >/dev/null 2>&1; then
+    return 0
+  fi
+
+  info "Installing pip3 package '$pkg'"
+  if [ "$use_sudo" = true ]; then
+    indent sudo "$pip_cmd" install "$pkg"
+  else
+    indent "$pip_cmd" install "$pkg"
+  fi
+}
+
 install_pkgs_from_json() {
   need_cmd jq
 
@@ -1157,4 +1195,11 @@ version_ge() {
 
   [ "$(echo "$version" | awk -F'.' '{ print $1 }')" -ge "$maj" ] \
     && [ "$(echo "$version" | awk -F'.' '{ print $2 }')" -ge "$min" ]
+}
+
+install_beets_pip_pkgs() {
+  install_pip3_pkg requests
+  install_pip3_pkg pylast
+  install_pip3_pkg flask
+  install_pip3_pkg beets
 }
