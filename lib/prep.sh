@@ -944,6 +944,7 @@ install_graphical_packages() {
       fi
       ;;
     Darwin)
+      darwin_add_homebrew_taps_from_json "$_data_path/homebrew_graphical_taps.json"
       darwin_install_cask_pkgs_from_json "$_data_path/darwin_graphical_cask_pkgs.json"
       darwin_install_apps_from_json "$_data_path/darwin_graphical_apps.json"
       killall Dock

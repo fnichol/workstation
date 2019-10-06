@@ -177,6 +177,38 @@ darwin_install_app() {
   indent mas install "$id"
 }
 
+darwin_add_homebrew_tap() {
+  need_cmd brew
+  need_cmd grep
+
+  local tap="$1"
+
+  if [ -n "${2:-}" ]; then
+    # Cache file was provided
+    local cache="$2"
+
+    if [ ! -f "$cache" ]; then
+      # If cache file doesn't exist, then populate it
+      brew tap >"$cache"
+    fi
+
+    if grep -E -q "^$tap$" "$cache"; then
+      # If an tap was found in the cache, early return
+      return 0
+    else
+      # About to add a tap, so invalidate cache to ensure it is
+      # repopulated on next call
+      rm -f "$cache"
+    fi
+  elif brew tap | grep -E -q "^$tap$"; then
+    # No cache file, but a tap was found, so early return
+    return 0
+  fi
+
+  info "Adding homebrew tap '$tap'"
+  indent env HOMEBREW_NO_AUTO_UPDATE=true brew tap "$tap"
+}
+
 darwin_install_apps_from_json() {
   need_cmd jq
 
@@ -214,6 +246,21 @@ darwin_install_cask_pkgs_from_json() {
 
   jq -r .[] "$json" | while read -r pkg; do
     darwin_install_cask_pkg "$pkg" "$cache"
+  done
+}
+
+darwin_add_homebrew_taps_from_json() {
+  need_cmd jq
+
+  local json="$1"
+  local cache
+  cache="$(mktemp_file brewtapcache)"
+  cleanup_file "$cache"
+  # Ensure no file exists
+  rm -f "$cache"
+
+  jq -r .[] "$json" | while read -r tap; do
+    darwin_add_homebrew_tap "$tap" "$cache"
   done
 }
 
