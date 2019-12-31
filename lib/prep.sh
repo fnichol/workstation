@@ -26,12 +26,14 @@ print_usage() {
                                 [values: hostname, pkg-init, update-system,
                                 base-pkgs, preferences, keys, bashrc,
                                 base-dot-configs, headless-pkgs, rust, ruby,
-                                go, node, graphical-pkgs, graphical-dot-configs]
+                                go, node, graphical-pkgs, graphical-dot-configs,
+                                graphical-finalize]
         -s, --skip=<T>[,<T>..]  Skip specific tasks
                                 [values: hostname, pkg-init, update-system,
                                 base-pkgs, preferences, keys, bashrc,
                                 base-dot-configs, headless-pkgs, rust, ruby,
-                                go, node, graphical-pkgs, graphical-dot-configs]
+                                go, node, graphical-pkgs, graphical-dot-configs,
+                                graphical-finalize]
 
     ARGS:
         <FQDN>  The name for this workstation
@@ -256,7 +258,9 @@ prepare_workstation() {
     if should_run_task "graphical-dot-configs" "$skips" "$onlys"; then
       install_graphical_dot_configs
     fi
-    finalize_graphical_setup
+    if should_run_task "graphical-finalize" "$skips" "$onlys"; then
+      finalize_graphical_setup
+    fi
   fi
 
   finish
@@ -315,7 +319,7 @@ is_task_valid() {
   case "$task" in
     hostname | pkg-init | update-system | base-pkgs | preferences | keys | \
       bashrc | base-dot-configs | headless-pkgs | rust | ruby | go | node | \
-      graphical-pkgs | graphical-dot-configs)
+      graphical-pkgs | graphical-dot-configs | graphical-finalize)
       return 0
       ;;
     *)
