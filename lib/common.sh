@@ -95,10 +95,11 @@ fail() {
 }
 
 get_sudo() {
-  need_cmd hostname
+  local hostname="$1"
+
   need_cmd sudo
 
-  sudo -p "[sudo required for some tasks] Password for %u@$(hostname): " echo
+  sudo -p "[sudo required for some tasks] Password for %u@$hostname: " echo
 }
 
 header() {

@@ -434,7 +434,7 @@ init() {
   header "Setting up workstation '${_argv_hostname:-$hostname}'"
 
   ensure_not_root
-  get_sudo
+  get_sudo "$hostname"
   keep_sudo
 
   if [ "$_system" = "Darwin" ]; then
