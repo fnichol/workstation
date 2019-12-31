@@ -686,7 +686,6 @@ install_bashrc() {
 install_base_dot_configs() {
   need_cmd cut
   need_cmd git
-  need_cmd jq
 
   local repo repo_dir castle
 
@@ -698,7 +697,7 @@ install_base_dot_configs() {
       "$HOME/.homesick/repos/homeshick"
   fi
 
-  jq -r .[] "$_data_path/homesick_base_repos.json" | while read -r repo; do
+  json_items "$_data_path/homesick_base_repos.json" | while read -r repo; do
     manage_homesick_repo "$repo"
   done
 }
@@ -764,7 +763,7 @@ install_rust() {
   indent "$rustup" component add rustfmt
 
   installed_plugins="$("$cargo" install --list | grep ':$' | cut -d ' ' -f 1)"
-  jq -r .[] "$_data_path/rust_cargo_plugins.json" | while read -r plugin; do
+  json_items "$_data_path/rust_cargo_plugins.json" | while read -r plugin; do
     if ! echo "$installed_plugins" | grep -q "^$plugin\$"; then
       info "Installing $plugin"
       indent "$cargo" install --verbose "$plugin"
@@ -963,11 +962,9 @@ install_graphical_packages() {
 install_graphical_dot_configs() {
   local repo
 
-  need_cmd jq
-
   header "Installing graphical dot configs"
 
-  jq -r .[] "$_data_path/homesick_graphical_repos.json" | while read -r repo; do
+  json_items "$_data_path/homesick_graphical_repos.json" | while read -r repo; do
     manage_homesick_repo "$repo"
   done
 }
@@ -1067,8 +1064,6 @@ install_pip3_pkg() {
 }
 
 install_pkgs_from_json() {
-  need_cmd jq
-
   local json="$1"
   local cache
   cache="$(mktemp_file pkgcache)"
@@ -1076,7 +1071,7 @@ install_pkgs_from_json() {
   # Ensure no file exists
   rm -f "$cache"
 
-  jq -r .[] "$json" | while read -r pkg; do
+  json_items "$json" | while read -r pkg; do
     install_pkg "$pkg" "$cache"
   done
 }
@@ -1135,6 +1130,18 @@ version_ge() {
 
   [ "$(echo "$version" | awk -F'.' '{ print $1 }')" -ge "$maj" ] \
     && [ "$(echo "$version" | awk -F'.' '{ print $2 }')" -ge "$min" ]
+}
+
+json_items() {
+  local filter='.[] | if type == "object" then .name else . end'
+
+  need_cmd jq
+
+  if [ -n "${1:-}" ]; then
+    jq -r "$filter" "$1"
+  else
+    jq -r "$filter"
+  fi
 }
 
 install_beets_pip_pkgs() {

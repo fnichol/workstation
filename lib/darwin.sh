@@ -235,8 +235,6 @@ darwin_install_apps_from_json() {
 }
 
 darwin_install_cask_pkgs_from_json() {
-  need_cmd jq
-
   local json="$1"
   local cache
   cache="$(mktemp_file caskcache)"
@@ -244,14 +242,12 @@ darwin_install_cask_pkgs_from_json() {
   # Ensure no file exists
   rm -f "$cache"
 
-  jq -r .[] "$json" | while read -r pkg; do
+  json_items "$json" | while read -r pkg; do
     darwin_install_cask_pkg "$pkg" "$cache"
   done
 }
 
 darwin_add_homebrew_taps_from_json() {
-  need_cmd jq
-
   local json="$1"
   local cache
   cache="$(mktemp_file brewtapcache)"
@@ -259,7 +255,7 @@ darwin_add_homebrew_taps_from_json() {
   # Ensure no file exists
   rm -f "$cache"
 
-  jq -r .[] "$json" | while read -r tap; do
+  json_items "$json" | while read -r tap; do
     darwin_add_homebrew_tap "$tap" "$cache"
   done
 }
