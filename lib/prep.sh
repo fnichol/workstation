@@ -364,13 +364,11 @@ is_task_in() {
 
 init() {
   need_cmd basename
-  need_cmd hostname
   need_cmd uname
 
   local root="$1"
   local lib_path="$root/lib"
   local hostname
-  hostname="$(hostname)"
 
   _system="$(uname -s)"
 
@@ -406,10 +404,30 @@ init() {
       . "$lib_path/unix.sh"
       ;;
     Linux)
-      # shellcheck source=lib/linux.sh
-      . "$lib_path/linux.sh"
       # shellcheck source=lib/unix.sh
       . "$lib_path/unix.sh"
+      # shellcheck source=lib/linux.sh
+      . "$lib_path/linux.sh"
+
+      case "$_os" in
+        Arch)
+          # shellcheck source=lib/arch.sh
+          . "$lib_path/arch.sh"
+          ;;
+      esac
+      ;;
+  esac
+
+  case "$_os" in
+    Arch)
+      need_cmd hostnamectl
+
+      hostname="$(hostnamectl --transient)"
+      ;;
+    *)
+      need_cmd hostname
+
+      hostname="$(hostname)"
       ;;
   esac
 
@@ -443,25 +461,7 @@ set_hostname() {
   header "Setting hostname to '$fqdn'"
   case "$_os" in
     Arch)
-      need_cmd grep
-      need_cmd hostname
-      need_cmd sed
-      need_cmd sudo
-      need_cmd tee
-
-      local old_hostname
-      old_hostname="$(hostname -f)"
-
-      if [ "$old_hostname" != "$name" ]; then
-        echo "$name" | sudo tee /etc/hostname >/dev/null
-        sudo hostname "$name"
-        if ! grep -q -w "$fqdn" /etc/hosts; then
-          sudo sed -i "1i 127.0.0.1\\t${fqdn}\\t${name}" /etc/hosts
-        fi
-        if command -v hostnamectl; then
-          sudo hostnamectl set-hostname "$name"
-        fi
-      fi
+      arch_set_hostname "$name" "$fqdn"
       ;;
     Darwin)
       need_cmd sudo
@@ -711,9 +711,7 @@ install_headless_packages() {
       install_pkgs_from_json "$_data_path/alpine_headless_pkgs.json"
       ;;
     Arch)
-      install_pkgs_from_json "$_data_path/arch_headless_pkgs.json"
-      arch_build_yay
-      arch_install_aur_pkgs_from_json "$_data_path/arch_headless_aur_pkgs.json"
+      arch_install_headless_packages "$_data_path"
       ;;
     Darwin)
       install_pkgs_from_json "$_data_path/darwin_headless_pkgs.json"
@@ -938,14 +936,7 @@ install_graphical_packages() {
       # Nothing to do yet
       ;;
     Arch)
-      install_pkgs_from_json "$_data_path/arch_graphical_pkgs.json"
-      arch_install_aur_pkgs_from_json "$_data_path/arch_graphical_aur_pkgs.json"
-      if [ "$(cat /sys/class/dmi/id/product_name)" = "XPS 13 9370" ]; then
-        # Support customizing touchpad on Dell XPS 13-inch 9370
-        install_pkg libinput
-        install_pkg xf86-input-libinput
-        install_pkg xorg-xinput
-      fi
+      arch_install_graphical_packages "$_data_path"
       ;;
     Darwin)
       darwin_add_homebrew_taps_from_json "$_data_path/homebrew_graphical_taps.json"
@@ -989,63 +980,7 @@ finalize_graphical_setup() {
       # Nothing to do yet
       ;;
     Arch)
-      need_cmd ln
-      need_cmd sudo
-
-      sudo ln -snf /etc/fonts/conf.avail/11-lcdfilter-default.conf \
-        /etc/fonts/conf.d
-      sudo ln -snf /etc/fonts/conf.avail/10-sub-pixel-rgb.conf \
-        /etc/fonts/conf.d
-      sudo ln -snf /etc/fonts/conf.avail/30-infinality-aliases.conf \
-        /etc/fonts/conf.d
-
-      if [ "$(cat /sys/class/dmi/id/product_name)" = "XPS 13 9370" ]; then
-        need_cmd cut
-        need_cmd getent
-        need_cmd grep
-
-        # Battery status
-        install_pkg acpi
-
-        # Setup power management
-        install_pkg powertop
-        if [ ! -f /etc/systemd/system/powertop.service ]; then
-          need_cmd systemctl
-
-          info "Setting up Powertop for power management tuning"
-          cat <<'_EOF_' | sudo tee /etc/systemd/system/powertop.service >/dev/null
-[Unit]
-Description=Powertop tunings
-
-[Service]
-ExecStart=/usr/bin/powertop --auto-tune
-RemainAfterExit=true
-
-[Install]
-WantedBy=multi-user.target
-_EOF_
-          sudo systemctl enable powertop
-          sudo systemctl start powertop
-        fi
-
-        if [ ! -f /etc/udev/rules.d/backlight.rules ]; then
-          info "Setting up udev backlight rule"
-          cat <<'_EOF_' | sudo tee /etc/udev/rules.d/backlight.rules >/dev/null
-ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="intel_backlight", RUN+="/bin/chgrp video /sys/class/backlight/%k/brightness"
-ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="intel_backlight", RUN+="/bin/chmod g+w /sys/class/backlight/%k/brightness"
-_EOF_
-        fi
-
-        if ! getent group video | cut -d : -f 4 | grep -q "$USER"; then
-          need_cmd sudo
-          need_cmd usermod
-
-          info "Adding $USER to the video group"
-          sudo usermod --append --groups video "$USER"
-        fi
-
-        arch_install_aur_pkg light
-      fi
+      arch_finalize_graphical_setup
       ;;
     Darwin)
       # Nothing to do yet
