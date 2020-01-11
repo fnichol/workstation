@@ -177,8 +177,9 @@ invoke_cli() {
     && [ "$profile" = "graphical" ] \
     && [ ! -f "$HOME/Library/Preferences/com.apple.appstore.plist" ]; then
     printf -- "Not logged into App Store, please login and try again.\n\n"
-    print_usage
-    exit_with "Must be logged into App Store" 2
+    print_usage "$program" "$version" "$author" >&2
+    fail "must be logged into App Store"
+    return 1
   fi
 
   prepare_workstation "$root" "$profile" "$skips" "$onlys"
