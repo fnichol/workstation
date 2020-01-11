@@ -1,0 +1,46 @@
+[
+  {
+    "#": [
+      "Dynamic display configuration",
+      "This is a Wayland equivalent for tools like autorandr",
+      "(https://github.com/emersion/kanshi)"
+    ],
+    "name": "kanshi"
+  },
+  {
+    "#": "Plugin for QT 5 apps on Wayland",
+    "name": "qt5-wayland"
+  },
+  {
+    "#": [
+      "Sway is a tiling Wayland compositor and a drop-in replacement for",
+      "the i3 window manager for X11",
+      "(https://swaywm.org/)"
+    ],
+    "name": "sway"
+  },
+  {
+    "#": [
+      "Idle management daemon for Wayland",
+      "Idle mangement helps to to sleep, turn off screen, lock, etc.",
+      "(https://github.com/swaywm/swayidle)"
+    ],
+    "name": "swayidle"
+  },
+  {
+    "#": "Screen locker for Wayland (https://github.com/swaywm/swaylock)",
+    "name": "swaylock"
+  },
+  {
+    "#": [
+      "Wayland is intended as a simpler replacement for X, easier to develop",
+      "and maintain",
+      "(https://wayland.freedesktop.org/)"
+    ],
+    "name": "wayland"
+  },
+  {
+    "#": "Xwayland: runs X clients under Wayland",
+    "name": "xorg-server-xwayland"
+  }
+]

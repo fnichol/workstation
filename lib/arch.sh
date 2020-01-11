@@ -36,14 +36,6 @@ arch_install_graphical_packages() {
 
   install_pkgs_from_json "$data_path/arch_graphical_pkgs.json"
   arch_install_aur_pkgs_from_json "$data_path/arch_graphical_aur_pkgs.json"
-
-  # TODO: libinput should be pulled in now via wayland
-  # if [ "$(cat /sys/class/dmi/id/product_name)" = "XPS 13 9370" ]; then
-  #   # Support customizing touchpad on Dell XPS 13-inch 9370
-  #   install_pkg libinput
-  #   install_pkg xf86-input-libinput
-  #   install_pkg xorg-xinput
-  # fi
 }
 
 arch_finalize_graphical_setup() {
@@ -103,9 +95,6 @@ arch_finalize_graphical_setup() {
       info "Adding $USER to the video group"
       sudo usermod --append --groups video "$USER"
     fi
-
-    # TODO: now a proper package, installed via arch_graphical_pkgs.json
-    # arch_install_aur_pkg light
   fi
 
   if [ "$(cat /sys/class/dmi/id/sys_vendor)" = "VMware, Inc." ]; then

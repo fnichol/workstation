@@ -1,0 +1,63 @@
+[
+  {
+    "#": [
+      "Auto-detect connected display hardware and load appropiate X11 setup",
+      "using xrandr",
+      "(https://github.com/phillipberndt/autorandr)"
+    ],
+    "name": "autorandr"
+  },
+  {
+    "#": [
+      "i3 is a tiling window manager for X11.",
+      "This is a package group which installs the i3-gaps fork",
+      "(https://www.archlinux.org/groups/x86_64/i3/)"
+    ],
+    "name": "i3"
+  },
+  {
+    "#": [
+      "Background browser and setter for X windows",
+      "(https://www.archlinux.org/packages/extra/x86_64/nitrogen/)"
+    ],
+    "name": "nitrogen"
+  },
+  {
+    "#": [
+      "X compositor that may fix tearing issues",
+      "A fork from the original Compton because it seems to have become",
+      "unmaintained",
+      "(https://github.com/yshui/picom)"
+    ],
+    "name": "picom"
+  },
+  {
+    "#": [
+      "A small program for hiding the mouse cursor",
+      "(https://github.com/Airblader/unclutter-xfixes)"
+    ],
+    "name": "unclutter"
+  },
+  {
+    "#": [
+      "Generic input driver for the X.Org server based on libinput",
+      "Used in part to support customizing touchpads on physical laptops"
+    ],
+    "name": "xf86-input-libinput"
+  },
+  {
+    "#": "X.Org initialisation program (i.e. startx)",
+    "name": "xorg-xinit"
+  },
+  {
+    "#": [
+      "Small commandline tool to configure devices",
+      "Used in part to support customizing touchpads on physical laptops"
+    ],
+    "name": "xorg-xinput"
+  },
+  {
+    "#": "User preference utility for X",
+    "name": "xorg-xset"
+  }
+]

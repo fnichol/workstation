@@ -1,29 +1,46 @@
 [
-  "alacritty",
+  {
+    "#": [
+      "Dynamic menu library and client program inspired by dmenu",
+      "(https://github.com/Cloudef/bemenu)"
+    ],
+    "name": "bemenu"
+  },
+  {
+    "#": [
+      "A cross-platform, GPU-accelerated terminal emulator",
+      "(https://github.com/jwilm/alacritty)"
+    ],
+    "name": "alacritty"
+  },
   "alsa-utils",
-  "autorandr",
   "chromium",
-  "compton",
   "darktable",
-  "dex",
-  "dialog",
-  "feh",
+  {
+    "#": [
+      "DesktopEntry Execution, is a program to generate and",
+      "execute DesktopEntry files of the Application type",
+      "(https://github.com/jceb/dex)"
+    ],
+    "name": "dex"
+  },
   "firefox",
-  "i3",
   "ifplugd",
+  {
+    "#": [
+      "Control brightness on backlit-controllers",
+      "(https://github.com/haikarainen/light)"
+    ],
+    "name": "light"
+  },
   "mopidy",
   "mpc",
   "ncmpcpp",
-  "nitrogen",
   "otf-overpass",
   "playerctl",
   "pulseaudio-alsa",
   "pulsemixer",
-  "rofi",
   "ttf-inconsolata",
-  "unclutter",
   "vlc",
-  "wpa_actiond",
-  "xorg-xbacklight",
-  "xorg-xset"
+  "wpa_actiond"
 ]
