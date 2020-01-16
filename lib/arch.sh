@@ -36,6 +36,8 @@ arch_install_graphical_packages() {
 
   install_pkgs_from_json "$data_path/arch_graphical_pkgs.json"
   arch_install_aur_pkgs_from_json "$data_path/arch_graphical_aur_pkgs.json"
+  # TODO: determine how to swap between Wayland and Xorg
+  install_pkgs_from_json "$data_path/arch_graphical_xorg_pkgs.json"
 }
 
 arch_finalize_graphical_setup() {
