@@ -46,6 +46,10 @@
     "name": "xf86-input-libinput"
   },
   {
+    "#": "Xorg X server",
+    "name": "xorg-server"
+  },
+  {
     "#": "X.Org initialisation program (i.e. startx)",
     "name": "xorg-xinit"
   },
