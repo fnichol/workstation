@@ -5,6 +5,5 @@
   "ngrok",
   "vagrant",
   "vagrant-vmware-utility",
-  "virtualbox",
   "vmware-fusion"
 ]
