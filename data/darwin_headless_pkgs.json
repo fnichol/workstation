@@ -21,7 +21,6 @@
   "mercurial",
   "packer",
   "pkg-config",
-  "postgresql",
   "protobuf",
   "qemu",
   "redis",
