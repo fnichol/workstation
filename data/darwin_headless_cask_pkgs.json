@@ -1,5 +1,5 @@
 [
-  "homebrew/cask-versions/docker-edge",
+  "docker",
   "dropshare",
   "google-cloud-sdk",
   "java",
