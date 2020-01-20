@@ -1,7 +1,6 @@
 [
   "docker",
   "dropshare",
-  "google-cloud-sdk",
   "java",
   "ngrok",
   "vagrant",
