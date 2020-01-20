@@ -1,11 +1,14 @@
 ARG VERSION=latest
-FROM greyltc/archlinux:$VERSION
+FROM archlinux:$VERSION
 
 ARG VERSION
 ARG USER=jdoe
 ARG GROUP=$USER
 
-RUN pacman -Syy --noconfirm \
+RUN pacman -Syyu --noconfirm \
+  && pacman -Scc --noconfirm \
+  && pacman-key --init \
+  && pacman-key --populate archlinux \
   && pacman -S --noconfirm sudo \
   && echo "%wheel ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/01_wheel \
   && groupadd --gid 1001 "$GROUP" \
