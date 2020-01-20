@@ -965,9 +965,29 @@ install_graphical_dot_configs() {
 
   header "Installing graphical dot configs"
 
-  json_items "$_data_path/homesick_graphical_repos.json" | while read -r repo; do
-    manage_homesick_repo "$repo"
-  done
+  case "$_os" in
+    Alpine)
+      # Nothing to do yet
+      ;;
+    Arch)
+      manage_homesick_repo "fnichol/dotx"
+      ;;
+    Darwin)
+      # Nothing to do yet
+      ;;
+    FreeBSD)
+      # Nothing to do yet
+      ;;
+    RedHat)
+      # Nothing to do yet
+      ;;
+    Ubuntu)
+      # Nothing to do yet
+      ;;
+    *)
+      warn "Finalizing graphical setup on $_os not yet supported, skipping"
+      ;;
+  esac
 }
 
 finalize_graphical_setup() {
