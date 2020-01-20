@@ -22,7 +22,6 @@
   "packer",
   "pkg-config",
   "protobuf",
-  "qemu",
   "redis",
   "ripgrep",
   "rsnapshot",

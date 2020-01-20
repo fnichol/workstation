@@ -13,7 +13,6 @@
   "lynx",
   "mercurial",
   "pkg-config",
-  "qemu",
   "rsnapshot",
   "rsync",
   "shellcheck",
