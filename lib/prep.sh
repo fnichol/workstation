@@ -723,7 +723,7 @@ finalize_base_setup() {
       # Nothing to do yet
       ;;
     Darwin)
-      # Nothing to do yet
+      darwin_finalize_base_setup
       ;;
     FreeBSD)
       # Nothing to do yet

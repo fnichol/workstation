@@ -401,3 +401,32 @@ darwin_set_preferences() {
   info "Use all function keys as function keys by default"
   defaults write -g com.apple.keyboard.fnState -bool true
 }
+
+darwin_finalize_base_setup() {
+  darwin_set_bash_shell
+}
+
+darwin_set_bash_shell() {
+  need_cmd brew
+  need_cmd chsh
+  need_cmd cut
+  need_cmd dscacheutil
+  need_cmd grep
+
+  local bash_shell
+  bash_shell="$(brew --prefix)/bin/bash"
+
+  if ! grep -q "^${bash_shell}$" /etc/shells; then
+    info "Adding '$bash_shell' to /etc/shells"
+    echo "$bash_shell" | sudo tee -a /etc/shells >/dev/null
+  fi
+
+  local current_shell
+  current_shell="$(dscacheutil -q user -a name "$USER" | grep ^shell: \
+    | cut -d' ' -f 2)"
+
+  if [ "$current_shell" != "$bash_shell" ]; then
+    info "Setting '$bash_shell' as default shell for '$USER'"
+    indent sudo chsh -s "$bash_shell" "$USER"
+  fi
+}
