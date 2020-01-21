@@ -25,14 +25,16 @@ print_usage() {
         -o, --only=<T>[,<T>..]  Only run specific tasks
                                 [values: hostname, pkg-init, update-system,
                                 base-pkgs, preferences, keys, bashrc,
-                                base-dot-configs, headless-pkgs, rust, ruby,
-                                go, node, graphical-pkgs, graphical-dot-configs,
+                                base-dot-configs, base-finalize, headless-pkgs,
+                                rust, ruby, go, node, headless-finalize,
+                                graphical-pkgs, graphical-dot-configs,
                                 graphical-finalize]
         -s, --skip=<T>[,<T>..]  Skip specific tasks
                                 [values: hostname, pkg-init, update-system,
                                 base-pkgs, preferences, keys, bashrc,
-                                base-dot-configs, headless-pkgs, rust, ruby,
-                                go, node, graphical-pkgs, graphical-dot-configs,
+                                base-dot-configs, base-finalize, headless-pkgs,
+                                rust, ruby, go, node, headless-finalize,
+                                graphical-pkgs, graphical-dot-configs,
                                 graphical-finalize]
 
     ARGS:
@@ -233,6 +235,9 @@ prepare_workstation() {
   if should_run_task "base-dot-configs" "$skips" "$onlys"; then
     install_base_dot_configs
   fi
+  if should_run_task "base-finalize" "$skips" "$onlys"; then
+    finalize_base_setup
+  fi
 
   if [ "$profile" = "headless" ] || [ "$profile" = "graphical" ]; then
     if should_run_task "headless-pkgs" "$skips" "$onlys"; then
@@ -249,6 +254,9 @@ prepare_workstation() {
     fi
     if should_run_task "node" "$skips" "$onlys"; then
       install_node
+    fi
+    if should_run_task "headless-finalize" "$skips" "$onlys"; then
+      finalize_headless_setup
     fi
   fi
 
@@ -319,8 +327,9 @@ is_task_valid() {
 
   case "$task" in
     hostname | pkg-init | update-system | base-pkgs | preferences | keys | \
-      bashrc | base-dot-configs | headless-pkgs | rust | ruby | go | node | \
-      graphical-pkgs | graphical-dot-configs | graphical-finalize)
+      bashrc | base-dot-configs | base-finalize | headless-pkgs | rust | \
+      ruby | go | node | headless-finalize | graphical-pkgs | \
+      graphical-dot-configs | graphical-finalize)
       return 0
       ;;
     *)
@@ -703,6 +712,34 @@ install_base_dot_configs() {
   done
 }
 
+finalize_base_setup() {
+  header "Finalizing base setup"
+
+  case "$_os" in
+    Alpine)
+      # Nothing to do yet
+      ;;
+    Arch)
+      # Nothing to do yet
+      ;;
+    Darwin)
+      # Nothing to do yet
+      ;;
+    FreeBSD)
+      # Nothing to do yet
+      ;;
+    RedHat)
+      # Nothing to do yet
+      ;;
+    Ubuntu)
+      # Nothing to do yet
+      ;;
+    *)
+      warn "Finalizing base setup on $_os not yet supported, skipping"
+      ;;
+  esac
+}
+
 install_headless_packages() {
   header "Installing headless packages"
 
@@ -926,6 +963,34 @@ install_node() {
 
   # Install latest LTS version of Node
   indent bash -c ". $HOME/.nvm/nvm.sh && nvm install --lts 2>&1"
+}
+
+finalize_headless_setup() {
+  header "Finalizing headless setup"
+
+  case "$_os" in
+    Alpine)
+      # Nothing to do yet
+      ;;
+    Arch)
+      # Nothing to do yet
+      ;;
+    Darwin)
+      # Nothing to do yet
+      ;;
+    FreeBSD)
+      # Nothing to do yet
+      ;;
+    RedHat)
+      # Nothing to do yet
+      ;;
+    Ubuntu)
+      # Nothing to do yet
+      ;;
+    *)
+      warn "Finalizing headless setup on $_os not yet supported, skipping"
+      ;;
+  esac
 }
 
 install_graphical_packages() {
