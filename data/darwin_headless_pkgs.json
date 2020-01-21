@@ -20,6 +20,7 @@
   "macvim",
   "mercurial",
   "packer",
+  "parallel",
   "pkg-config",
   "protobuf",
   "redis",

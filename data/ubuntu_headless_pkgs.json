@@ -12,6 +12,7 @@
   "libxml2",
   "lynx",
   "mercurial",
+  "parallel",
   "pkg-config",
   "rsnapshot",
   "rsync",
