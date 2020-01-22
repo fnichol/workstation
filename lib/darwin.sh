@@ -4,7 +4,7 @@
 darwin_check_tmux() {
   if [ -n "${TMUX:-}" ]; then
     # shellcheck disable=SC2154
-    warn "$_program must not be run under tmux for mas to work correctly."
+    warn "Program must not be run under tmux for mas to work correctly."
     exit_with "Program run under tmux session" 1
   fi
 }
