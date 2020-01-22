@@ -312,6 +312,7 @@ darwin_set_preferences() {
 
   info "Enable password immediately after screen saver starts"
   local domain=com.fnichol
+  local organization=fnichol
   local askForPasswordDelay=0
   local config
   config="$(mktemp_file)"
@@ -319,6 +320,7 @@ darwin_set_preferences() {
   # shellcheck disable=SC2154
   sed \
     -e "s,{{domain}},$domain,g" \
+    -e "s,{{organization}},$organization,g" \
     -e "s,{{askForPasswordDelay}},$askForPasswordDelay,g" \
     "$_asset_path/askforpassworddelay.mobileconfig" \
     >"$config"
