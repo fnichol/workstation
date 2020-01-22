@@ -289,6 +289,8 @@ darwin_install_iterm2_settings() {
 
 darwin_set_preferences() {
   need_cmd defaults
+  need_cmd profiles
+  need_cmd sed
 
   info "Enable screen saver hot corner (bottom left)"
   defaults write com.apple.dock wvous-bl-corner -int 5
@@ -309,8 +311,18 @@ darwin_set_preferences() {
   defaults write com.apple.dock magnification -bool true
 
   info "Enable password immediately after screen saver starts"
-  defaults write com.apple.screensaver askForPassword -int 1
-  defaults write com.apple.screensaver askForPasswordDelay -int 0
+  local domain=com.fnichol
+  local askForPasswordDelay=0
+  local config
+  config="$(mktemp_file)"
+  cleanup_file "$config"
+  # shellcheck disable=SC2154
+  sed \
+    -e "s,{{domain}},$domain,g" \
+    -e "s,{{askForPasswordDelay}},$askForPasswordDelay,g" \
+    "$_asset_path/askforpassworddelay.mobileconfig" \
+    >"$config"
+  profiles -I -F "$config"
 
   info "Disable press-and-hold for keys in favor of key repeat"
   defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
