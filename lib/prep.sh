@@ -383,6 +383,7 @@ init() {
   _system="$(uname -s)"
 
   _data_path="$root/data"
+  _asset_path="$root/assets"
 
   if [ "$_system" != "Linux" ]; then
     _os="$_system"
