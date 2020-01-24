@@ -1,13 +1,6 @@
 [
   {
     "#": [
-      "Dynamic menu library and client program inspired by dmenu",
-      "(https://github.com/Cloudef/bemenu)"
-    ],
-    "name": "bemenu"
-  },
-  {
-    "#": [
       "A cross-platform, GPU-accelerated terminal emulator",
       "(https://github.com/jwilm/alacritty)"
     ],
