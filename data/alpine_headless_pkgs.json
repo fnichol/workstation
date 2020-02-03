@@ -11,5 +11,6 @@
   "parallel",
   "rsnapshot",
   "rsync",
+  "tmate",
   "unrar"
 ]
