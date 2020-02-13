@@ -19,6 +19,7 @@
   "shellcheck",
   "sqlite3",
   "sshuttle",
+  "syncthing",
   "tmate",
   "unrar"
 ]
