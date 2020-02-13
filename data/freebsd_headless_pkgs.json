@@ -25,6 +25,7 @@
   "rsync",
   "shfmt",
   "sqlite3",
+  "syncthing",
   "tmate",
   "unrar"
 ]
