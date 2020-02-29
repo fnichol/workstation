@@ -76,10 +76,12 @@ darwin_install_homebrew() {
 }
 
 darwin_install_pkg() {
+  need_cmd basename
   need_cmd brew
   need_cmd wc
 
-  local pkg="$1"
+  local pkg
+  pkg="$(basename "$1")"
 
   if [ -n "${2:-}" ]; then
     need_cmd grep
@@ -110,10 +112,12 @@ darwin_install_pkg() {
 }
 
 darwin_install_cask_pkg() {
+  need_cmd basename
   need_cmd brew
   need_cmd wc
 
-  local pkg="$1"
+  local pkg
+  pkg="$(basename "$1")"
 
   if [ -n "${2:-}" ]; then
     need_cmd grep
