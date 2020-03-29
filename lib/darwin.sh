@@ -116,8 +116,9 @@ darwin_install_cask_pkg() {
   need_cmd brew
   need_cmd wc
 
-  local pkg
-  pkg="$(basename "$1")"
+  local pkg pkg
+  pkg="$1"
+  pkg_name="$(basename "$pkg")"
 
   if [ -n "${2:-}" ]; then
     need_cmd grep
@@ -130,7 +131,7 @@ darwin_install_cask_pkg() {
       brew cask list --versions >"$cache"
     fi
 
-    if grep -E -q "^$pkg\s+" "$cache"; then
+    if grep -E -q "^$pkg_name\s+" "$cache"; then
       # If an installed package was found in the cache, early return
       return 0
     else
@@ -138,7 +139,7 @@ darwin_install_cask_pkg() {
       # repopulated on next call
       rm -f "$cache"
     fi
-  elif [ "$(brew cask list --versions "$pkg" | wc -l)" -ne 0 ]; then
+  elif [ "$(brew cask list --versions "$pkg_name" | wc -l)" -ne 0 ]; then
     # No cache file, but an installed package was found, so early return
     return 0
   fi
