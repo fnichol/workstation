@@ -35,5 +35,12 @@
   "pulsemixer",
   "ttf-inconsolata",
   "ttf-jetbrains-mono",
-  "vlc"
+  "vlc",
+  {
+    "#": [
+      "Used to support clipboard copy/paste with the",
+      "terminal for aliases such as `pbcopy` and `pbpaste`."
+    ],
+    "name": "xsel"
+  }
 ]
