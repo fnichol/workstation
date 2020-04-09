@@ -42,7 +42,7 @@ main() {
   author="Fletcher Nichol <fnichol@nichol.ca>"
 
   # shellcheck source=lib/realpath.sh
-  . "${0%/*}/../../lib/realpath.sh"
+  . "${0%/*}/../lib/realpath.sh"
 
   ROOT="$(realpath "${0%/*}/../..")"
 
