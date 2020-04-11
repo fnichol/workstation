@@ -44,7 +44,7 @@ main() {
   # shellcheck source=lib/realpath.sh
   . "${0%/*}/../lib/realpath.sh"
 
-  ROOT="$(realpath "${0%/*}/../..")"
+  ROOT="$(realpath "${0%/*}/..")"
 
   cli_invoke "$program" "$version" "$author" "$@"
 }
