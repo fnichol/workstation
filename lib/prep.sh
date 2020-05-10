@@ -568,6 +568,7 @@ update_system() {
     Darwin)
       indent softwareupdate --install --all
       indent env HOMEBREW_NO_AUTO_UPDATE=true brew upgrade
+      indent env HOMEBREW_NO_AUTO_UPDATE=true brew cask upgrade
       ;;
     FreeBSD)
       indent sudo pkg upgrade --yes --no-repo-update
