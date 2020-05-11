@@ -564,6 +564,7 @@ update_system() {
       ;;
     Arch)
       indent sudo pacman -Su --noconfirm
+      indent yay -Su --noconfirm
       ;;
     Darwin)
       indent softwareupdate --install --all
