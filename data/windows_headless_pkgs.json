@@ -5,6 +5,7 @@
   "fzf",
   "protoc",
   "ripgrep",
+  "starship",
   "visualstudio2019buildtools",
   "visualstudio2019-workload-vctools"
 ]
