@@ -848,10 +848,10 @@ install_ruby() {
 
   if [ ! -f /etc/profile.d/chruby.sh ]; then
     info "Creating /etc/profile.d/chruby.sh"
-    cat <<_CHRUBY_ | sudo tee /etc/profile.d/chruby.sh >/dev/null
-source /usr/local/share/chruby/chruby.sh
-source /usr/local/share/chruby/auto.sh
-_CHRUBY_
+    cat <<-EOF | sudo tee /etc/profile.d/chruby.sh >/dev/null
+	source /usr/local/share/chruby/chruby.sh
+	source /usr/local/share/chruby/auto.sh
+	EOF
   fi
 
   if [ ! -f /etc/profile.d/renv.sh ]; then
