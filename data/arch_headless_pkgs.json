@@ -2,6 +2,7 @@
   "aws-cli",
   "axel",
   "base-devel",
+  "bat",
   "cmake",
   "docker",
   "fd",

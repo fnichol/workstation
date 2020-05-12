@@ -1,6 +1,7 @@
 [
   "awscli",
   "axel",
+  "bat",
   "cmake",
   "coreutils",
   "direnv",

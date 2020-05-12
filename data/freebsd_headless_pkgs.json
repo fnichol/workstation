@@ -1,6 +1,7 @@
 [
   "autoconf",
   "axel",
+  "bat",
   "cmake",
   "ctags",
   "direnv",
