@@ -8,5 +8,6 @@
   "ripgrep",
   "starship",
   "visualstudio2019buildtools",
-  "visualstudio2019-workload-vctools"
+  "visualstudio2019-workload-vctools",
+  "watchexec"
 ]
