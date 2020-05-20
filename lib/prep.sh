@@ -866,6 +866,11 @@ install_ruby() {
     sudo cp "$renv_sh" /etc/profile.d/renv.sh
     sudo chmod 0644 /etc/profile.d/renv.sh
   fi
+
+  if [ ! -f "$HOME/.ruby-version" ]; then
+    info "Creating ~/.ruby-version"
+    echo "ruby" >"$HOME/.ruby-version"
+  fi
 }
 
 install_go() {
