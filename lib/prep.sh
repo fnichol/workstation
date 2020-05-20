@@ -864,6 +864,7 @@ install_ruby() {
       https://raw.githubusercontent.com/fnichol/renv/master/renv.sh \
       "$renv_sh"
     sudo cp "$renv_sh" /etc/profile.d/renv.sh
+    sudo chmod 0644 /etc/profile.d/renv.sh
   fi
 }
 
