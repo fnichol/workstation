@@ -45,7 +45,7 @@ main() {
 }
 
 cli_invoke() {
-  local program version author prefix
+  local program version author
   program="$1"
   shift
   version="$1"
