@@ -1,1 +1,8 @@
-["direnv", "hadolint-bin", "jo", "ngrok", "powershell-bin", "starship-bin"]
+[
+  "direnv",
+  "hadolint-bin",
+  "jo",
+  "ngrok",
+  "powershell-bin",
+  "starship-bin"
+]
