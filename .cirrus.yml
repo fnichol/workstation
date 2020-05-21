@@ -1,6 +1,7 @@
 check_task:
   container:
     image: fnichol/check-shell:latest
+  setup_script: apk add jq
   check_script: make check
 
 task:
