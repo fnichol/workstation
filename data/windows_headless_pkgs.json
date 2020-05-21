@@ -4,6 +4,7 @@
   "docker-for-windows",
   "fd",
   "fzf",
+  "kind",
   "protoc",
   "ripgrep",
   "starship",

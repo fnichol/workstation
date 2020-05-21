@@ -14,6 +14,7 @@
   "graphviz",
   "hadolint",
   "jo",
+  "kind",
   "kubernetes-cli",
   "lame",
   "libxml2",

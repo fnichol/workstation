@@ -2,6 +2,7 @@
   "direnv",
   "hadolint-bin",
   "jo",
+  "kind",
   "ngrok",
   "powershell-bin",
   "starship-bin"
