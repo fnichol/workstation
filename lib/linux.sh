@@ -44,16 +44,22 @@ redhat_install_pkg() {
 }
 
 ubuntu_install_pkg() {
+  local pkg="$1"
+  local status
+
   need_cmd apt-get
-  need_cmd dpkg
+  need_cmd dpkg-query
   need_cmd sudo
 
-  local pkg="$1"
-
-  if dpkg -l "$pkg" >/dev/null 2>&1; then
-    return 0
+  # Thanks to https://askubuntu.com/a/668229 for the inspiration
+  if status="$(
+    dpkg-query --show --showformat='${db:Status-Status}\n' "$pkg" 2>/dev/null
+  )"; then
+    if [ "$status" = "installed" ]; then
+      return 0
+    fi
   fi
 
   info "Installing package '$pkg'"
-  indent sudo apt-get install -y "$pkg"
+  indent sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y "$pkg"
 }
