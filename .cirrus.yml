@@ -26,7 +26,7 @@ task:
           - DISTRO: centos
             VERSION: 7.6.1810
           - DISTRO: ubuntu
-            VERSION: 19.04
+            VERSION: 20.04
       name: profile_${PROFILE}_${DISTRO}_${VERSION}
       container:
         dockerfile: support/dockerfiles/Dockerfile.$DISTRO
