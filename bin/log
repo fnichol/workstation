@@ -46,6 +46,9 @@ main() {
 
   ROOT="$(realpath "${0%/*}/..")"
 
+  # shellcheck source=vendor/lib/libsh.sh
+  . "$ROOT/vendor/lib/libsh.sh"
+
   cli_invoke "$program" "$version" "$author" "$@"
 }
 
@@ -65,7 +68,7 @@ cli_invoke() {
     case "$arg" in
       h)
         print_usage "$program" "$version" "$author"
-        return 0
+        exit 0
         ;;
       p)
         prefix="$OPTARG"
@@ -74,29 +77,29 @@ cli_invoke() {
         VERBOSE=true
         ;;
       V)
-        print_version "$program" "$version" "${VERBOSE:-}"
-        return 0
+        print_version "$program" "$version"
+        exit 0
         ;;
       -)
         long_optarg="${OPTARG#*=}"
         case "$OPTARG" in
           help)
             print_usage "$program" "$version" "$author"
-            return 0
+            exit 0
             ;;
           prefix=?*)
             prefix="$long_optarg"
             ;;
           prefix*)
             print_usage "$program" "$version" "$author"
-            fail "missing required argument for --$OPTARG option"
+            die "missing required argument for --$OPTARG option"
             ;;
           verbose)
             VERBOSE=true
             ;;
           version)
-            print_version "$program" "$version" "${VERBOSE:-}"
-            return 0
+            print_version "$program" "$version" "true"
+            exit 0
             ;;
           '')
             # "--" terminates argument processing
@@ -104,13 +107,13 @@ cli_invoke() {
             ;;
           *)
             print_usage "$program" "$version" "$author" >&2
-            fail "invalid argument --$OPTARG"
+            die "invalid argument --$OPTARG"
             ;;
         esac
         ;;
       \?)
         print_usage "$program" "$version" "$author" >&2
-        fail "invalid argument; arg=-$OPTARG"
+        die "invalid argument; arg=-$OPTARG"
         ;;
     esac
   done
@@ -118,7 +121,7 @@ cli_invoke() {
 
   if [ -z "${1:-}" ]; then
     print_usage "$program" "$version" "$author" >&2
-    fail "missing program argument"
+    die "missing program argument"
   fi
   local program="$1"
   shift
@@ -149,49 +152,6 @@ log_program() {
     if [ -n "$VERBOSE" ]; then set -x; fi
     exec script "$ROOT/log/${prefix}-$timestamp.log" "$program" "$@"
   fi
-}
-
-# Inspired by Cargo's version implementation, see: https://git.io/fjsOh
-print_version() {
-  local program="$1"
-  local version="$2"
-  local verbose="$3"
-
-  if command -v git >/dev/null; then
-    local date sha
-    date="$(git show -s --format=%cd --date=short)"
-    sha="$(git show -s --format=%h)"
-    if ! git diff-index --quiet HEAD --; then
-      sha="${sha}-dirty"
-    fi
-
-    echo "$program $version ($sha $date)"
-
-    if [ -n "$verbose" ]; then
-      local long_sha
-      long_sha="$(git show -s --format=%H)"
-      case "$sha" in
-        *-dirty) long_sha="${long_sha}-dirty" ;;
-      esac
-
-      echo "release: $version"
-      echo "commit-hash: $long_sha"
-      echo "commit-date: $date"
-    fi
-  else
-    echo "$program $version"
-
-    if [ -n "$verbose" ]; then
-      echo "release: $version"
-    fi
-  fi
-}
-
-fail() {
-  echo "" >&2
-  echo "xxx $1" >&2
-  echo "" >&2
-  return 1
 }
 
 main "$@"

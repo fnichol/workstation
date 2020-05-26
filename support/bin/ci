@@ -22,11 +22,4 @@ main() {
   cli__invoke_main "$program" "$version" "$author" "$@"
 }
 
-fail() {
-  echo "" >&2
-  echo "xxx $1" >&2
-  echo "" >&2
-  return 1
-}
-
 main "$@"
