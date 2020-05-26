@@ -71,15 +71,13 @@ _build_pre() {
   img_pre="$(docker__img_pre_name "$distro" "$version")"
 
   if [ -z "$force" ] && docker__img_pre_exists "$distro" "$version"; then
-    echo "--- Pre image exists, skipping; img_pre=$img_pre"
+    section "Pre image exists, skipping; img_pre=$img_pre"
     return 0
   fi
 
   local dockerfile="$ROOT/dockerfiles/Dockerfile.$distro"
   if [ ! -f "$dockerfile" ]; then
-    echo >&2
-    echo "xxx dockerfile not found; dockerfile=$dockerfile" >&2
-    echo >&2
+    warn "dockerfile not found; dockerfile=$dockerfile"
     return 1
   fi
 
@@ -108,19 +106,20 @@ _build_variant() {
   img="$(docker__img_variant_name "$distro" "$version" "$variant")"
 
   if [ -z "$force" ] && docker__img_variant_exists "$distro" "$version" "$variant"; then
-    echo "--- Image exists, skipping; img=$img"
+    section "Image exists, skipping; img=$img"
     return 0
   fi
 
-  echo "--- Running workstation; variant=$variant, img_pre=$img_pre"
+  section "Running workstation; variant=$variant, img_pre=$img_pre"
   cid="$(docker container run \
     --detach \
+    --env TERM=screen-256color \
     --volume="$(pwd)":/usr/src:ro \
     "$img_pre" \
     /usr/src/bin/prep "--profile=$variant")"
   docker container attach "$cid"
 
-  echo "--- Building image; img=$img"
+  section "Building image; img=$img"
   docker container commit --change='CMD ["/bin/bash", "-l"]' "$cid" "$img"
   docker container rm "$cid"
 }

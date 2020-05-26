@@ -53,7 +53,7 @@ cli__invoke_main() {
         VERBOSE=true
         ;;
       V)
-        _print_version "$program" "$version" "${VERBOSE:-}"
+        print_version "$program" "$version"
         return 0
         ;;
       -)
@@ -66,7 +66,7 @@ cli__invoke_main() {
             VERBOSE=true
             ;;
           version)
-            _print_version "$program" "$version" "${VERBOSE:-}"
+            print_version "$program" "$version" "true"
             return 0
             ;;
           '')
@@ -105,7 +105,7 @@ cli__invoke_main() {
       return 0
       ;;
     version)
-      _print_version "$program" "$version" "$VERBOSE"
+      print_version "$program" "$version" "true"
       return 0
       ;;
     '')
@@ -117,40 +117,4 @@ cli__invoke_main() {
       die "invalid argument; arg=${1:-}"
       ;;
   esac
-}
-
-# Inspired by Cargo's version implementation, see: https://git.io/fjsOh
-_print_version() {
-  local program="$1"
-  local version="$2"
-  local verbose="$3"
-
-  if command -v git >/dev/null; then
-    local date sha
-    date="$(git show -s --format=%cd --date=short)"
-    sha="$(git show -s --format=%h)"
-    if ! git diff-index --quiet HEAD --; then
-      sha="${sha}-dirty"
-    fi
-
-    echo "$program $version ($sha $date)"
-
-    if [ -n "$verbose" ]; then
-      local long_sha
-      long_sha="$(git show -s --format=%H)"
-      case "$sha" in
-        *-dirty) long_sha="${long_sha}-dirty" ;;
-      esac
-
-      echo "release: $version"
-      echo "commit-hash: $long_sha"
-      echo "commit-date: $date"
-    fi
-  else
-    echo "$program $version"
-
-    if [ -n "$verbose" ]; then
-      echo "release: $version"
-    fi
-  fi
 }
