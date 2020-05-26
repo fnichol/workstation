@@ -75,13 +75,13 @@ cli__invoke_main() {
             ;;
           *)
             _print_usage_main "$program" "$version" "$author" >&2
-            fail "invalid argument --$OPTARG"
+            die "invalid argument --$OPTARG"
             ;;
         esac
         ;;
       \?)
         _print_usage_main "$program" "$version" "$author" >&2
-        fail "invalid argument; arg=-$OPTARG"
+        die "invalid argument; arg=-$OPTARG"
         ;;
     esac
   done
@@ -110,11 +110,11 @@ cli__invoke_main() {
       ;;
     '')
       _print_usage_main "$program" "$version" "$author" >&2
-      fail "missing subcommand argument"
+      die "missing subcommand argument"
       ;;
     *)
       _print_usage_main "$program" "$version" "$author" >&2
-      fail "invalid argument; arg=${1:-}"
+      die "invalid argument; arg=${1:-}"
       ;;
   esac
 }

@@ -16,7 +16,6 @@ print_usage() {
     FLAGS:
         -h, --help      Prints help information
         -V, --version   Prints version information
-        -v, --verbose   Prints verbose output
 
     AUTHOR:
         $author
@@ -38,13 +37,16 @@ main() {
 
   root="$(realpath "${0%/*}/..")"
 
-  # shellcheck source=lib/common.sh
-  . "$root/lib/common.sh"
+  # shellcheck source=vendor/lib/libsh.sh
+  . "$root/vendor/lib/libsh.sh"
 
-  cli_invoke "$program" "$version" "$author" "$@"
+  # Parse CLI arguments and set local variables
+  parse_cli_args "$program" "$version" "$author" "$@"
+
+  update
 }
 
-cli_invoke() {
+parse_cli_args() {
   local program version author
   program="$1"
   shift
@@ -53,34 +55,26 @@ cli_invoke() {
   author="$1"
   shift
 
-  VERBOSE=""
-
   OPTIND=1
-  while getopts "hvV-:" arg; do
+  while getopts "hV-:" arg; do
     case "$arg" in
       h)
         print_usage "$program" "$version" "$author"
-        return 0
-        ;;
-      v)
-        VERBOSE=true
+        exit 0
         ;;
       V)
-        print_version "$program" "$version" "${VERBOSE:-}"
-        return 0
+        print_version "$program" "$version"
+        exit 0
         ;;
       -)
         case "$OPTARG" in
           help)
             print_usage "$program" "$version" "$author"
-            return 0
-            ;;
-          verbose)
-            VERBOSE=true
+            exit 0
             ;;
           version)
-            print_version "$program" "$version" "${VERBOSE:-}"
-            return 0
+            print_version "$program" "$version" "true"
+            exit 0
             ;;
           '')
             # "--" terminates argument processing
@@ -88,23 +82,21 @@ cli_invoke() {
             ;;
           *)
             print_usage "$program" "$version" "$author" >&2
-            fail "invalid argument --$OPTARG"
+            die "invalid argument --$OPTARG"
             ;;
         esac
         ;;
       \?)
         print_usage "$program" "$version" "$author" >&2
-        fail "invalid argument; arg=-$OPTARG"
+        die "invalid argument; arg=-$OPTARG"
         ;;
     esac
   done
   shift "$((OPTIND - 1))"
-
-  update "$@"
 }
 
 update() {
-  header "Updating repository checkout"
+  section "Updating repository checkout"
 
   need_cmd git
 
@@ -113,7 +105,7 @@ update() {
   info "git rebase origin/master"
   git rebase origin/master
 
-  header "Finished updating"
+  section "Finished updating"
 }
 
 main "$@" || exit 99

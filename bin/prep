@@ -16,6 +16,8 @@ main() {
 
   root="$(realpath "${0%/*}/..")"
 
+  # shellcheck source=vendor/lib/libsh.sh
+  . "$root/vendor/lib/libsh.sh"
   # shellcheck source=lib/common.sh
   . "$root/lib/common.sh"
   # shellcheck source=lib/prep.sh

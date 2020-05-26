@@ -5,7 +5,7 @@ darwin_check_tmux() {
   if [ -n "${TMUX:-}" ]; then
     # shellcheck disable=SC2154
     warn "Program must not be run under tmux for mas to work correctly."
-    exit_with "Program run under tmux session" 1
+    die "Program run under tmux session"
   fi
 }
 
@@ -229,7 +229,7 @@ darwin_install_apps_from_json() {
   install_pkg mas
 
   if ! mas account | grep -q '@'; then
-    exit_with "Not logged into App Store" 16
+    die "Not logged into App Store"
   fi
 
   jq -r '. | to_entries | .[] | @sh "app=\(.key); id=\(.value)"' "$json" \

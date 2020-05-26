@@ -72,13 +72,13 @@ cli_docker_build__invoke() {
             ;;
           *)
             _print_usage_docker_build "$program" "$version" "$author" >&2
-            fail "invalid argument --$OPTARG"
+            die "invalid argument --$OPTARG"
             ;;
         esac
         ;;
       \?)
         _print_usage_docker_build "$program" "$version" "$author" >&2
-        fail "invalid argument; arg=-$OPTARG"
+        die "invalid argument; arg=-$OPTARG"
         ;;
     esac
   done
@@ -96,7 +96,7 @@ cli_docker_build__invoke() {
     *)
       if ! docker__valid_distros | grep -q "^$1$"; then
         _print_usage_docker_build "$program" "$version" "$author" >&2
-        fail "invalid distro value; distro=$1"
+        die "invalid distro value; distro=$1"
       fi
 
       local distro="$1"
@@ -112,7 +112,7 @@ cli_docker_build__invoke() {
     *)
       if ! docker__valid_versions_for "$distro" | grep -q "^$1$"; then
         _print_usage_docker_build "$program" "$version" "$author" >&2
-        fail "invalid version value; version=$1"
+        die "invalid version value; version=$1"
       fi
 
       local distro_version="$1"

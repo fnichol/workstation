@@ -81,8 +81,7 @@ invoke_cli() {
           profile="$OPTARG"
         else
           print_usage "$program" "$version" "$author" >&2
-          fail "invalid profile name $OPTARG"
-          return 1
+          die "invalid profile name $OPTARG"
         fi
         ;;
       s)
@@ -115,22 +114,19 @@ invoke_cli() {
             ;;
           only*)
             print_usage "$program" "$version" "$author" >&2
-            fail "missing required argument for --$OPTARG option"
-            return 1
+            die "missing required argument for --$OPTARG option"
             ;;
           profile=?*)
             if is_profile_valid "$long_optarg"; then
               profile="$long_optarg"
             else
               print_usage "$program" "$version" "$author" >&2
-              fail "invalid profile name '$long_optarg'"
-              return 1
+              die "invalid profile name '$long_optarg'"
             fi
             ;;
           profile*)
             print_usage "$program" "$version" "$author" >&2
-            fail "missing required argument for --$OPTARG option"
-            return 1
+            die "missing required argument for --$OPTARG option"
             ;;
           skip=?*)
             if are_skips_valid "$program" "$version" "$author" "$long_optarg"; then
@@ -141,8 +137,7 @@ invoke_cli() {
             ;;
           skip*)
             print_usage "$program" "$version" "$author" >&2
-            fail "missing required argument for --$OPTARG option"
-            return 1
+            die "missing required argument for --$OPTARG option"
             ;;
           verbose)
             VERBOSE=true
@@ -157,15 +152,13 @@ invoke_cli() {
             ;;
           *)
             print_usage "$program" "$version" "$author" >&2
-            fail "invalid argument --$OPTARG"
-            return 1
+            die "invalid argument --$OPTARG"
             ;;
         esac
         ;;
       \?)
         print_usage "$program" "$version" "$author" >&2
-        fail "invalid argument; arg=-$OPTARG"
-        return 1
+        die "invalid argument; arg=-$OPTARG"
         ;;
     esac
   done
@@ -180,18 +173,18 @@ invoke_cli() {
     && [ ! -f "$HOME/Library/Preferences/com.apple.appstore.plist" ]; then
     printf -- "Not logged into App Store, please login and try again.\n\n"
     print_usage "$program" "$version" "$author" >&2
-    fail "must be logged into App Store"
-    return 1
+    die "must be logged into App Store"
   fi
 
-  prepare_workstation "$root" "$profile" "$skips" "$onlys"
+  prepare_workstation "$program" "$root" "$profile" "$skips" "$onlys"
 }
 
 prepare_workstation() {
-  local root="$1"
-  local profile="$2"
-  local skips="$3"
-  local onlys="$4"
+  local program="$1"
+  local root="$2"
+  local profile="$3"
+  local skips="$4"
+  local onlys="$5"
 
   if [ -n "$VERBOSE" ]; then
     echo "root: $root"
@@ -200,17 +193,9 @@ prepare_workstation() {
     echo "only: $onlys"
   fi
 
-  # Very nice, portable signal handling thanks to:
-  # https://unix.stackexchange.com/a/240736
-  for sig in HUP INT QUIT ALRM TERM; do
-    trap "
-      trap_cleanup
-      trap - $sig EXIT
-      kill -s $sig "'"$$"' "$sig"
-  done
-  trap trap_cleanup EXIT
+  setup_traps trap_cleanup_files
 
-  init "$root"
+  init "$program" "$root"
   if should_run_task "hostname" "$skips" "$onlys"; then
     set_hostname
   fi
@@ -286,8 +271,7 @@ are_onlys_valid() {
   for only in $(echo "$onlys" | tr ',' ' '); do
     if ! is_task_valid "$only"; then
       print_usage "$program" "$version" "$author" >&2
-      fail "invalid only task: $only"
-      return 1
+      die "invalid only task: $only"
     fi
   done
 }
@@ -303,8 +287,7 @@ are_skips_valid() {
   for skip in $(echo "$skips" | tr ',' ' '); do
     if ! is_task_valid "$skip"; then
       print_usage "$program" "$version" "$author" >&2
-      fail "invalid skip task: $skip"
-      return 1
+      die "invalid skip task: $skip"
     fi
   done
 }
@@ -376,7 +359,8 @@ init() {
   need_cmd basename
   need_cmd uname
 
-  local root="$1"
+  local program="$1"
+  local root="$2"
   local lib_path="$root/lib"
   local hostname
 
@@ -442,9 +426,9 @@ init() {
       ;;
   esac
 
-  header "Setting up workstation '${_argv_hostname:-$hostname}'"
+  section "Setting up workstation '${_argv_hostname:-$hostname}'"
 
-  ensure_not_root
+  ensure_not_root "$program"
   get_sudo "$hostname"
   keep_sudo
 
@@ -469,7 +453,7 @@ set_hostname() {
     fqdn="$_argv_hostname"
   fi
 
-  header "Setting hostname to '$fqdn'"
+  section "Setting hostname to '$fqdn'"
   case "$_os" in
     Arch)
       arch_set_hostname "$name" "$fqdn"
@@ -527,7 +511,7 @@ set_hostname() {
 }
 
 setup_package_system() {
-  header "Setting up package system"
+  section "Setting up package system"
 
   case "$_os" in
     Alpine)
@@ -556,7 +540,7 @@ setup_package_system() {
 }
 
 update_system() {
-  header "Applying system updates"
+  section "Applying system updates"
 
   case "$_os" in
     Alpine)
@@ -587,7 +571,7 @@ update_system() {
 }
 
 install_base_packages() {
-  header "Installing base packages"
+  section "Installing base packages"
 
   case "$_os" in
     Alpine)
@@ -621,7 +605,7 @@ install_base_packages() {
 }
 
 set_preferences() {
-  header "Setting preferences"
+  section "Setting preferences"
 
   case "$_os" in
     Alpine)
@@ -650,7 +634,7 @@ set_preferences() {
 }
 
 generate_keys() {
-  header "Generating keys"
+  section "Generating keys"
 
   need_cmd chmod
   need_cmd date
@@ -679,14 +663,14 @@ install_bashrc() {
   need_cmd sudo
 
   if [ -f /etc/bash/bashrc.local ]; then
-    header "Updating fnichol/bashrc"
+    section "Updating fnichol/bashrc"
     indent bash -c "source /etc/bash/bashrc && bashrc update"
   else
     local install_sh
     install_sh="$(mktemp_file)"
     cleanup_file "$install_sh"
 
-    header "Installing fnichol/bashrc"
+    section "Installing fnichol/bashrc"
     download \
       https://raw.githubusercontent.com/fnichol/bashrc/master/contrib/install-system-wide \
       "$install_sh"
@@ -702,7 +686,7 @@ install_base_dot_configs() {
 
   local repo repo_dir castle
 
-  header "Installing base dot configs"
+  section "Installing base dot configs"
 
   if [ ! -f "$HOME/.homesick/repos/homeshick/homeshick.sh" ]; then
     info "Installing homeshick for '$USER'"
@@ -716,7 +700,7 @@ install_base_dot_configs() {
 }
 
 finalize_base_setup() {
-  header "Finalizing base setup"
+  section "Finalizing base setup"
 
   case "$_os" in
     Alpine)
@@ -744,7 +728,7 @@ finalize_base_setup() {
 }
 
 install_headless_packages() {
-  header "Installing headless packages"
+  section "Installing headless packages"
 
   case "$_os" in
     Alpine)
@@ -780,7 +764,7 @@ install_rust() {
   local rustup="$cargo_home/bin/rustup"
   local installed_plugins
 
-  header "Setting up Rust"
+  section "Setting up Rust"
 
   if [ "$_os" = Alpine ]; then
     warn "Alpine Linux not supported, skipping Rust installation"
@@ -813,7 +797,7 @@ install_rust() {
 }
 
 install_ruby() {
-  header "Setting up Ruby"
+  section "Setting up Ruby"
 
   if [ "$_os" = Alpine ]; then
     warn "Alpine Linux not supported, skipping Ruby installation"
@@ -874,7 +858,7 @@ install_ruby() {
 }
 
 install_go() {
-  header "Setting up Go"
+  section "Setting up Go"
 
   if [ "$_os" = Alpine ]; then
     install_pkg "go"
@@ -919,7 +903,7 @@ install_go() {
       arch="386"
       ;;
     *)
-      exit_with "Installation of Go not currently supported for $machine" 22
+      die "Installation of Go not currently supported for $machine"
       ;;
   esac
 
@@ -937,7 +921,7 @@ install_node() {
   need_cmd jq
   need_cmd touch
 
-  header "Setting up Node"
+  section "Setting up Node"
 
   case "$_os" in
     Alpine)
@@ -975,7 +959,7 @@ install_node() {
 }
 
 finalize_headless_setup() {
-  header "Finalizing headless setup"
+  section "Finalizing headless setup"
 
   case "$_os" in
     Alpine)
@@ -1003,7 +987,7 @@ finalize_headless_setup() {
 }
 
 install_graphical_packages() {
-  header "Installing graphical packages"
+  section "Installing graphical packages"
 
   case "$_os" in
     Alpine)
@@ -1037,7 +1021,7 @@ install_graphical_packages() {
 install_graphical_dot_configs() {
   local repo
 
-  header "Installing graphical dot configs"
+  section "Installing graphical dot configs"
 
   case "$_os" in
     Alpine)
@@ -1065,7 +1049,7 @@ install_graphical_dot_configs() {
 }
 
 finalize_graphical_setup() {
-  header "Finalizing graphical setup"
+  section "Finalizing graphical setup"
 
   case "$_os" in
     Alpine)
@@ -1093,7 +1077,7 @@ finalize_graphical_setup() {
 }
 
 finish() {
-  header "Finished setting up workstation, enjoy!"
+  section "Finished setting up workstation, enjoy!"
 }
 
 install_pkg() {
