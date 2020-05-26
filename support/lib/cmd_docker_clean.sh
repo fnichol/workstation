@@ -69,21 +69,21 @@ _clean() {
   containers="$(docker container ls --all --quiet \
     --filter "ancestor=$img" --filter status=running)"
   if [ -n "$containers" ]; then
-    echo "--- Killing running containers; img=$img"
+    section "Killing running containers; img=$img"
     echo "$containers" | xargs docker container kill
   fi
 
   # Remove all containers that are descendant from `$img`
   containers="$(docker container ls --all --quiet --filter "ancestor=$img")"
   if [ -n "$containers" ]; then
-    echo "--- Removing containers; img=$img"
+    section "Removing containers; img=$img"
     echo "$containers" | xargs docker container rm
   fi
 
   # Remove all images related to `$img
   images="$(docker image ls --quiet "$img")"
   if [ -n "$images" ]; then
-    echo "--- Removing images; img=$img"
+    section "Removing images; img=$img"
     echo "$images" | xargs docker image rm
   fi
 }
