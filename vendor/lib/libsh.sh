@@ -16,11 +16,11 @@
 # --------
 # project: https://github.com/fnichol/libsh
 # author: Fletcher Nichol <fnichol@nichol.ca>
-# version: 0.3.0
-# commit-hash: 93eace4d0d5ea71173bbf5861826910baa9f86a8
-# commit-date: 2020-05-13
-# source: https://github.com/fnichol/libsh/tree/v0.3.0
-# archive: https://github.com/fnichol/libsh/archive/v0.3.0.tar.gz
+# version: 0.4.0
+# commit-hash: b69942cde1a609f84c3663245c3d2a603165c994
+# commit-date: 2020-05-26
+# source: https://github.com/fnichol/libsh/tree/v0.4.0
+# archive: https://github.com/fnichol/libsh/archive/v0.4.0.tar.gz
 #
 
 if [ -n "${KSH_VERSION:-}" ]; then
@@ -139,7 +139,7 @@ die() {
   _msg="$1"
 
   case "${TERM:-}" in
-    *term | xterm-* | rxvt | screen | screen-*)
+    *term | alacritty | rxvt | screen | screen-* | tmux | tmux-* | xterm-*)
       printf -- "\n\033[1;31;40mxxx \033[1;37;40m%s\033[0m\n\n" "$_msg" >&2
       ;;
     *)
@@ -324,7 +324,7 @@ info() {
   _msg="$1"
 
   case "${TERM:-}" in
-    *term | xterm-* | rxvt | screen | screen-*)
+    *term | alacritty | rxvt | screen | screen-* | tmux | tmux-* | xterm-*)
       printf -- "\033[1;36;40m  - \033[1;37;40m%s\033[0m\n" "$_msg"
       ;;
     *)
@@ -521,7 +521,7 @@ section() {
   _msg="$1"
 
   case "${TERM:-}" in
-    *term | xterm-* | rxvt | screen | screen-*)
+    *term | alacritty | rxvt | screen | screen-* | tmux | tmux-* | xterm-*)
       printf -- "\033[1;36;40m--- \033[1;37;40m%s\033[0m\n" "$_msg"
       ;;
     *)
@@ -648,7 +648,7 @@ warn() {
   _msg="$1"
 
   case "${TERM:-}" in
-    *term | xterm-* | rxvt | screen | screen-*)
+    *term | alacritty | rxvt | screen | screen-* | tmux | tmux-* | xterm-*)
       printf -- "\033[1;31;40m!!! \033[1;37;40m%s\033[0m\n" "$_msg"
       ;;
     *)
