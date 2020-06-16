@@ -17,6 +17,7 @@
   "lynx",
   "mercurial",
   "minikube",
+  "openbsd-netcat",
   "packer",
   "parallel",
   "protobuf",
