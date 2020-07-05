@@ -11,6 +11,7 @@
   "fzf",
   "gnupg",
   "graphviz",
+  "helm",
   "kubectl",
   "lame",
   "libyaml",
