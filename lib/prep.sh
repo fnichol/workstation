@@ -518,7 +518,7 @@ setup_package_system() {
       indent sudo apk update
       ;;
     Arch)
-      indent sudo pacman -Sy --noconfirm
+      arch_setup_package_system
       ;;
     Darwin)
       darwin_install_xcode_cli_tools
@@ -547,8 +547,7 @@ update_system() {
       indent sudo apk upgrade
       ;;
     Arch)
-      indent sudo pacman -Su --noconfirm
-      indent yay -Su --noconfirm
+      arch_update_system
       ;;
     Darwin)
       indent softwareupdate --install --all
@@ -579,8 +578,7 @@ install_base_packages() {
       install_pkgs_from_json "$_data_path/alpine_base_pkgs.json"
       ;;
     Arch)
-      install_pkg jq
-      install_pkgs_from_json "$_data_path/arch_base_pkgs.json"
+      arch_install_base_packages "$_data_path"
       ;;
     Darwin)
       install_pkg jq

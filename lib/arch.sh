@@ -23,6 +23,22 @@ arch_set_hostname() {
   fi
 }
 
+arch_setup_package_system() {
+  indent sudo pacman -Sy --noconfirm
+}
+
+arch_update_system() {
+  indent sudo pacman -Su --noconfirm
+  indent yay -Su --noconfirm
+}
+
+arch_install_base_packages() {
+  local data_path="$1"
+
+  install_pkg jq
+  install_pkgs_from_json "$data_path/arch_base_pkgs.json"
+}
+
 arch_install_headless_packages() {
   local data_path="$1"
 
