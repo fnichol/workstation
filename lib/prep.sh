@@ -518,7 +518,7 @@ setup_package_system() {
       indent sudo apk update
       ;;
     Arch)
-      indent sudo pacman -Syy --noconfirm
+      indent sudo pacman -Sy --noconfirm
       ;;
     Darwin)
       darwin_install_xcode_cli_tools
