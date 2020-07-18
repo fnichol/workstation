@@ -1243,7 +1243,7 @@ install_pip3_pkg() {
 install_pkgs_from_json() {
   local json="$1"
   local cache
-  cache="$(mktemp_file pkgcache)"
+  cache="$(mktemp_file)"
   cleanup_file "$cache"
   # Ensure no file exists
   rm -f "$cache"
