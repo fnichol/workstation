@@ -1,0 +1,55 @@
+[
+  {
+    "#": [
+      "i3 is a tiling window manager for X11.",
+      "This is a package group which installs the i3-gaps fork",
+      "(https://i3wm.org/)"
+    ],
+    "name": "i3-gaps"
+  },
+  {
+    "#": [
+      "i3lock is a simple screen locker like slock. After starting it, you",
+      "will see a white screen (you can configure the color/an image). You",
+      "can return to your screen by entering your password.",
+      "(https://openports.se/x11/i3lock)"
+    ],
+    "name": "i3lock"
+  },
+  {
+    "#": [
+      "i3status is a small program (about 1500 SLOC) for generating a status",
+      "bar for dzen2, xmobar or similar programs. It is designed to be very",
+      "efficient by issuing a very small number of system calls, as one",
+      "generally wants to update such a status line every second. This ensures",
+      "that even under high load, your status bar is updated correctly. Also,",
+      "it saves a bit of energy by not hogging your CPU as much as spawning",
+      "the corresponding amount of shell commands would.",
+      "(https://openports.se/x11/i3status)"
+    ],
+    "name": "i3status"
+  },
+  {
+    "#": [
+      "Background browser and setter for X windows",
+      "(https://openports.se/x11/nitrogen)"
+    ],
+    "name": "nitrogen"
+  },
+  {
+    "#": [
+      "Compton is a lightweight, standalone composite manager, suitable for use",
+      "with window managers that do not natively provide compositing",
+      "functionality.",
+      "(https://openports.se/x11/compton)"
+    ],
+    "name": "compton"
+  },
+  {
+    "#": [
+      "A small program for hiding the mouse cursor",
+      "(https://openports.se/x11/unclutter)"
+    ],
+    "name": "unclutter"
+  }
+]

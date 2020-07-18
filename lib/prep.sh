@@ -1092,8 +1092,8 @@ install_graphical_packages() {
     FreeBSD)
       # Nothing to do yet
       ;;
-    OpeBSD)
-      # Nothing to do yet
+    OpenBSD)
+      openbsd_install_graphical_packages "$_data_path"
       ;;
     RedHat)
       # Nothing to do yet
@@ -1126,7 +1126,7 @@ install_graphical_dot_configs() {
       # Nothing to do yet
       ;;
     OpenBSD)
-      # Nothing to do yet
+      manage_homesick_repo "fnichol/dotx"
       ;;
     RedHat)
       # Nothing to do yet

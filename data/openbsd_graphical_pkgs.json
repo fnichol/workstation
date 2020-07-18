@@ -1,0 +1,48 @@
+[
+  "chromium",
+  "darktable",
+  "firefox",
+  {
+    "#": [
+      "GMPC is a frontend for the mpd (Music Player Daemon). It's focused on",
+      "being fast and easy to use, while still making optimal use of all the",
+      "functions in mpd.",
+      "http://gmpclient.org/"
+    ],
+    "name": "gmpc"
+  },
+  "ncmpcpp",
+  {
+    "#": [
+      "Overpass is an open source webfont family inspired by Highway Gothic,",
+      "sponsored by Red Hat and created by Delve Fonts.",
+      "https://overpassfont.org/"
+    ],
+    "name": "overpass"
+  },
+  "pulseaudio",
+  {
+    "#": [
+      "Inconsolata is a monospace font, designed for code listings and the",
+      "like, in print. There are a great many 'programmer fonts' designed",
+      "primarily for use on the screen, but in most cases do not have the",
+      "attention to detail for high resolution rendering.",
+      "https://www.levien.com/type/myfonts/inconsolata.html"
+    ],
+    "name": "inconsolata-font"
+  },
+  {
+    "#": [
+      "JetBrains Mono. A typeface for developers",
+      "1. Increased height for a better reading experience",
+      "2. Adapted to reading code",
+      "3. code-specific ligatures",
+      "4. 145 languages",
+      "5. weights with matching italics",
+      "6. JetBrains Mono is free & open source",
+      "https://www.jetbrains.com/lp/mono/"
+    ],
+    "name": "jetbrains-mono"
+  },
+  "vlc"
+]

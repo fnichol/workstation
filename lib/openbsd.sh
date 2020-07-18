@@ -42,6 +42,41 @@ openbsd_install_node() {
   install_pkg node
 }
 
+openbsd_install_graphical_packages() {
+  local data_path="$1"
+
+  openbsd_install_xenocara
+  install_pkgs_from_json "$data_path/openbsd_graphical_pkgs.json"
+  install_pkgs_from_json "$data_path/openbsd_graphical_xorg_pkgs.json"
+}
+
+openbsd_install_xenocara() {
+  if [ -x /usr/X11R6/bin/xterm ]; then
+    return 0
+  fi
+
+  need_cmd rm
+  need_cmd sed
+  need_cmd tar
+  need_cmd uname
+
+  local url suffix tgz tmptgz
+  suffix="$(uname -r | sed 's/\.//g').tgz"
+
+  url="$(cat /etc/installurl)"
+  url="$url/$(uname -r)"
+  url="$url/$(uname -m)"
+
+  for tgz in xbase xfont xserv xshare; do
+    tmptgz="$(mktemp_file)"
+    cleanup_file "$tmptgz"
+    download "$url/$tgz$suffix" "$tmptgz"
+    info "Extracting $tgz$suffix"
+    doas tar xzphf "$tmptgz" -C /
+    rm -f "$tmptgz"
+  done
+}
+
 openbsd_install_pkg() {
   local pkg="$1"
 
