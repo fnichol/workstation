@@ -8,8 +8,20 @@ unix_install_chruby() {
 
   need_cmd make
   need_cmd rm
-  need_cmd sudo
   need_cmd tar
+  need_cmd uname
+
+  local sudo
+  case "$(uname -s)" in
+    OpenBSD)
+      need_cmd doas
+      sudo="doas"
+      ;;
+    *)
+      need_cmd sudo
+      sudo="sudo"
+      ;;
+  esac
 
   local version tar
   version="v0.3.9"
@@ -20,8 +32,8 @@ unix_install_chruby() {
   download \
     "https://github.com/postmodern/chruby/archive/${version}.tar.gz" \
     "$tar"
-  tar -xf "$tar" -C /tmp
-  (cd "/tmp/chruby-${version#v}" && indent sudo make install)
+  tar -xzf "$tar" -C /tmp
+  (cd "/tmp/chruby-${version#v}" && indent "$sudo" make install)
   rm -rf "/tmp/chruby-${version#v}"
 }
 
@@ -32,8 +44,20 @@ unix_install_ruby_install() {
 
   need_cmd make
   need_cmd rm
-  need_cmd sudo
   need_cmd tar
+  need_cmd uname
+
+  local sudo
+  case "$(uname -s)" in
+    OpenBSD)
+      need_cmd doas
+      sudo="doas"
+      ;;
+    *)
+      need_cmd sudo
+      sudo="sudo"
+      ;;
+  esac
 
   local version tar
   version="v0.7.0"
@@ -44,7 +68,7 @@ unix_install_ruby_install() {
   download \
     "https://github.com/postmodern/ruby-install/archive/${version}.tar.gz" \
     "$tar"
-  tar -xf "$tar" -C /tmp
-  (cd "/tmp/ruby-install-${version#v}" && indent sudo make install)
+  tar -xzf "$tar" -C /tmp
+  (cd "/tmp/ruby-install-${version#v}" && indent "$sudo" make install)
   rm -rf "/tmp/ruby-install-${version#v}"
 }

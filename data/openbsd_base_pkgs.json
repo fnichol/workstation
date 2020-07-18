@@ -1,0 +1,15 @@
+[
+  "bash",
+  "curl",
+  "gawk",
+  "git",
+  "ggrep",
+  "htop",
+  "mosh",
+  "pstree",
+  "screen--",
+  "tree",
+  "wget",
+  "unzip--",
+  "vim--no_x11"
+]

@@ -411,6 +411,12 @@ init() {
           ;;
       esac
       ;;
+    OpenBSD)
+      # shellcheck source=lib/openbsd.sh
+      . "$lib_path/openbsd.sh"
+      # shellcheck source=lib/unix.sh
+      . "$lib_path/unix.sh"
+      ;;
   esac
 
   case "$_os" in
@@ -477,6 +483,9 @@ set_hostname() {
         sudo defaults write "$smb" NetBIOSName -string "$name"
       fi
       ;;
+    OpenBSD)
+      openbsd_set_hostname "$fqdn"
+      ;;
     Ubuntu)
       need_cmd grep
       need_cmd hostname
@@ -527,6 +536,9 @@ setup_package_system() {
     FreeBSD)
       indent sudo pkg update
       ;;
+    OpenBSD)
+      # Nothing to do
+      ;;
     RedHat)
       # Nothing to do
       ;;
@@ -556,6 +568,9 @@ update_system() {
       ;;
     FreeBSD)
       indent sudo pkg upgrade --yes --no-repo-update
+      ;;
+    OpenBSD)
+      openbsd_update_system
       ;;
     RedHat)
       # Nothing to do
@@ -588,6 +603,9 @@ install_base_packages() {
       install_pkg jq
       install_pkgs_from_json "$_data_path/freebsd_base_pkgs.json"
       ;;
+    OpenBSD)
+      openbsd_install_base_packages "$_data_path"
+      ;;
     RedHat)
       redhat_install_jq
       install_pkgs_from_json "$_data_path/redhat_base_pkgs.json"
@@ -619,6 +637,9 @@ set_preferences() {
     FreeBSD)
       # Nothing to do
       ;;
+    OpenBSD)
+      # Nothing to do
+      ;;
     RedHat)
       # Nothing to do
       ;;
@@ -636,16 +657,27 @@ generate_keys() {
 
   need_cmd chmod
   need_cmd date
-  need_cmd hostname
   need_cmd mkdir
   need_cmd ssh-keygen
+
+  local hostname
+  case "$_os" in
+    OpenBSD)
+      need_cmd cat
+      hostname="$(cat /etc/myname)"
+      ;;
+    *)
+      need_cmd hostname
+      hostname="$(hostname -f)"
+      ;;
+  esac
 
   if [ ! -f "$HOME/.ssh/id_rsa" ]; then
     info "Generating SSH key for '$USER' on this system"
     mkdir -p "$HOME/.ssh"
     indent ssh-keygen \
       -N '' \
-      -C "${USER}@$(hostname -f)-$(date -u +%FT%TZ)" \
+      -C "${USER}@${hostname}-$(date -u +%FT%TZ)" \
       -t rsa \
       -b 4096 \
       -a 100 \
@@ -658,7 +690,18 @@ generate_keys() {
 
 install_bashrc() {
   need_cmd bash
-  need_cmd sudo
+
+  local sudo
+  case "$_os" in
+    OpenBSD)
+      need_cmd doas
+      sudo="doas"
+      ;;
+    *)
+      need_cmd sudo
+      sudo="sudo"
+      ;;
+  esac
 
   if [ -f /etc/bash/bashrc.local ]; then
     section "Updating fnichol/bashrc"
@@ -673,7 +716,7 @@ install_bashrc() {
       https://raw.githubusercontent.com/fnichol/bashrc/master/contrib/install-system-wide \
       "$install_sh"
     info "Running installer"
-    indent sudo bash "$install_sh"
+    indent "$sudo" bash "$install_sh"
   fi
 
 }
@@ -713,6 +756,9 @@ finalize_base_setup() {
     FreeBSD)
       # Nothing to do yet
       ;;
+    OpenBSD)
+      # Nothing to do yet
+      ;;
     RedHat)
       # Nothing to do yet
       ;;
@@ -744,6 +790,9 @@ install_headless_packages() {
       install_pkgs_from_json "$_data_path/freebsd_headless_pkgs.json"
       freebsd_install_beets
       ;;
+    OpenBSD)
+      openbsd_install_headless_packages "$_data_path"
+      ;;
     RedHat)
       install_pkgs_from_json "$_data_path/redhat_headless_pkgs.json"
       ;;
@@ -769,21 +818,30 @@ install_rust() {
     return 0
   fi
 
-  if [ ! -x "$rustup" ]; then
-    local install_sh
-    install_sh="$(mktemp_file)"
-    cleanup_file "$install_sh"
+  case "$_os" in
+    OpenBSD)
+      cargo=/usr/local/bin/cargo
 
-    info "Installing Rust"
-    download https://sh.rustup.rs "$install_sh"
-    indent sh "$install_sh" -y --default-toolchain stable
-  fi
+      openbsd_install_rust
+      ;;
+    *)
+      if [ ! -x "$rustup" ]; then
+        local install_sh
+        install_sh="$(mktemp_file)"
+        cleanup_file "$install_sh"
 
-  indent "$rustup" self update
-  indent "$rustup" update
+        info "Installing Rust"
+        download https://sh.rustup.rs "$install_sh"
+        indent sh "$install_sh" -y --default-toolchain stable
+      fi
 
-  indent "$rustup" component add rust-src
-  indent "$rustup" component add rustfmt
+      indent "$rustup" self update
+      indent "$rustup" update
+
+      indent "$rustup" component add rust-src
+      indent "$rustup" component add rustfmt
+      ;;
+  esac
 
   installed_plugins="$("$cargo" install --list | grep ':$' | cut -d ' ' -f 1)"
   json_items "$_data_path/rust_cargo_plugins.json" | while read -r plugin; do
@@ -815,9 +873,27 @@ install_ruby() {
       unix_install_chruby
       unix_install_ruby_install
       ;;
+    OpenBSD)
+      unix_install_chruby
+      unix_install_ruby_install
+      ;;
     *)
       warn "Installing Ruby on $_os not yet supported, skipping"
       return 0
+      ;;
+  esac
+
+  need_cmd uname
+
+  local sudo
+  case "$(uname -s)" in
+    OpenBSD)
+      need_cmd doas
+      sudo="doas"
+      ;;
+    *)
+      need_cmd sudo
+      sudo="sudo"
       ;;
   esac
 
@@ -826,11 +902,11 @@ install_ruby() {
   # Install latest stable version of Ruby
   indent ruby-install --no-reinstall ruby
 
-  sudo mkdir -p /etc/profile.d
+  "$sudo" mkdir -p /etc/profile.d
 
   if [ ! -f /etc/profile.d/chruby.sh ]; then
     info "Creating /etc/profile.d/chruby.sh"
-    cat <<-EOF | sudo tee /etc/profile.d/chruby.sh >/dev/null
+    cat <<-EOF | "$sudo" tee /etc/profile.d/chruby.sh >/dev/null
 	source /usr/local/share/chruby/chruby.sh
 	source /usr/local/share/chruby/auto.sh
 	EOF
@@ -845,8 +921,8 @@ install_ruby() {
     download \
       https://raw.githubusercontent.com/fnichol/renv/master/renv.sh \
       "$renv_sh"
-    sudo cp "$renv_sh" /etc/profile.d/renv.sh
-    sudo chmod 0644 /etc/profile.d/renv.sh
+    "$sudo" cp "$renv_sh" /etc/profile.d/renv.sh
+    "$sudo" chmod 0644 /etc/profile.d/renv.sh
   fi
 
   if [ ! -f "$HOME/.ruby-version" ]; then
@@ -858,10 +934,15 @@ install_ruby() {
 install_go() {
   section "Setting up Go"
 
-  if [ "$_os" = Alpine ]; then
-    install_pkg "go"
-    return 0
-  fi
+  case "$_os" in
+    Alpine | OpenBSD)
+      install_pkg go
+      return 0
+      ;;
+    *)
+      # Nothing to do
+      ;;
+  esac
 
   need_cmd cat
   need_cmd rm
@@ -930,6 +1011,10 @@ install_node() {
       warn "FreeBSD not yet supported, skipping Node installation"
       return 0
       ;;
+    OpenBSD)
+      openbsd_install_node
+      return 0
+      ;;
   esac
 
   if [ ! -f "$HOME/.nvm/nvm.sh" ]; then
@@ -972,6 +1057,9 @@ finalize_headless_setup() {
     FreeBSD)
       # Nothing to do yet
       ;;
+    OpenBSD)
+      # Nothing to do yet
+      ;;
     RedHat)
       # Nothing to do yet
       ;;
@@ -1004,6 +1092,9 @@ install_graphical_packages() {
     FreeBSD)
       # Nothing to do yet
       ;;
+    OpeBSD)
+      # Nothing to do yet
+      ;;
     RedHat)
       # Nothing to do yet
       ;;
@@ -1034,6 +1125,9 @@ install_graphical_dot_configs() {
     FreeBSD)
       # Nothing to do yet
       ;;
+    OpenBSD)
+      # Nothing to do yet
+      ;;
     RedHat)
       # Nothing to do yet
       ;;
@@ -1060,6 +1154,9 @@ finalize_graphical_setup() {
       # Nothing to do yet
       ;;
     FreeBSD)
+      # Nothing to do yet
+      ;;
+    OpenBSD)
       # Nothing to do yet
       ;;
     RedHat)
@@ -1091,6 +1188,9 @@ install_pkg() {
       ;;
     FreeBSD)
       freebsd_install_pkg "$1"
+      ;;
+    OpenBSD)
+      openbsd_install_pkg "$1"
       ;;
     RedHat)
       redhat_install_pkg "$1"
