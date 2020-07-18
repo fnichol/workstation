@@ -16,11 +16,11 @@
 # --------
 # project: https://github.com/fnichol/libsh
 # author: Fletcher Nichol <fnichol@nichol.ca>
-# version: 0.4.0
-# commit-hash: b69942cde1a609f84c3663245c3d2a603165c994
-# commit-date: 2020-05-26
-# source: https://github.com/fnichol/libsh/tree/v0.4.0
-# archive: https://github.com/fnichol/libsh/archive/v0.4.0.tar.gz
+# version: 0.5.0
+# commit-hash: 2bc3a2bcd68985caf697e165b0ec68042e04e164
+# commit-date: 2020-05-27
+# source: https://github.com/fnichol/libsh/tree/v0.5.0
+# archive: https://github.com/fnichol/libsh/archive/v0.5.0.tar.gz
 #
 
 if [ -n "${KSH_VERSION:-}" ]; then
@@ -65,6 +65,53 @@ check_cmd() {
     unset _cmd
     return 0
   fi
+}
+
+# Tracks a directory for later cleanup in a trap handler.
+#
+# This function can be called immediately after a temp directory is created,
+# before a directory is created, or long after a directory exists. When used in
+# combination with [`trap_cleanup_directories`], all directories registered by
+# calling `cleanup_directory` will be removed if they exist when
+# `trap_cleanup_directories` is invoked.
+#
+# * `@param [String]` path to directory
+# * `@return 0` if successful
+# * `@return 1` if a temp file could not be created
+#
+# [`trap_cleanup_directories`]: #function.trap_cleanup_directories
+#
+# # Global Variables
+#
+# * `__CLEANUP_DIRECTORIES__` used to track the collection of directories to
+#   clean up whose value is a file. If not declared or set, this function will
+#   set it up.
+#
+# # Examples
+#
+# Basic usage:
+#
+# ```sh
+# dir="$(mktemp_directory)"
+# cleanup_directory "$dir"
+# # do work on directory, etc.
+# ```
+cleanup_directory() {
+  local _dir
+  _dir="$1"
+
+  # If a tempfile hasn't been setup yet, create it
+  if [ -z "${__CLEANUP_DIRECTORIES__:-}" ]; then
+    __CLEANUP_DIRECTORIES__="$(mktemp_file)"
+
+    # If the result string is empty, tempfile wasn't created so report failure
+    if [ -z "$__CLEANUP_DIRECTORIES__" ]; then
+      return 1
+    fi
+  fi
+
+  echo "$_dir" >>"$__CLEANUP_DIRECTORIES__"
+  unset _dir
 }
 
 # Tracks a file for later cleanup in a trap handler.
@@ -335,6 +382,45 @@ info() {
   unset _msg
 }
 
+# Creates a temporary directory and prints the name to standard output.
+#
+# Most system use the first no-argument version, however Mac OS X 10.10
+# (Yosemite) and older don't allow the no-argument version, hence the second
+# fallback version.
+#
+# All tested invocations will create a file in each platform's suitable
+# temporary directory.
+#
+# * `@param [optional, String] parent directory
+# * `@stdout` path to temporary directory
+# * `@return 0` if successful
+#
+# # Examples
+#
+# Basic usage:
+#
+# ```sh
+# dir="$(mktemp_directory)"
+# # use directory
+# ```
+#
+# With a custom parent directory:
+#
+# ```sh
+# dir="$(mktemp_directory $HOME)"
+# # use directory
+# ```
+mktemp_directory() {
+  local _parent_dir
+  _parent_dir="${1:-}"
+
+  if [ -n "$_parent_dir" ]; then
+    mktemp -d "$_parent_dir/tmp.XXXXXX"
+  else
+    mktemp -d 2>/dev/null || mktemp -d -t tmp
+  fi
+}
+
 # Creates a temporary file and prints the name to standard output.
 #
 # Most systems use the first no-argument version, however Mac OS X 10.10
@@ -344,6 +430,7 @@ info() {
 # All tested invocations will create a file in each platform's suitable
 # temporary directory.
 #
+# * `@param [optional, String] parent directory
 # * `@stdout` path to temporary file
 # * `@return 0` if successful
 #
@@ -355,8 +442,25 @@ info() {
 # file="$(mktemp_file)"
 # # use file
 # ```
+# shellcheck disable=SC2120
+#
+# With a custom parent directory:
+#
+# ```sh
+# dir="$(mktemp_file $HOME)"
+# # use file
+# ```
 mktemp_file() {
-  mktemp 2>/dev/null || mktemp -t tmp
+  local _parent_dir
+  _parent_dir="${1:-}"
+
+  if [ -n "$_parent_dir" ]; then
+    mktemp "$_parent_dir/tmp.XXXXXX"
+  else
+    mktemp 2>/dev/null || mktemp -t tmp
+  fi
+
+  unset _parent_dir
 }
 
 # Prints an error message and exits with a non-zero code if the program is not
@@ -589,6 +693,41 @@ setup_traps() {
   fi
 
   unset _trap_fun _sig
+}
+
+# Removes any tracked directories registered via [`cleanup_directory`].
+#
+# * `@return 0` whether or not an error has occurred
+#
+# [`cleanup_directory`]: #function.cleanup_directory
+#
+# # Global Variables
+#
+# * `__CLEANUP_DIRECTORIES__` used to track the collection of files to clean up
+#   whose value is a file. If not declared or set, this function will assume
+#   there is no work to do.
+#
+# # Examples
+#
+# Basic usage:
+#
+# ```sh
+# trap trap_cleanup_directories 1 2 3 15 ERR EXIT
+#
+# dir="$(mktemp_directory)"
+# cleanup_directory "$dir"
+# # do work on directory, etc.
+# ```
+trap_cleanup_directories() {
+  set +e
+
+  if [ -n "${__CLEANUP_DIRECTORIES__:-}" ] \
+    && [ -f "$__CLEANUP_DIRECTORIES__" ]; then
+    while read -r directory; do
+      rm -rf "$directory"
+    done <"$__CLEANUP_DIRECTORIES__"
+    rm -f "$__CLEANUP_DIRECTORIES__"
+  fi
 }
 
 # Removes any tracked files registered via [`cleanup_file`].
