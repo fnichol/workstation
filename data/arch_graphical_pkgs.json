@@ -17,6 +17,7 @@
     ],
     "name": "dex"
   },
+  "element-desktop",
   "firefox",
   "ifplugd",
   {
@@ -33,7 +34,6 @@
   "playerctl",
   "pulseaudio-alsa",
   "pulsemixer",
-  "riot-desktop",
   "ttf-inconsolata",
   "ttf-jetbrains-mono",
   "vlc",
