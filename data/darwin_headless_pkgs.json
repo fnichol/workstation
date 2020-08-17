@@ -67,5 +67,6 @@
   "unrar",
   "watch",
   "watchexec",
-  "youtube-dl"
+  "youtube-dl",
+  "zoxide"
 ]

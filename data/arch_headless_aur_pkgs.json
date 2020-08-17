@@ -6,5 +6,6 @@
   "kind",
   "ngrok",
   "powershell-bin",
-  "starship-bin"
+  "starship-bin",
+  "zoxide"
 ]
