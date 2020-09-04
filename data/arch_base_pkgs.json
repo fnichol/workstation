@@ -3,6 +3,7 @@
   "curl",
   "gawk",
   "git",
+  "gvim",
   "htop",
   "inetutils",
   "man",
@@ -14,6 +15,5 @@
   "tmux",
   "tree",
   "wget",
-  "unzip",
-  "vim"
+  "unzip"
 ]
