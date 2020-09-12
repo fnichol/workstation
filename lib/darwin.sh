@@ -128,7 +128,7 @@ darwin_install_cask_pkg() {
 
     if [ ! -f "$cache" ]; then
       # If cache file doesn't exist, then populate it
-      brew cask list --versions >"$cache"
+      brew list --cask --versions >"$cache"
     fi
 
     if grep -E -q "^$pkg_name\s+" "$cache"; then
