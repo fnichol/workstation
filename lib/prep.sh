@@ -1017,6 +1017,9 @@ install_node() {
       ;;
   esac
 
+  local default
+  default="node"
+
   if [ ! -f "$HOME/.nvm/nvm.sh" ]; then
     local api_latest install_sh version
     api_latest="$(mktemp_file)"
@@ -1035,10 +1038,23 @@ install_node() {
       "https://raw.githubusercontent.com/creationix/nvm/$version/install.sh" \
       "$install_sh"
     indent env PROFILE="$HOME/.bash_profile" bash "$install_sh"
+    indent bash -c ". $HOME/.nvm/nvm.sh && nvm install $default"
   fi
 
-  # Install latest LTS version of Node
-  indent bash -c ". $HOME/.nvm/nvm.sh && nvm install --lts 2>&1"
+  # Install new version of `$default` and update packages but only if necessary
+  # Thanks to: https://github.com/nvm-sh/nvm/issues/1706#issuecomment-616174768
+  indent bash <<-EOF
+	. $HOME/.nvm/nvm.sh
+	current="\$(nvm current)"
+	latest="\$(nvm version-remote $default)"
+	if [[ "\$current" != "\$latest" ]]; then
+	  previous="\$current"
+	  nvm install node
+	  nvm reinstall-packages "\$previous"
+	  nvm uninstall "\$previous"
+	  nvm cache clear
+	fi
+	EOF
 }
 
 finalize_headless_setup() {
