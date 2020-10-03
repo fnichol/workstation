@@ -40,7 +40,7 @@ darwin_setup_package_system() {
 darwin_update_system() {
   indent softwareupdate --install --all
   indent env HOMEBREW_NO_AUTO_UPDATE=true brew upgrade
-  indent env HOMEBREW_NO_AUTO_UPDATE=true brew cask upgrade
+  indent env HOMEBREW_NO_AUTO_UPDATE=true brew upgrade --cask
 }
 
 darwin_install_base_packages() {
