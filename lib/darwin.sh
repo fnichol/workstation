@@ -9,6 +9,202 @@ darwin_check_tmux() {
   fi
 }
 
+darwin_set_hostname() {
+  need_cmd sudo
+  need_cmd scutil
+  need_cmd defaults
+
+  local name="$1"
+  local fqdn="$2"
+
+  local smb="/Library/Preferences/SystemConfiguration/com.apple.smb.server"
+  if [ "$(scutil --get HostName)" != "$fqdn" ]; then
+    sudo scutil --set HostName "$fqdn"
+  fi
+  if [ "$(scutil --get ComputerName)" != "$name" ]; then
+    sudo scutil --set ComputerName "$name"
+  fi
+  if [ "$(scutil --get LocalHostName)" != "$name" ]; then
+    sudo scutil --set LocalHostName "$name"
+  fi
+  if [ "$(defaults read "$smb" NetBIOSName)" != "$name" ]; then
+    sudo defaults write "$smb" NetBIOSName -string "$name"
+  fi
+}
+
+darwin_setup_package_system() {
+  darwin_install_xcode_cli_tools
+  darwin_install_homebrew
+}
+
+darwin_update_system() {
+  indent softwareupdate --install --all
+  indent env HOMEBREW_NO_AUTO_UPDATE=true brew upgrade
+  indent env HOMEBREW_NO_AUTO_UPDATE=true brew cask upgrade
+}
+
+darwin_install_base_packages() {
+  local data_path="$1"
+
+  install_pkg jq
+  install_pkgs_from_json "$data_path/darwin_base_pkgs.json"
+}
+
+darwin_set_preferences() {
+  need_cmd defaults
+  need_cmd profiles
+  need_cmd sed
+
+  local asset_path="$1"
+
+  info "Enable screen saver hot corner (bottom left)"
+  defaults write com.apple.dock wvous-bl-corner -int 5
+
+  info "Disable screen saver hot corner (top right)"
+  defaults write com.apple.dock wvous-tr-corner -int 6
+
+  info "Automatically show and hide the Dock"
+  defaults write com.apple.dock autohide -bool true
+
+  info "Set icon size of Dock images"
+  defaults write com.apple.dock tilesize -int 34
+
+  info "Set large icon size of Dock images"
+  defaults write com.apple.dock largesize -float 44
+
+  info "Enable Dock magnification"
+  defaults write com.apple.dock magnification -bool true
+
+  info "Enable password immediately after screen saver starts"
+  local domain=com.fnichol
+  local organization=fnichol
+  local askForPasswordDelay=0
+  local config
+  config="$(mktemp_file)"
+  cleanup_file "$config"
+  # shellcheck disable=SC2154
+  sed \
+    -e "s,{{domain}},$domain,g" \
+    -e "s,{{organization}},$organization,g" \
+    -e "s,{{askForPasswordDelay}},$askForPasswordDelay,g" \
+    "$asset_path/askforpassworddelay.mobileconfig" \
+    >"$config"
+  profiles -I -F "$config"
+
+  info "Disable press-and-hold for keys in favor of key repeat"
+  defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+
+  info "Set a blazingly fast keyboard repeat rate"
+  defaults write NSGlobalDomain KeyRepeat -int 1
+  defaults write NSGlobalDomain InitialKeyRepeat -int 10
+
+  info "Enable full keyboard access for all controls"
+  defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+
+  info "Disable annoying UI error sounds."
+  defaults write com.apple.systemsound com.apple.sound.beep.volume -int 0
+  defaults write com.apple.sound.beep feedback -int 0
+  defaults write com.apple.systemsound com.apple.sound.uiaudio.enabled -int 0
+
+  info "Set the menu bar date format"
+  defaults write com.apple.menuextra.clock DateFormat -string "HH:mm::ss"
+  defaults write com.apple.menuextra.clock FlashDateSeparators -bool false
+  defaults write com.apple.menuextra.clock IsAnalog -bool false
+
+  info "Announce time on the hour"
+  defaults write com.apple.speech.synthesis.general.prefs \
+    TimeAnnouncementPrefs -dict \
+    TimeAnnouncementsEnabled -bool true \
+    TimeAnnouncementsIntervalIdentifier -string "EveryHourInterval" \
+    TimeAnnouncementsPhraseIdentifier -string "ShortTime"
+
+  info "Save to disk (not to iCloud) by default"
+  defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+
+  info "Expand Save panel by default"
+  defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+  defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+
+  info "Expand Print panel by default"
+  defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
+  defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
+
+  info "Save screenshots to the desktop"
+  defaults write com.apple.screencapture location -string "\$HOME/Desktop"
+
+  info "Save screenshots in PNG format"
+  defaults write com.apple.screencapture type -string "png"
+
+  info "Disable shadow in screenshots"
+  defaults write com.apple.screencapture disable-shadow -bool true
+
+  info "Show all filename extensions in Finder"
+  defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+  info "Avoid creating .DS_Store files on network volumes"
+  defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
+
+  info "Avoid creating .DS_Store files on USB volumes"
+  defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
+
+  info "Check for software updates daily"
+  defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
+
+  info "Show icons for external hard drives on the Desktop"
+  defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
+
+  info "Show icons for servers on the Desktop"
+  defaults write com.apple.finder ShowMountedServersOnDesktop -bool true
+
+  info "Show icons for removable media on the Desktop"
+  defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
+
+  info "Show Finder status bar"
+  defaults write com.apple.finder ShowStatusBar -bool true
+
+  info "Disable warning when changing a file extension"
+  defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+
+  info "Use list view in all Finder windows by default"
+  defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+
+  info "Empty trash securely by default"
+  defaults write com.apple.finder EmptyTrashSecurely -bool true
+
+  info "Disable crash reporter."
+  defaults write com.apple.CrashReporter DialogType none
+
+  info "Disable smart dashes"
+  defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+  info "Use all function keys as function keys by default"
+  defaults write -g com.apple.keyboard.fnState -bool true
+
+  darwin_install_iterm2_settings
+}
+
+darwin_finalize_base_setup() {
+  darwin_set_bash_shell
+}
+
+darwin_install_headless_packages() {
+  local data_path="$1"
+
+  install_pkgs_from_json "$data_path/darwin_headless_pkgs.json"
+  darwin_install_cask_pkgs_from_json "$data_path/darwin_headless_cask_pkgs.json"
+  darwin_install_beets
+}
+
+darwin_install_graphical_packages() {
+  local data_path="$1"
+
+  darwin_add_homebrew_taps_from_json "$data_path/homebrew_graphical_taps.json"
+  darwin_install_cask_pkgs_from_json "$data_path/darwin_graphical_cask_pkgs.json"
+  darwin_install_apps_from_json "$data_path/darwin_graphical_apps.json"
+  killall Dock
+  killall Finder
+}
+
 # Implementation graciously borrowed and modified from the build-essential
 # Chef cookbook which has been graciously borrowed and modified from Tim
 # Sutton's osx-vm-templates project.
@@ -290,139 +486,6 @@ darwin_install_iterm2_settings() {
     https://raw.githubusercontent.com/fnichol/macosx-iterm2-settings/master/contrib/install-settings.sh \
     "$install_sh"
   indent bash "$install_sh"
-}
-
-darwin_set_preferences() {
-  need_cmd defaults
-  need_cmd profiles
-  need_cmd sed
-
-  info "Enable screen saver hot corner (bottom left)"
-  defaults write com.apple.dock wvous-bl-corner -int 5
-
-  info "Disable screen saver hot corner (top right)"
-  defaults write com.apple.dock wvous-tr-corner -int 6
-
-  info "Automatically show and hide the Dock"
-  defaults write com.apple.dock autohide -bool true
-
-  info "Set icon size of Dock images"
-  defaults write com.apple.dock tilesize -int 34
-
-  info "Set large icon size of Dock images"
-  defaults write com.apple.dock largesize -float 44
-
-  info "Enable Dock magnification"
-  defaults write com.apple.dock magnification -bool true
-
-  info "Enable password immediately after screen saver starts"
-  local domain=com.fnichol
-  local organization=fnichol
-  local askForPasswordDelay=0
-  local config
-  config="$(mktemp_file)"
-  cleanup_file "$config"
-  # shellcheck disable=SC2154
-  sed \
-    -e "s,{{domain}},$domain,g" \
-    -e "s,{{organization}},$organization,g" \
-    -e "s,{{askForPasswordDelay}},$askForPasswordDelay,g" \
-    "$_asset_path/askforpassworddelay.mobileconfig" \
-    >"$config"
-  profiles -I -F "$config"
-
-  info "Disable press-and-hold for keys in favor of key repeat"
-  defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
-
-  info "Set a blazingly fast keyboard repeat rate"
-  defaults write NSGlobalDomain KeyRepeat -int 1
-  defaults write NSGlobalDomain InitialKeyRepeat -int 10
-
-  info "Enable full keyboard access for all controls"
-  defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
-
-  info "Disable annoying UI error sounds."
-  defaults write com.apple.systemsound com.apple.sound.beep.volume -int 0
-  defaults write com.apple.sound.beep feedback -int 0
-  defaults write com.apple.systemsound com.apple.sound.uiaudio.enabled -int 0
-
-  info "Set the menu bar date format"
-  defaults write com.apple.menuextra.clock DateFormat -string "HH:mm::ss"
-  defaults write com.apple.menuextra.clock FlashDateSeparators -bool false
-  defaults write com.apple.menuextra.clock IsAnalog -bool false
-
-  info "Announce time on the hour"
-  defaults write com.apple.speech.synthesis.general.prefs \
-    TimeAnnouncementPrefs -dict \
-    TimeAnnouncementsEnabled -bool true \
-    TimeAnnouncementsIntervalIdentifier -string "EveryHourInterval" \
-    TimeAnnouncementsPhraseIdentifier -string "ShortTime"
-
-  info "Save to disk (not to iCloud) by default"
-  defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
-
-  info "Expand Save panel by default"
-  defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
-  defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
-
-  info "Expand Print panel by default"
-  defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
-  defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
-
-  info "Save screenshots to the desktop"
-  defaults write com.apple.screencapture location -string "\$HOME/Desktop"
-
-  info "Save screenshots in PNG format"
-  defaults write com.apple.screencapture type -string "png"
-
-  info "Disable shadow in screenshots"
-  defaults write com.apple.screencapture disable-shadow -bool true
-
-  info "Show all filename extensions in Finder"
-  defaults write NSGlobalDomain AppleShowAllExtensions -bool true
-
-  info "Avoid creating .DS_Store files on network volumes"
-  defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
-
-  info "Avoid creating .DS_Store files on USB volumes"
-  defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
-
-  info "Check for software updates daily"
-  defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
-
-  info "Show icons for external hard drives on the Desktop"
-  defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
-
-  info "Show icons for servers on the Desktop"
-  defaults write com.apple.finder ShowMountedServersOnDesktop -bool true
-
-  info "Show icons for removable media on the Desktop"
-  defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
-
-  info "Show Finder status bar"
-  defaults write com.apple.finder ShowStatusBar -bool true
-
-  info "Disable warning when changing a file extension"
-  defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
-
-  info "Use list view in all Finder windows by default"
-  defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
-
-  info "Empty trash securely by default"
-  defaults write com.apple.finder EmptyTrashSecurely -bool true
-
-  info "Disable crash reporter."
-  defaults write com.apple.CrashReporter DialogType none
-
-  info "Disable smart dashes"
-  defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
-
-  info "Use all function keys as function keys by default"
-  defaults write -g com.apple.keyboard.fnState -bool true
-}
-
-darwin_finalize_base_setup() {
-  darwin_set_bash_shell
 }
 
 darwin_set_bash_shell() {

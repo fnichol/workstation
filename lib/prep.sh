@@ -465,23 +465,7 @@ set_hostname() {
       arch_set_hostname "$name" "$fqdn"
       ;;
     Darwin)
-      need_cmd sudo
-      need_cmd scutil
-      need_cmd defaults
-
-      local smb="/Library/Preferences/SystemConfiguration/com.apple.smb.server"
-      if [ "$(scutil --get HostName)" != "$fqdn" ]; then
-        sudo scutil --set HostName "$fqdn"
-      fi
-      if [ "$(scutil --get ComputerName)" != "$name" ]; then
-        sudo scutil --set ComputerName "$name"
-      fi
-      if [ "$(scutil --get LocalHostName)" != "$name" ]; then
-        sudo scutil --set LocalHostName "$name"
-      fi
-      if [ "$(defaults read "$smb" NetBIOSName)" != "$name" ]; then
-        sudo defaults write "$smb" NetBIOSName -string "$name"
-      fi
+      darwin_set_hostname "$name" "$fqdn"
       ;;
     OpenBSD)
       openbsd_set_hostname "$fqdn"
@@ -530,8 +514,7 @@ setup_package_system() {
       arch_setup_package_system
       ;;
     Darwin)
-      darwin_install_xcode_cli_tools
-      darwin_install_homebrew
+      darwin_setup_package_system
       ;;
     FreeBSD)
       indent sudo pkg update
@@ -562,9 +545,7 @@ update_system() {
       arch_update_system
       ;;
     Darwin)
-      indent softwareupdate --install --all
-      indent env HOMEBREW_NO_AUTO_UPDATE=true brew upgrade
-      indent env HOMEBREW_NO_AUTO_UPDATE=true brew cask upgrade
+      darwin_update_system
       ;;
     FreeBSD)
       indent sudo pkg upgrade --yes --no-repo-update
@@ -596,8 +577,7 @@ install_base_packages() {
       arch_install_base_packages "$_data_path"
       ;;
     Darwin)
-      install_pkg jq
-      install_pkgs_from_json "$_data_path/darwin_base_pkgs.json"
+      darwin_install_base_packages "$_data_path"
       ;;
     FreeBSD)
       install_pkg jq
@@ -631,8 +611,7 @@ set_preferences() {
       # Nothing to do
       ;;
     Darwin)
-      darwin_set_preferences "$_data_path/darwin_prefs.json"
-      darwin_install_iterm2_settings
+      darwin_set_preferences "$_asset_path"
       ;;
     FreeBSD)
       # Nothing to do
@@ -782,9 +761,7 @@ install_headless_packages() {
       arch_install_headless_packages "$_data_path"
       ;;
     Darwin)
-      install_pkgs_from_json "$_data_path/darwin_headless_pkgs.json"
-      darwin_install_cask_pkgs_from_json "$_data_path/darwin_headless_cask_pkgs.json"
-      darwin_install_beets
+      darwin_install_headless_packages "$_data_path"
       ;;
     FreeBSD)
       install_pkgs_from_json "$_data_path/freebsd_headless_pkgs.json"
@@ -1099,11 +1076,7 @@ install_graphical_packages() {
       arch_install_graphical_packages "$_data_path"
       ;;
     Darwin)
-      darwin_add_homebrew_taps_from_json "$_data_path/homebrew_graphical_taps.json"
-      darwin_install_cask_pkgs_from_json "$_data_path/darwin_graphical_cask_pkgs.json"
-      darwin_install_apps_from_json "$_data_path/darwin_graphical_apps.json"
-      killall Dock
-      killall Finder
+      darwin_install_graphical_packages "$_data_path"
       ;;
     FreeBSD)
       # Nothing to do yet
