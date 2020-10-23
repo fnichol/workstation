@@ -63,7 +63,7 @@ docker__valid_versions_for() {
 docker__versions_for() {
   local distro="$1"
 
-  cat "$ROOT/distros/${distro}.txt"
+  cat "$ROOT/distros/docker/${distro}.txt"
 }
 
 docker__valid_variants() {
