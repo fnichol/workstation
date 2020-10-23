@@ -1,19 +1,49 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-
-# For information about how to build this box, see:
 #
-#     https://github.com/chef/bento#mac-os-x
-#
+require 'pathname'
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "bento/macos-10.12"
-  config.vm.synced_folder ".", "/src"
+  basedir = Pathname.new("./support/distros/vagrant")
+  boxes = Dir.children(basedir)
+    .sort
+    .map {|filename|
+      IO.readlines(basedir.join(filename))
+        .map {|line| "#{filename.sub(/\.txt$/, '')}-#{line.chomp}" }
+    }
+    .flatten
+    .map {|kv| kv.split(",") }
 
-  config.vm.provider "vmware_fusion" do |v|
-    v.gui = true
+  Hash[boxes].each do |name, box|
+    %w{
+      base
+      headless
+      graphical
+    }.each do |profile|
+      config.vm.define "workstation-#{name}-#{profile}", autostart: false do |c|
+        c.vm.box = box
 
-    v.vmx["memsize"] = (10 * 1024).to_s
-    v.vmx["numvcpus"] = "3"
+        if name.to_s.start_with?("freebsd")
+          c.vm.synced_folder ".", "/vagrant", type: "rsync"
+        end
+
+        inline = "cd /vagrant && ./bin/prep --profile=#{profile}"
+        if name.to_s.start_with?("freebsd")
+          inline << " && sudo chsh -s /usr/local/bin/bash vagrant"
+        end
+        if name.to_s.start_with?("openbsd")
+          inline << " && chsh -s /usr/local/bin/bash"
+        end
+
+        c.vm.provision "shell", privileged: false, inline: inline
+
+        c.vm.provider "vmware_desktop" do |p|
+          p.vmx["numvcpus"] = "3"
+        end
+        c.vm.provider "virtualbox" do |p|
+          p.cpus = 3
+        end
+      end
+    end
   end
 end

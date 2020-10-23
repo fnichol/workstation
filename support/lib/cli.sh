@@ -23,6 +23,7 @@ _print_usage_main() {
     SUBCOMMANDS:
         docker    Manages Docker images and containers
         help      Prints help information
+        vagrant   Manages Vagrant virtual machines
         version   Prints version information
 
     SUBCOMMAND HELP:
@@ -99,6 +100,14 @@ cli__invoke_main() {
       . "$ROOT/lib/cli_docker.sh"
 
       cli_docker__invoke "$program" "$version" "$author" "$@"
+      ;;
+    vagrant)
+      shift
+
+      # shellcheck source=support/lib/cli_vagrant.sh
+      . "$ROOT/lib/cli_vagrant.sh"
+
+      cli_vagrant__invoke "$program" "$version" "$author" "$@"
       ;;
     help)
       _print_usage_main "$program" "$version" "$author"
