@@ -467,6 +467,9 @@ set_hostname() {
     Darwin)
       darwin_set_hostname "$name" "$fqdn"
       ;;
+    FreeBSD)
+      freebsd_set_hostname "$fqdn"
+      ;;
     OpenBSD)
       openbsd_set_hostname "$fqdn"
       ;;
@@ -517,7 +520,7 @@ setup_package_system() {
       darwin_setup_package_system
       ;;
     FreeBSD)
-      indent sudo pkg update
+      freebsd_setup_package_system
       ;;
     OpenBSD)
       # Nothing to do
@@ -548,7 +551,7 @@ update_system() {
       darwin_update_system
       ;;
     FreeBSD)
-      indent sudo pkg upgrade --yes --no-repo-update
+      freebsd_update_system
       ;;
     OpenBSD)
       openbsd_update_system
@@ -580,8 +583,7 @@ install_base_packages() {
       darwin_install_base_packages "$_data_path"
       ;;
     FreeBSD)
-      install_pkg jq
-      install_pkgs_from_json "$_data_path/freebsd_base_pkgs.json"
+      freebsd_install_base_packages "$_data_path"
       ;;
     OpenBSD)
       openbsd_install_base_packages "$_data_path"
@@ -764,8 +766,7 @@ install_headless_packages() {
       darwin_install_headless_packages "$_data_path"
       ;;
     FreeBSD)
-      install_pkgs_from_json "$_data_path/freebsd_headless_pkgs.json"
-      freebsd_install_beets
+      freebsd_install_headless_packages "$_data_path"
       ;;
     OpenBSD)
       openbsd_install_headless_packages "$_data_path"
@@ -838,21 +839,9 @@ install_ruby() {
   fi
 
   case "$_system" in
-    Darwin)
+    Darwin | FreeBSD | Linux | OpenBSD)
       install_pkg chruby
       install_pkg ruby-install
-      ;;
-    FreeBSD)
-      unix_install_chruby
-      unix_install_ruby_install
-      ;;
-    Linux)
-      unix_install_chruby
-      unix_install_ruby_install
-      ;;
-    OpenBSD)
-      unix_install_chruby
-      unix_install_ruby_install
       ;;
     *)
       warn "Installing Ruby on $_os not yet supported, skipping"
@@ -985,7 +974,7 @@ install_node() {
       return 0
       ;;
     FreeBSD)
-      warn "FreeBSD not yet supported, skipping Node installation"
+      freebsd_install_node
       return 0
       ;;
     OpenBSD)
@@ -1205,11 +1194,28 @@ install_pip3_pkg() {
       use_sudo=false
       ;;
     FreeBSD)
-      pip_cmd=pip-3.6
+      need_cmd uname
+
+      local release
+      release="$(uname -r)"
+
+      case "$release" in
+        12.*)
+          pip_cmd=pip-3.7
+          ;;
+        11.*)
+          pip_cmd=pip-3.6
+          ;;
+        *)
+          warn "Installing a pip pkg on $release not yet supported, skipping..."
+          return 1
+          ;;
+      esac
+
       use_sudo=true
       ;;
     *)
-      warn "Installing a pip package on $_os not yet supported, skipping..."
+      warn "Installing a pip pkg on $_os not yet supported, skipping..."
       return 1
       ;;
   esac
