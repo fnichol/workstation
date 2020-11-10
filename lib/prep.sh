@@ -389,14 +389,16 @@ init() {
 
   case "$_system" in
     Darwin)
+      # shellcheck source=lib/unix.sh
+      . "$lib_path/unix.sh"
       # shellcheck source=lib/darwin.sh
       . "$lib_path/darwin.sh"
       ;;
     FreeBSD)
-      # shellcheck source=lib/freebsd.sh
-      . "$lib_path/freebsd.sh"
       # shellcheck source=lib/unix.sh
       . "$lib_path/unix.sh"
+      # shellcheck source=lib/freebsd.sh
+      . "$lib_path/freebsd.sh"
       ;;
     Linux)
       # shellcheck source=lib/unix.sh
@@ -412,10 +414,10 @@ init() {
       esac
       ;;
     OpenBSD)
-      # shellcheck source=lib/openbsd.sh
-      . "$lib_path/openbsd.sh"
       # shellcheck source=lib/unix.sh
       . "$lib_path/unix.sh"
+      # shellcheck source=lib/openbsd.sh
+      . "$lib_path/openbsd.sh"
       ;;
   esac
 
@@ -839,9 +841,13 @@ install_ruby() {
   fi
 
   case "$_system" in
-    Darwin | FreeBSD | Linux | OpenBSD)
+    Darwin)
       install_pkg chruby
       install_pkg ruby-install
+      ;;
+    FreeBSD | Linux | OpenBSD)
+      unix_install_chruby
+      unix_install_ruby_install
       ;;
     *)
       warn "Installing Ruby on $_os not yet supported, skipping"
@@ -863,8 +869,15 @@ install_ruby() {
       ;;
   esac
 
-  # Update list of Ruby versions
-  indent ruby-install --latest
+  # If this is the initial install or if the cache is older than 12 hours,
+  # update the list of Ruby versions
+  local checked_versions="$HOME/.cache/ruby-install/ruby/versions.txt"
+  if [ ! -f "$checked_versions" ] \
+    || [ -n "$(find "$checked_versions" -mmin +720)" ]; then
+    info "Updating the list of Ruby versions"
+    indent ruby-install --latest
+  fi
+
   # Install latest stable version of Ruby
   indent ruby-install --no-reinstall ruby
 
@@ -1274,34 +1287,10 @@ manage_homesick_repo() {
 # Is it just me, or shouldn't there be a much better way than this??
 latest_go_version() {
   need_cmd awk
-  need_cmd git
 
-  {
-    # The `--sort` option on `git ls-remote` was introduced in Git 2.18.0, so
-    # if it's older then we'll have to use GNU/sort's `--version-sort` to help.
-    # Oi
-    local version
-    version="$(git --version | awk '{ print $NF }')"
-    if version_ge "$version" 2 18; then
-      git ls-remote --tags --sort=version:refname https://go.googlesource.com/go
-    else
-      need_cmd sort
-
-      git ls-remote --tags https://go.googlesource.com/go \
-        | sort --field-separator='/' --key=3 --version-sort
-    fi
-  } | awk -F/ '
+  sorted_git_tags "https://go.googlesource.com/go" | awk -F/ '
       ($NF ~ /^go[0-9]+\./ && $NF !~ /(beta|rc)[0-9]+$/) { last = $NF }
       END { sub(/^go/, "", last); print last }'
-}
-
-version_ge() {
-  local version="$1"
-  local maj="$2"
-  local min="$3"
-
-  [ "$(echo "$version" | awk -F'.' '{ print $1 }')" -ge "$maj" ] \
-    && [ "$(echo "$version" | awk -F'.' '{ print $2 }')" -ge "$min" ]
 }
 
 json_items() {

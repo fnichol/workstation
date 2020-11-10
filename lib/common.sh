@@ -56,3 +56,33 @@ keep_sudo() {
     kill -0 "$$" || exit
   done 2>/dev/null &
 }
+
+sorted_git_tags() {
+  local repo="$1"
+
+  need_cmd awk
+  need_cmd git
+
+  # The `--sort` option on `git ls-remote` was introduced in Git 2.18.0, so
+  # if it's older then we'll have to use GNU/sort's `--version-sort` to help.
+  # Oi
+  local version
+  version="$(git --version | awk '{ print $NF }')"
+  if version_ge "$version" 2 18; then
+    git ls-remote --tags --sort=version:refname "$repo"
+  else
+    need_cmd sort
+
+    git ls-remote --tags "$repo" \
+      | sort --field-separator='/' --key=3 --version-sort
+  fi
+}
+
+version_ge() {
+  local version="$1"
+  local maj="$2"
+  local min="$3"
+
+  [ "$(echo "$version" | awk -F'.' '{ print $1 }')" -ge "$maj" ] \
+    && [ "$(echo "$version" | awk -F'.' '{ print $2 }')" -ge "$min" ]
+}
