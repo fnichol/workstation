@@ -5,6 +5,7 @@
   "bat",
   "cmake",
   "docker",
+  "eksctl",
   "fd",
   "ffmpeg",
   "flac",
