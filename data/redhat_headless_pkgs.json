@@ -17,6 +17,7 @@
   "make",
   "mercurial",
   "ncurses-devel",
+  "openssl-devel",
   "patch",
   "rsync",
   "sqlite"

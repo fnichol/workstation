@@ -87,12 +87,42 @@ unix_install_ruby_install() {
   rm -rf "/tmp/ruby-install-$ver"
 }
 
+unix_install_volta() {
+  local volta="$1"
+
+  local ver
+  ver="$(unix_latest_volta_version)"
+
+  if [ -x "$volta" ]; then
+    local installed_ver
+    installed_ver="$("$volta" --version)"
+    if [ "$installed_ver" = "$ver" ]; then
+      info "Current Volta version '$ver' is installed"
+      return 0
+    fi
+  fi
+
+  need_cmd bash
+
+  local install_sh
+  install_sh="$(mktemp_file)"
+  cleanup_file "$install_sh"
+
+  info "Installing Volta '$ver'"
+  download https://get.volta.sh "$install_sh"
+  indent bash "$install_sh" --skip-setup
+}
+
 unix_latest_chruby_version() {
   unix_latest_version "https://github.com/postmodern/chruby"
 }
 
 unix_latest_ruby_install_version() {
   unix_latest_version "https://github.com/postmodern/ruby-install"
+}
+
+unix_latest_volta_version() {
+  unix_latest_version "https://github.com/volta-cli/volta"
 }
 
 unix_latest_version() {

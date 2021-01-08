@@ -974,10 +974,8 @@ install_go() {
 }
 
 install_node() {
-  need_cmd bash
-  need_cmd env
-  need_cmd jq
-  need_cmd touch
+  local volta_home="$HOME/.volta"
+  local volta="$volta_home/bin/volta"
 
   section "Setting up Node"
 
@@ -996,44 +994,9 @@ install_node() {
       ;;
   esac
 
-  local default
-  default="node"
+  unix_install_volta "$volta"
 
-  if [ ! -f "$HOME/.nvm/nvm.sh" ]; then
-    local api_latest install_sh version
-    api_latest="$(mktemp_file)"
-    cleanup_file "$api_latest"
-    install_sh="$(mktemp_file)"
-    cleanup_file "$install_sh"
-
-    info "Installing nvm"
-    download \
-      https://api.github.com/repos/creationix/nvm/releases/latest \
-      "$api_latest"
-    version="$(jq -r .tag_name "$api_latest")"
-
-    touch "$HOME/.bash_profile"
-    download \
-      "https://raw.githubusercontent.com/creationix/nvm/$version/install.sh" \
-      "$install_sh"
-    indent env PROFILE="$HOME/.bash_profile" bash "$install_sh"
-    indent bash -c ". $HOME/.nvm/nvm.sh && nvm install $default"
-  fi
-
-  # Install new version of `$default` and update packages but only if necessary
-  # Thanks to: https://github.com/nvm-sh/nvm/issues/1706#issuecomment-616174768
-  indent bash <<-EOF
-	. $HOME/.nvm/nvm.sh
-	current="\$(nvm current)"
-	latest="\$(nvm version-remote $default)"
-	if [[ "\$current" != "\$latest" ]]; then
-	  previous="\$current"
-	  nvm install node
-	  nvm reinstall-packages "\$previous"
-	  nvm uninstall "\$previous"
-	  nvm cache clear
-	fi
-	EOF
+  indent "$volta" install node@latest
 }
 
 finalize_headless_setup() {
