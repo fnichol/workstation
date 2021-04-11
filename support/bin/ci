@@ -18,8 +18,8 @@ main() {
 
   # shellcheck source=support/lib/cli.sh
   . "$ROOT/lib/cli.sh"
-  # shellcheck source=vendor/lib/libsh.sh
-  . "$ROOT/../vendor/lib/libsh.sh"
+  # shellcheck source=vendor/lib/libsh.full.sh
+  . "$ROOT/../vendor/lib/libsh.full.sh"
 
   cli__invoke_main "$program" "$version" "$author" "$@"
 }

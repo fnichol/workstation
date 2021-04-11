@@ -37,8 +37,8 @@ main() {
 
   root="$(realpath "${0%/*}/..")"
 
-  # shellcheck source=vendor/lib/libsh.sh
-  . "$root/vendor/lib/libsh.sh"
+  # shellcheck source=vendor/lib/libsh.full.sh
+  . "$root/vendor/lib/libsh.full.sh"
 
   # Parse CLI arguments and set local variables
   parse_cli_args "$program" "$version" "$author" "$@"

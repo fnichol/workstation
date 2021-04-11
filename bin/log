@@ -46,8 +46,8 @@ main() {
 
   ROOT="$(realpath "${0%/*}/..")"
 
-  # shellcheck source=vendor/lib/libsh.sh
-  . "$ROOT/vendor/lib/libsh.sh"
+  # shellcheck source=vendor/lib/libsh.full.sh
+  . "$ROOT/vendor/lib/libsh.full.sh"
 
   cli_invoke "$program" "$version" "$author" "$@"
 }
