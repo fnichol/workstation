@@ -6,10 +6,15 @@
   "ggrep",
   "htop",
   "mosh",
+  "pftop",
   "pstree",
+  "rsnapshot",
+  "rsync--",
   "screen--",
   "tree",
   "wget",
   "unzip--",
-  "vim--no_x11"
+  "vim--no_x11",
+  "wireguard-tools",
+  "wol"
 ]
