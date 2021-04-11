@@ -1,6 +1,6 @@
 include vendor/mk/base.mk
 include vendor/mk/json.mk
-include vendor/mk/libsh.mk
+include vendor/mk/libsh-vendor.mk
 include vendor/mk/shell.mk
 
 SH_SOURCES += ./bin/log ./bin/prep ./bin/update
