@@ -436,9 +436,11 @@ init() {
 
   section "Setting up workstation '${_argv_hostname:-$hostname}'"
 
-  ensure_not_root "$program"
-  get_sudo "$hostname"
-  keep_sudo
+  if [ "${PREP_RUN_AS_ROOT:-}" != "true" ]; then
+    ensure_not_root "$program"
+    get_sudo "$hostname"
+    keep_sudo
+  fi
 
   if [ "$_system" = "Darwin" ]; then
     darwin_check_tmux
