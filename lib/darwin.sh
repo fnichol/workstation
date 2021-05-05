@@ -190,6 +190,7 @@ darwin_finalize_base_setup() {
 darwin_install_headless_packages() {
   local data_path="$1"
 
+  darwin_add_homebrew_taps_from_json "$data_path/homebrew_headless_taps.json"
   install_pkgs_from_json "$data_path/darwin_headless_pkgs.json"
   darwin_install_cask_pkgs_from_json "$data_path/darwin_headless_cask_pkgs.json"
   darwin_install_beets
