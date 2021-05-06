@@ -26,12 +26,13 @@ task:
             dockerfile: support/dockerfiles/Dockerfile.$DISTRO
             docker_arguments:
               VERSION: $VERSION
+          run_script: ./bin/prep "--profile=$PROFILE"
         - env:
             DISTRO: macos
             VERSION: 10.15
           osx_instance:
             image: catalina-base
-      run_script: ./bin/prep "--profile=$PROFILE"
+          run_script: ./bin/prep "--profile=$PROFILE" --skip=update-system
     - env:
         DISTRO: freebsd
         VERSION: 12-1
