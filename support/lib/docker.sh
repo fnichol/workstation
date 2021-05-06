@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# shellcheck shell=sh disable=SC2039
+# shellcheck disable=SC3043
 
 docker__img_pre_name() {
   docker__img_variant_name "$1" "$2" "pre"

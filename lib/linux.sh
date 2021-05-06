@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# shellcheck disable=SC2039
+# shellcheck disable=SC3043
 
 alpine_install_pkg() {
   need_cmd apk

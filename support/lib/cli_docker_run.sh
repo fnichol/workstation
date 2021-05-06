@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# shellcheck disable=SC2039
+# shellcheck disable=SC3043
 
 _print_usage_docker_run() {
   local program="$1"

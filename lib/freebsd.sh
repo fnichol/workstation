@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# shellcheck disable=SC2039
+# shellcheck disable=SC3043
 
 freebsd_set_hostname() {
   local fqdn="$1"

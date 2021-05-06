@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# shellcheck shell=sh disable=SC2039
+# shellcheck disable=SC3043
 
 vagrant__vm_variant_name() {
   local distro="$1"

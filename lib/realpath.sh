@@ -1,5 +1,5 @@
 #!/bin/sh
-# shellcheck shell=sh disable=SC2039
+# shellcheck disable=SC3043
 #
 # Implementation drawn from `sh-realpath`: a portable, pure shell
 # implementation of realpath. Modified:
