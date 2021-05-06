@@ -936,7 +936,7 @@ install_go() {
   if [ -f /usr/local/go/VERSION ]; then
     local installed_ver
     installed_ver="$(cat /usr/local/go/VERSION)"
-    if [ "$installed_ver" = "go${ver}" ]; then
+    if [ "$installed_ver" = "$ver" ]; then
       info "Current version '$ver' is installed"
       return 0
     else
@@ -970,7 +970,7 @@ install_go() {
   info "Installing Go $ver"
   sudo mkdir -p /usr/local
   download \
-    "https://storage.googleapis.com/golang/go${ver}.${kernel}-${arch}.tar.gz" \
+    "https://storage.googleapis.com/golang/${ver}.${kernel}-${arch}.tar.gz" \
     "$tar"
   sudo tar xf "$tar" -C /usr/local
 }
@@ -1246,16 +1246,16 @@ manage_homesick_repo() {
     && homeshick --batch pull $castle && homeshick --batch link $castle"
 }
 
-# Prints the latest stable release of Go, using the tags from the Git
-# sourcetree.
-#
-# Is it just me, or shouldn't there be a much better way than this??
+# Prints the latest stable release of Go.
 latest_go_version() {
-  need_cmd awk
+  local version
+  version="$(mktemp_file)"
+  cleanup_file "$version"
 
-  sorted_git_tags "https://go.googlesource.com/go" | awk -F/ '
-      ($NF ~ /^go[0-9]+\./ && $NF !~ /(beta|rc)[0-9]+$/) { last = $NF }
-      END { sub(/^go/, "", last); print last }'
+  need_cmd cat
+
+  download "https://golang.org/VERSION?m=text" "$version" >/dev/null
+  cat "$version"
 }
 
 json_items() {
