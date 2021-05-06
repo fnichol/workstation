@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# shellcheck disable=SC2039
+# shellcheck disable=SC3043
 
 # BEGIN: libsh.sh
 
@@ -16,13 +16,13 @@
 # --------
 # project: https://github.com/fnichol/libsh
 # author: Fletcher Nichol <fnichol@nichol.ca>
-# version: 0.8.0
+# version: 0.10.0
 # distribution: libsh.full.sh
-# commit-hash: 0daf997ec5026389d31461dd19f1d21082be737e
-# commit-date: 2021-04-11
-# artifact: https://github.com/fnichol/libsh/releases/download/v0.8.0/libsh.full.sh
-# source: https://github.com/fnichol/libsh/tree/v0.8.0
-# archive: https://github.com/fnichol/libsh/archive/v0.8.0.tar.gz
+# commit-hash: 9de10a0a2b17dc5b56b7759c6c45669ed58ba0ba
+# commit-date: 2021-04-22
+# artifact: https://github.com/fnichol/libsh/releases/download/v0.10.0/libsh.full.sh
+# source: https://github.com/fnichol/libsh/tree/v0.10.0
+# archive: https://github.com/fnichol/libsh/archive/v0.10.0.tar.gz
 #
 
 if [ -n "${KSH_VERSION:-}" ]; then
@@ -118,6 +118,42 @@ mktemp_file() {
   fi
 }
 
+# Removes any tracked files registered via [`cleanup_file`].
+#
+# * `@return 0` whether or not an error has occurred
+#
+# [`cleanup_file`]: #cleanup_file
+#
+# # Global Variables
+#
+# * `__CLEANUP_FILES__` used to track the collection of files to clean up whose
+#   value is a file. If not declared or set, this function will assume there is
+#   no work to do.
+#
+# # Examples
+#
+# Basic usage:
+#
+# ```sh
+# trap trap_cleanup_files 1 2 3 15 ERR EXIT
+#
+# file="$(mktemp_file)"
+# cleanup_file "$file"
+# # do work on file, etc.
+# ```
+trap_cleanup_files() {
+  set +e
+
+  if [ -n "${__CLEANUP_FILES__:-}" ] && [ -f "$__CLEANUP_FILES__" ]; then
+    local _file
+    while read -r _file; do
+      rm -f "$_file"
+    done <"$__CLEANUP_FILES__"
+    unset _file
+    rm -f "$__CLEANUP_FILES__"
+  fi
+}
+
 # Prints an error message and exits with a non-zero code if the program is not
 # available on the system PATH.
 #
@@ -144,6 +180,36 @@ need_cmd() {
   if ! check_cmd "$1"; then
     die "Required command '$1' not found on PATH"
   fi
+}
+
+# Removes any tracked files and directories registered via [`cleanup_file`]
+# and [`cleanup_directory`] respectively.
+#
+# * `@return 0` whether or not an error has occurred
+#
+# [`cleanup_directory`]: #cleanup_directory
+# [`cleanup_file`]: #cleanup_file
+#
+# # Examples
+#
+# Basic usage:
+#
+# ```sh
+# trap trap_cleanups 1 2 3 15 ERR EXIT
+# ```
+#
+# Used with [`setup_traps`]:
+#
+# ```sh
+# setup_traps trap_cleanups
+# ```
+#
+# [`setup_traps`]: #setup_traps
+trap_cleanups() {
+  set +e
+
+  trap_cleanup_directories
+  trap_cleanup_files
 }
 
 # Prints program version information to standard out.
@@ -257,6 +323,35 @@ print_version() {
   unset _program _version _verbose _sha _long_sha _date
 }
 
+# Prints a warning message to standard out.
+#
+# * `@param [String]` warning text
+# * `@stdout` warning heading text
+# * `@return 0` if successful
+#
+# # Environment Variables
+#
+# * `TERM` used to determine whether or not the terminal is capable of printing
+#   colored output.
+#
+# # Examples
+#
+# Basic usage:
+#
+# ```sh
+# warn "Could not connect to service"
+# ```
+warn() {
+  case "${TERM:-}" in
+    *term | alacritty | rxvt | screen | screen-* | tmux | tmux-* | xterm-*)
+      printf -- "\033[1;31;40m!!! \033[1;37;40m%s\033[0m\n" "$1"
+      ;;
+    *)
+      printf -- "!!! %s\n" "$1"
+      ;;
+  esac
+}
+
 # Prints a section-delimiting header to standard out.
 #
 # * `@param [String]` section heading text
@@ -284,6 +379,148 @@ section() {
       printf -- "--- %s\n" "$1"
       ;;
   esac
+}
+
+# Sets up state to track directories for later cleanup in a trap handler.
+#
+# This function is typically used in combination with [`cleanup_directory`] and
+# [`trap_cleanup_directories`].
+#
+# * `@return 0` if successful
+# * `@return 1` if a temp file could not be created
+#
+# # Global Variables
+#
+# * `__CLEANUP_DIRECTORIES__` used to track the collection of directories to
+# clean up whose value is a file. If not declared or set, this function will
+# set it up.
+#
+# # Examples
+#
+# Basic usage:
+#
+# ```sh
+# setup_cleanup_directories
+# ```
+#
+# Used with [`cleanup_directory`], [`setup_traps`], and
+# [`trap_cleanup_directories`]:
+#
+# ```sh
+# setup_cleanup_directories
+# setup_traps trap_cleanup_directories
+#
+# dir="$(mktemp_directory)"
+# cleanup_directory "$dir"
+# # do work on directory, etc.
+# ```
+#
+# [`cleanup_file`]: #cleanup_file
+# [`setup_traps`]: #setup_traps
+# [`trap_cleanup_directories`]: #trap_cleanup_directories
+setup_cleanup_directories() {
+  # If a tempfile hasn't been setup yet, create it
+  if [ -z "${__CLEANUP_DIRECTORIES__:-}" ]; then
+    __CLEANUP_DIRECTORIES__="$(mktemp_file)"
+
+    # If the result string is empty, tempfile wasn't created so report failure
+    if [ -z "$__CLEANUP_DIRECTORIES__" ]; then
+      return 1
+    fi
+
+    export __CLEANUP_DIRECTORIES__
+  fi
+}
+
+# Sets up state to track files for later cleanup in a trap handler.
+#
+# This function is typically used in combination with [`cleanup_file`] and
+# [`trap_cleanup_files`].
+#
+# * `@return 0` if successful
+# * `@return 1` if a temp file could not be created
+#
+# # Global Variables
+#
+# * `__CLEANUP_FILES__` used to track the collection of files to clean up whose
+#   value is a file. If not declared or set, this function will set it up.
+#
+# # Examples
+#
+# Basic usage:
+#
+# ```sh
+# setup_cleanup_files
+# ```
+#
+# Used with [`cleanup_file`], [`setup_traps`], and [`trap_cleanup_files`]:
+#
+# ```sh
+# setup_cleanup_files
+# setup_traps trap_cleanup_files
+#
+# file="$(mktemp_file)"
+# cleanup_file "$file"
+# # do work on file, etc.
+# ```
+#
+# [`cleanup_file`]: #cleanup_file
+# [`setup_traps`]: #setup_traps
+# [`trap_cleanup_files`]: #trap_cleanup_files
+setup_cleanup_files() {
+  # If a tempfile hasn't been setup yet, create it
+  if [ -z "${__CLEANUP_FILES__:-}" ]; then
+    __CLEANUP_FILES__="$(mktemp_file)"
+
+    # If the result string is empty, tempfile wasn't created so report failure
+    if [ -z "$__CLEANUP_FILES__" ]; then
+      return 1
+    fi
+
+    export __CLEANUP_FILES__
+  fi
+}
+
+# Sets up state to track files and directories for later cleanup in a trap
+# handler.
+#
+# This function is typically used in combination with [`cleanup_file`] and
+# [`cleanup_directory`] as well as [`trap_cleanups`].
+#
+# * `@return 0` if successful
+# * `@return 1` if the setup was not successful
+#
+# # Examples
+#
+# Basic usage:
+#
+# ```sh
+# setup_cleanups
+# ```
+#
+# Used with [`cleanup_directory`], [`cleanup_file`], [`setup_traps`], and
+# [`trap_cleanups`]:
+#
+# ```sh
+# setup_cleanups
+# setup_traps trap_cleanups
+#
+# file="$(mktemp_file)"
+# cleanup_file "$file"
+# # do work on file, etc.
+#
+# dir="$(mktemp_directory)"
+# cleanup_directory "$dir"
+# # do work on directory, etc.
+# ```
+#
+# [`cleanup_directory`]: #cleanup_directory
+# [`cleanup_file`]: #cleanup_file
+# [`setup_traps`]: #setup_traps
+# [`trap_cleanups`]: #trap_cleanups
+setup_cleanups() {
+  setup_cleanup_directories
+  setup_cleanup_files
 }
 
 # Sets up traps for `EXIT` and common signals with the given cleanup function.
@@ -347,7 +584,7 @@ setup_traps() {
 #
 # * `@return 0` whether or not an error has occurred
 #
-# [`cleanup_directory`]: #function.cleanup_directory
+# [`cleanup_directory`]: #cleanup_directory
 #
 # # Global Variables
 #
@@ -378,71 +615,6 @@ trap_cleanup_directories() {
     unset _dir
     rm -f "$__CLEANUP_DIRECTORIES__"
   fi
-}
-
-# Removes any tracked files registered via [`cleanup_file`].
-#
-# * `@return 0` whether or not an error has occurred
-#
-# [`cleanup_file`]: #function.cleanup_file
-#
-# # Global Variables
-#
-# * `__CLEANUP_FILES__` used to track the collection of files to clean up whose
-#   value is a file. If not declared or set, this function will assume there is
-#   no work to do.
-#
-# # Examples
-#
-# Basic usage:
-#
-# ```sh
-# trap trap_cleanup_files 1 2 3 15 ERR EXIT
-#
-# file="$(mktemp_file)"
-# cleanup_file "$file"
-# # do work on file, etc.
-# ```
-trap_cleanup_files() {
-  set +e
-
-  if [ -n "${__CLEANUP_FILES__:-}" ] && [ -f "$__CLEANUP_FILES__" ]; then
-    local _file
-    while read -r _file; do
-      rm -f "$_file"
-    done <"$__CLEANUP_FILES__"
-    unset _file
-    rm -f "$__CLEANUP_FILES__"
-  fi
-}
-
-# Prints a warning message to standard out.
-#
-# * `@param [String]` warning text
-# * `@stdout` warning heading text
-# * `@return 0` if successful
-#
-# # Environment Variables
-#
-# * `TERM` used to determine whether or not the terminal is capable of printing
-#   colored output.
-#
-# # Examples
-#
-# Basic usage:
-#
-# ```sh
-# warn "Could not connect to service"
-# ```
-warn() {
-  case "${TERM:-}" in
-    *term | alacritty | rxvt | screen | screen-* | tmux | tmux-* | xterm-*)
-      printf -- "\033[1;31;40m!!! \033[1;37;40m%s\033[0m\n" "$1"
-      ;;
-    *)
-      printf -- "!!! %s\n" "$1"
-      ;;
-  esac
 }
 
 # Determines whether or not a program is available on the system PATH.
@@ -482,7 +654,7 @@ check_cmd() {
 # * `@return 0` if successful
 # * `@return 1` if a temp file could not be created
 #
-# [`trap_cleanup_directories`]: #function.trap_cleanup_directories
+# [`trap_cleanup_directories`]: #trap_cleanup_directories
 #
 # # Global Variables
 #
@@ -500,16 +672,7 @@ check_cmd() {
 # # do work on directory, etc.
 # ```
 cleanup_directory() {
-  # If a tempfile hasn't been setup yet, create it
-  if [ -z "${__CLEANUP_DIRECTORIES__:-}" ]; then
-    __CLEANUP_DIRECTORIES__="$(mktemp_file)"
-
-    # If the result string is empty, tempfile wasn't created so report failure
-    if [ -z "$__CLEANUP_DIRECTORIES__" ]; then
-      return 1
-    fi
-  fi
-
+  setup_cleanup_directories
   echo "$1" >>"$__CLEANUP_DIRECTORIES__"
 }
 
@@ -524,7 +687,7 @@ cleanup_directory() {
 # * `@return 0` if successful
 # * `@return 1` if a temp file could not be created
 #
-# [`trap_cleanup_files`]: #function.trap_cleanup_files
+# [`trap_cleanup_files`]: #trap_cleanup_files
 #
 # # Global Variables
 #
@@ -541,16 +704,7 @@ cleanup_directory() {
 # # do work on file, etc.
 # ```
 cleanup_file() {
-  # If a tempfile hasn't been setup yet, create it
-  if [ -z "${__CLEANUP_FILES__:-}" ]; then
-    __CLEANUP_FILES__="$(mktemp_file)"
-
-    # If the result string is empty, tempfile wasn't created so report failure
-    if [ -z "$__CLEANUP_FILES__" ]; then
-      return 1
-    fi
-  fi
-
+  setup_cleanup_files
   echo "$1" >>"$__CLEANUP_FILES__"
 }
 

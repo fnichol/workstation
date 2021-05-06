@@ -193,7 +193,8 @@ prepare_workstation() {
     echo "only: $onlys"
   fi
 
-  setup_traps trap_cleanup_files
+  setup_cleanups
+  setup_traps trap_cleanups
 
   init "$program" "$root"
   if should_run_task "hostname" "$skips" "$onlys"; then
