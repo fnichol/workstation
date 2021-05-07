@@ -1,6 +1,6 @@
 [
   "awscli",
-  "autoconf-2.69p2",
+  "autoconf-2.71",
   "axel",
   "bison",
   "bzip2",
@@ -8,7 +8,7 @@
   "flac",
   "fzf",
   "gmake",
-  "gnupg-2.2.12p1",
+  "gnupg",
   "gpatch",
   "gtar--",
   "jo",

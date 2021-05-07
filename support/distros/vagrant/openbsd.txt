@@ -1,2 +1,3 @@
+6.9,fnichol/openbsd-6.9
 6.8,fnichol/openbsd-6.8
 6.7,fnichol/openbsd-6.7
