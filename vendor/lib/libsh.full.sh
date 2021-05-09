@@ -16,13 +16,13 @@
 # --------
 # project: https://github.com/fnichol/libsh
 # author: Fletcher Nichol <fnichol@nichol.ca>
-# version: 0.10.0
+# version: 0.10.1
 # distribution: libsh.full.sh
-# commit-hash: 9de10a0a2b17dc5b56b7759c6c45669ed58ba0ba
-# commit-date: 2021-04-22
-# artifact: https://github.com/fnichol/libsh/releases/download/v0.10.0/libsh.full.sh
-# source: https://github.com/fnichol/libsh/tree/v0.10.0
-# archive: https://github.com/fnichol/libsh/archive/v0.10.0.tar.gz
+# commit-hash: 46134771903ba66967666ca455f73ffc10dd0a03
+# commit-date: 2021-05-08
+# artifact: https://github.com/fnichol/libsh/releases/download/v0.10.1/libsh.full.sh
+# source: https://github.com/fnichol/libsh/tree/v0.10.1
+# archive: https://github.com/fnichol/libsh/archive/v0.10.1.tar.gz
 #
 
 if [ -n "${KSH_VERSION:-}" ]; then
@@ -394,6 +394,8 @@ section() {
 # * `__CLEANUP_DIRECTORIES__` used to track the collection of directories to
 # clean up whose value is a file. If not declared or set, this function will
 # set it up.
+# * `__CLEANUP_DIRECTORIES_SETUP__` used to track if the
+# `__CLEANUP_DIRECTORIES__` variable has been set up for the current process
 #
 # # Examples
 #
@@ -419,6 +421,12 @@ section() {
 # [`setup_traps`]: #setup_traps
 # [`trap_cleanup_directories`]: #trap_cleanup_directories
 setup_cleanup_directories() {
+  if [ "${__CLEANUP_DIRECTORIES_SETUP__:-}" != "$$" ]; then
+    unset __CLEANUP_DIRECTORIES__
+    __CLEANUP_DIRECTORIES_SETUP__="$$"
+    export __CLEANUP_DIRECTORIES_SETUP__
+  fi
+
   # If a tempfile hasn't been setup yet, create it
   if [ -z "${__CLEANUP_DIRECTORIES__:-}" ]; then
     __CLEANUP_DIRECTORIES__="$(mktemp_file)"
@@ -444,6 +452,8 @@ setup_cleanup_directories() {
 #
 # * `__CLEANUP_FILES__` used to track the collection of files to clean up whose
 #   value is a file. If not declared or set, this function will set it up.
+# * `__CLEANUP_FILES_SETUP__` used to track if the `__CLEANUP_FILES__`
+# variable has been set up for the current process
 #
 # # Examples
 #
@@ -468,6 +478,12 @@ setup_cleanup_directories() {
 # [`setup_traps`]: #setup_traps
 # [`trap_cleanup_files`]: #trap_cleanup_files
 setup_cleanup_files() {
+  if [ "${__CLEANUP_FILES_SETUP__:-}" != "$$" ]; then
+    unset __CLEANUP_FILES__
+    __CLEANUP_FILES_SETUP__="$$"
+    export __CLEANUP_FILES_SETUP__
+  fi
+
   # If a tempfile hasn't been setup yet, create it
   if [ -z "${__CLEANUP_FILES__:-}" ]; then
     __CLEANUP_FILES__="$(mktemp_file)"
