@@ -25,17 +25,17 @@ print_usage() {
         -o, --only=<T>[,<T>..]  Only run specific tasks
                                 [values: hostname, pkg-init, update-system,
                                 base-pkgs, preferences, keys, bashrc,
-                                base-dot-configs, base-finalize, headless-pkgs,
-                                rust, ruby, go, node, headless-finalize,
-                                graphical-pkgs, graphical-dot-configs,
-                                graphical-finalize]
+                                base-dot-configs, vim, base-finalize,
+                                headless-pkgs, rust, ruby, go, node,
+                                headless-finalize, graphical-pkgs,
+                                graphical-dot-configs, graphical-finalize]
         -s, --skip=<T>[,<T>..]  Skip specific tasks
                                 [values: hostname, pkg-init, update-system,
                                 base-pkgs, preferences, keys, bashrc,
-                                base-dot-configs, base-finalize, headless-pkgs,
-                                rust, ruby, go, node, headless-finalize,
-                                graphical-pkgs, graphical-dot-configs,
-                                graphical-finalize]
+                                base-dot-configs, vim, base-finalize,
+                                headless-pkgs, rust, ruby, go, node,
+                                headless-finalize, graphical-pkgs,
+                                graphical-dot-configs, graphical-finalize]
 
     ARGS:
         <FQDN>  The name for this workstation
@@ -221,6 +221,9 @@ prepare_workstation() {
   if should_run_task "base-dot-configs" "$skips" "$onlys"; then
     install_base_dot_configs
   fi
+  if should_run_task "vim" "$skips" "$onlys"; then
+    update_vim_config
+  fi
   if should_run_task "base-finalize" "$skips" "$onlys"; then
     finalize_base_setup
   fi
@@ -311,7 +314,7 @@ is_task_valid() {
 
   case "$task" in
     hostname | pkg-init | update-system | base-pkgs | preferences | keys | \
-      bashrc | base-dot-configs | base-finalize | headless-pkgs | rust | \
+      bashrc | base-dot-configs | vim | base-finalize | headless-pkgs | rust | \
       ruby | go | node | headless-finalize | graphical-pkgs | \
       graphical-dot-configs | graphical-finalize)
       return 0
@@ -724,6 +727,13 @@ install_base_dot_configs() {
   json_items "$_data_path/homesick_base_repos.json" | while read -r repo; do
     manage_homesick_repo "$repo"
   done
+}
+
+update_vim_config() {
+  if [ -x "$HOME/.vim/update.sh" ] && [ ! -f "$HOME/.vim/.skip_update" ]; then
+    section "Updating vim configuration"
+    indent "$HOME/.vim/update.sh"
+  fi
 }
 
 finalize_base_setup() {
