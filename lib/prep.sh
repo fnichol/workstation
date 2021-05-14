@@ -25,17 +25,19 @@ print_usage() {
         -o, --only=<T>[,<T>..]  Only run specific tasks
                                 [values: hostname, pkg-init, update-system,
                                 base-pkgs, preferences, keys, bashrc,
-                                base-dot-configs, vim, base-finalize,
+                                base-dot-configs, base-finalize,
                                 headless-pkgs, rust, ruby, go, node,
                                 headless-finalize, graphical-pkgs,
-                                graphical-dot-configs, graphical-finalize]
+                                graphical-dot-configs, graphical-finalize, vim,
+                                finish-base, finish-headless, finish-graphical]
         -s, --skip=<T>[,<T>..]  Skip specific tasks
                                 [values: hostname, pkg-init, update-system,
                                 base-pkgs, preferences, keys, bashrc,
-                                base-dot-configs, vim, base-finalize,
+                                base-dot-configs, base-finalize,
                                 headless-pkgs, rust, ruby, go, node,
                                 headless-finalize, graphical-pkgs,
-                                graphical-dot-configs, graphical-finalize]
+                                graphical-dot-configs, graphical-finalize, vim,
+                                finish-base, finish-headless, finish-graphical]
 
     ARGS:
         <FQDN>  The name for this workstation
@@ -221,9 +223,6 @@ prepare_workstation() {
   if should_run_task "base-dot-configs" "$skips" "$onlys"; then
     install_base_dot_configs
   fi
-  if should_run_task "vim" "$skips" "$onlys"; then
-    update_vim_config
-  fi
   if should_run_task "base-finalize" "$skips" "$onlys"; then
     finalize_base_setup
   fi
@@ -258,6 +257,23 @@ prepare_workstation() {
     fi
     if should_run_task "graphical-finalize" "$skips" "$onlys"; then
       finalize_graphical_setup
+    fi
+  fi
+
+  if should_run_task "vim" "$skips" "$onlys"; then
+    update_vim_config
+  fi
+  if should_run_task "finish-base" "$skips" "$onlys"; then
+    finish_base_setup
+  fi
+  if [ "$profile" = "headless" ] || [ "$profile" = "graphical" ]; then
+    if should_run_task "finish-headless" "$skips" "$onlys"; then
+      finish_headless_setup
+    fi
+  fi
+  if [ "$profile" = "graphical" ]; then
+    if should_run_task "finish-graphical" "$skips" "$onlys"; then
+      finish_graphical_setup
     fi
   fi
 
@@ -314,9 +330,10 @@ is_task_valid() {
 
   case "$task" in
     hostname | pkg-init | update-system | base-pkgs | preferences | keys | \
-      bashrc | base-dot-configs | vim | base-finalize | headless-pkgs | rust | \
+      bashrc | base-dot-configs | base-finalize | headless-pkgs | rust | \
       ruby | go | node | headless-finalize | graphical-pkgs | \
-      graphical-dot-configs | graphical-finalize)
+      graphical-dot-configs | graphical-finalize | vim | finish-base | \
+      finish-headless | finish-graphical)
       return 0
       ;;
     *)
@@ -729,13 +746,6 @@ install_base_dot_configs() {
   done
 }
 
-update_vim_config() {
-  if [ -x "$HOME/.vim/update.sh" ] && [ ! -f "$HOME/.vim/.skip_update" ]; then
-    section "Updating vim configuration"
-    indent "$HOME/.vim/update.sh"
-  fi
-}
-
 finalize_base_setup() {
   section "Finalizing base setup"
 
@@ -1134,6 +1144,106 @@ finalize_graphical_setup() {
       ;;
     *)
       warn "Finalizing graphical setup on $_os not yet supported, skipping"
+      ;;
+  esac
+}
+
+update_vim_config() {
+  if [ -x "$HOME/.vim/update.sh" ] && [ ! -f "$HOME/.vim/.skip_update" ]; then
+    section "Updating vim configuration"
+    indent "$HOME/.vim/update.sh"
+  fi
+}
+
+finish_base_setup() {
+  section "Finishing base setup"
+
+  case "$_os" in
+    Alpine)
+      # Nothing to do yet
+      ;;
+    Arch)
+      # Nothing to do yet
+      ;;
+    Darwin)
+      # Nothing to do yet
+      ;;
+    FreeBSD)
+      # Nothing to do yet
+      ;;
+    OpenBSD)
+      # Nothing to do yet
+      ;;
+    RedHat)
+      # Nothing to do yet
+      ;;
+    Ubuntu)
+      # Nothing to do yet
+      ;;
+    *)
+      warn "Finishing base setup on $_os not yet supported, skipping"
+      ;;
+  esac
+}
+
+finish_headless_setup() {
+  section "Finishing headless setup"
+
+  case "$_os" in
+    Alpine)
+      # Nothing to do yet
+      ;;
+    Arch)
+      # Nothing to do yet
+      ;;
+    Darwin)
+      # Nothing to do yet
+      ;;
+    FreeBSD)
+      # Nothing to do yet
+      ;;
+    OpenBSD)
+      # Nothing to do yet
+      ;;
+    RedHat)
+      # Nothing to do yet
+      ;;
+    Ubuntu)
+      # Nothing to do yet
+      ;;
+    *)
+      warn "Finishing headless setup on $_os not yet supported, skipping"
+      ;;
+  esac
+}
+
+finish_graphical_setup() {
+  section "Finishing graphical setup"
+
+  case "$_os" in
+    Alpine)
+      # Nothing to do yet
+      ;;
+    Arch)
+      # Nothing to do yet
+      ;;
+    Darwin)
+      # Nothing to do yet
+      ;;
+    FreeBSD)
+      # Nothing to do yet
+      ;;
+    OpenBSD)
+      # Nothing to do yet
+      ;;
+    RedHat)
+      # Nothing to do yet
+      ;;
+    Ubuntu)
+      # Nothing to do yet
+      ;;
+    *)
+      warn "Finishing graphical setup on $_os not yet supported, skipping"
       ;;
   esac
 }
