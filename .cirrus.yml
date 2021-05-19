@@ -37,6 +37,11 @@ task:
         DISTRO: freebsd
         VERSION: 12-1
         USER: jdoe
+        # Temporary workaround for error `error: sysinfo not supported on
+        # this platform` seen on FreeBSD platforms, affecting Rustup
+        #
+        # References: https://github.com/rust-lang/rustup/issues/2774
+        RUSTUP_IO_THREADS: 1
       freebsd_instance:
         image_family: ${DISTRO}-${VERSION}
       prepare_script: ./support/bin/freebsd-setup.sh "--user=$USER"
