@@ -1151,7 +1151,7 @@ finalize_graphical_setup() {
 update_vim_config() {
   if [ -x "$HOME/.vim/update.sh" ] && [ ! -f "$HOME/.vim/.skip_update" ]; then
     section "Updating vim configuration"
-    indent "$HOME/.vim/update.sh"
+    "$HOME/.vim/update.sh" >/dev/null 2>&1
   fi
 }
 
