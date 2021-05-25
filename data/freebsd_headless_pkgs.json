@@ -1,7 +1,6 @@
 [
   "autoconf",
   "axel",
-  "bat",
   "cmake",
   "ctags",
   "direnv",
@@ -22,7 +21,6 @@
   "m4",
   "mercurial",
   "parallel",
-  "ripgrep",
   "rsnapshot",
   "rsync",
   "shfmt",

@@ -1,7 +1,6 @@
 [
   "awscli",
   "axel",
-  "bat",
   "cmake",
   "coreutils",
   "direnv",
@@ -29,7 +28,6 @@
   "pkg-config",
   "protobuf",
   "redis",
-  "ripgrep",
   "rsnapshot",
   "rsync",
   "shellcheck",

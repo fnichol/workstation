@@ -1,5 +1,6 @@
 [
   "bash",
+  "bat",
   "curl",
   "gawk",
   "git",
@@ -11,6 +12,7 @@
   "mosh",
   "openssh",
   "psmisc",
+  "ripgrep",
   "screen",
   "tmux",
   "tree",
