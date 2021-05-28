@@ -10,6 +10,7 @@
   "protoc",
   "ripgrep",
   "starship",
+  "tailscale",
   "visualstudio2019buildtools",
   "visualstudio2019-workload-vctools",
   "watchexec"
