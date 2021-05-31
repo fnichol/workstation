@@ -47,6 +47,14 @@ arch_install_headless_packages() {
   arch_install_aur_pkgs_from_json "$data_path/arch_headless_aur_pkgs.json"
 }
 
+arch_finalize_headless_setup() {
+  need_cmd systemctl
+
+  info "Enabling and starting 'tailscaled' service"
+  indent sudo systemctl enable tailscaled.service
+  indent sudo systemctl start tailscaled.service
+}
+
 arch_install_graphical_packages() {
   local data_path="$1"
 

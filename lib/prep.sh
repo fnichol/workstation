@@ -1030,7 +1030,7 @@ finalize_headless_setup() {
       # Nothing to do yet
       ;;
     Arch)
-      # Nothing to do yet
+      arch_finalize_headless_setup
       ;;
     Darwin)
       # Nothing to do yet
