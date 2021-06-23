@@ -138,6 +138,48 @@ arch_finalize_graphical_setup() {
     sudo systemctl enable vmware-vmblock-fuse.service
     sudo systemctl start vmware-vmblock-fuse.service
   fi
+
+  local xinitrc_d=/etc/X11/xinit/xinitrc.d/90-gnome-keyring-daemon.sh
+  if [ ! -f "$xinitrc_d" ]; then
+    need_cmd chmod
+    need_cmd tee
+
+    info "Creating '$xinitrc_d'"
+    cat <<-'EOF' | sudo tee "$xinitrc_d" >/dev/null
+	#!/bin/sh
+
+	if [ -x /usr/bin/gnome-keyring-daemon ]; then
+	  eval $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)
+	  export SSH_AUTH_SOCK
+	fi
+	EOF
+    sudo chmod 0755 "$xinitrc_d"
+  fi
+
+  if ! grep -q 'pam_gnome_keyring.so auto_start$' /etc/pam.d/login; then
+    need_cmd awk
+    need_cmd install
+
+    local tmp_login
+    tmp_login="$(mktemp_file)"
+    cleanup_file "$tmp_login"
+
+    info "Starting gnome-keyring in PAM at console login"
+    awk '
+      /^auth *include *system-local-login$/ {
+        print
+        print "auth       optional     pam_gnome_keyring.so"
+        next
+      }
+      /^password *include *system-local-login$/ {
+        print
+        print "session    optional     pam_gnome_keyring.so auto_start"
+        next
+      }
+      { print }
+    ' /etc/pam.d/login >"$tmp_login"
+    sudo install -m 644 -o root -g root "$tmp_login" /etc/pam.d/login
+  fi
 }
 
 arch_build_yay() {

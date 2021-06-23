@@ -19,6 +19,13 @@
   },
   "element-desktop",
   "firefox",
+  {
+    "#": [
+      "Stores passwords and encryption keys",
+      "(https://wiki.gnome.org/Projects/GnomeKeyring)"
+    ],
+    "name": "gnome-keyring"
+  },
   "ifplugd",
   {
     "#": [
@@ -34,6 +41,13 @@
   "playerctl",
   "pulseaudio-alsa",
   "pulsemixer",
+  {
+    "#": [
+      "GNOME application for managing keys in GNOME keyring",
+      "(https://wiki.gnome.org/Apps/Seahorse)"
+    ],
+    "name": "seahorse"
+  },
   "ttf-inconsolata",
   "ttf-jetbrains-mono",
   "vlc",
