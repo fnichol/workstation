@@ -4,6 +4,7 @@
   "gawk",
   "git",
   "psmisc",
+  "pv",
   "screen",
   "tmux",
   "tree",

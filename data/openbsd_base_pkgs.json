@@ -9,6 +9,7 @@
   "mosh",
   "pftop",
   "pstree",
+  "pv",
   "ripgrep",
   "rsnapshot",
   "rsync--",

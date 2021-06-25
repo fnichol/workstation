@@ -8,6 +8,7 @@
   "mg",
   "mosh",
   "openssh-portable",
+  "pv",
   "ripgrep",
   "screen",
   "tmux",

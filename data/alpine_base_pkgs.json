@@ -12,6 +12,7 @@
   "ncurses",
   "openssh",
   "psmisc",
+  "pv",
   "ripgrep",
   "screen",
   "tmux",
