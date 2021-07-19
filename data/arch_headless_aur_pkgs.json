@@ -1,6 +1,5 @@
 [
   "direnv",
-  "evans-bin",
   "hadolint-bin",
   "jo",
   "kind",
