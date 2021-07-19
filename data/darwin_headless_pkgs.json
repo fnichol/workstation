@@ -27,7 +27,6 @@
   "parallel",
   "pkg-config",
   "protobuf",
-  "redis",
   "rsnapshot",
   "rsync",
   "shellcheck",

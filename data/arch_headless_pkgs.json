@@ -23,7 +23,6 @@
   "packer",
   "parallel",
   "protobuf",
-  "redis",
   "rsnapshot",
   "rsync",
   "shellcheck",
