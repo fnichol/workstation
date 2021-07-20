@@ -25,11 +25,12 @@ arch_set_hostname() {
 
 arch_setup_package_system() {
   indent sudo pacman -Sy --noconfirm
+  arch_build_paru
 }
 
 arch_update_system() {
   indent sudo pacman -Su --noconfirm
-  indent yay -Su --noconfirm
+  indent paru -Su --noconfirm
 }
 
 arch_install_base_packages() {
@@ -43,7 +44,6 @@ arch_install_headless_packages() {
   local data_path="$1"
 
   install_pkgs_from_json "$data_path/arch_headless_pkgs.json"
-  arch_build_yay
   arch_install_aur_pkgs_from_json "$data_path/arch_headless_aur_pkgs.json"
 }
 
@@ -182,25 +182,22 @@ arch_finalize_graphical_setup() {
   fi
 }
 
-arch_build_yay() {
+arch_build_paru() {
   need_cmd pacman
 
-  if pacman -Qi yay >/dev/null 2>&1; then
+  if pacman -Qi paru >/dev/null 2>&1; then
     return 0
   fi
 
-  need_cmd git
-  need_cmd makepkg
-  need_cmd mktemp
+  sudo pacman -S --noconfirm --needed base-devel git
 
   local build_dir
-  build_dir="$(mktemp -d /tmp/yay.XXXXXXXX)"
+  build_dir="$(mktemp_directory)"
+  cleanup_directory "$build_dir"
 
-  info "Building yay package"
-  git clone https://aur.archlinux.org/yay.git "$build_dir/yay"
-  (cd "$build_dir/yay" && makepkg --syncdeps --install --noconfirm --clean)
-
-  rm -rf "$build_dir"
+  info "Building Paru package"
+  indent git clone https://aur.archlinux.org/paru.git "$build_dir"
+  (cd "$build_dir" && makepkg --syncdeps --install --noconfirm --clean)
 }
 
 arch_install_pkg() {
@@ -237,10 +234,10 @@ arch_install_aur_pkg() {
   fi
 
   need_cmd sudo
-  need_cmd yay
+  need_cmd paru
 
   info "Installing AUR package '$pkg'"
-  indent yay -S --noconfirm "$pkg"
+  indent paru -S --noconfirm "$pkg"
 }
 
 arch_install_aur_pkgs_from_json() {
