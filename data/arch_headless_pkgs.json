@@ -27,6 +27,7 @@
   "rsync",
   "shellcheck",
   "shfmt",
+  "skopeo",
   "sqlite",
   "sshuttle",
   "syncthing",
