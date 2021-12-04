@@ -195,8 +195,8 @@ arch_build_paru() {
   build_dir="$(mktemp_directory)"
   cleanup_directory "$build_dir"
 
-  info "Building Paru package"
-  indent git clone https://aur.archlinux.org/paru.git "$build_dir"
+  info "Installing Paru package"
+  indent git clone https://aur.archlinux.org/paru-bin.git "$build_dir"
   (cd "$build_dir" && makepkg --syncdeps --install --noconfirm --clean)
 }
 
