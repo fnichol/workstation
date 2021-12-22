@@ -342,7 +342,7 @@ darwin_install_cask_pkg() {
   fi
 
   info "Installing cask package '$pkg'"
-  indent env HOMEBREW_NO_AUTO_UPDATE=true brew cask install "$pkg"
+  indent env HOMEBREW_NO_AUTO_UPDATE=true brew install "$pkg"
 }
 
 darwin_install_app() {
