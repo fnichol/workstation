@@ -35,12 +35,12 @@
 Currently, the following platforms are supported (older and newer version may
 also work):
 
-- Alpine Linux (3.12)
+- Alpine Linux (3.15)
 - Arch Linux (rolling latest)
 - CentOS (8)
-- FreeBSD (12.2)
+- FreeBSD (13.0)
 - macOS (10.15)
-- OpenBSD (6.8)
+- OpenBSD (7.0)
 - Ubuntu Linux (20.04)
 - Windows 10 (2004)
 
