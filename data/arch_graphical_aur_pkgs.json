@@ -1,8 +1,22 @@
 [
-  "1password",
-  "fonts-meta-extended-lt",
-  "keybase-bin",
-  "system-san-francisco-font-git",
-  "wee-slack",
-  "zoom"
+  {
+    "#": ["Password manager and secure wallet (https://1password.com/)"],
+    "name": "1password"
+  },
+  {
+    "#": [
+      "Full Regolith Desktop Environment, for the full stock experience.",
+      "An Arch Linux port of the Regolith Linux Desktop.",
+      "(https://github.com/regolith-linux/regolith-desktop)"
+    ],
+    "name": "regolith-full"
+  },
+  {
+    "#": [
+      "A small program for hiding the mouse cursor",
+      "unclutter-xfixes is a rewrite of unclutter using the x11-xfixes extension.",
+      "(https://github.com/Airblader/unclutter-xfixes)"
+    ],
+    "name": "unclutter-xfixes-git"
+  }
 ]

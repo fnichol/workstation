@@ -9,34 +9,10 @@
   },
   {
     "#": [
-      "i3 is a tiling window manager for X11.",
-      "This is a package group which installs the i3-gaps fork",
-      "(https://www.archlinux.org/groups/x86_64/i3/)"
-    ],
-    "name": "i3"
-  },
-  {
-    "#": [
       "Background browser and setter for X windows",
       "(https://www.archlinux.org/packages/extra/x86_64/nitrogen/)"
     ],
     "name": "nitrogen"
-  },
-  {
-    "#": [
-      "X compositor that may fix tearing issues",
-      "A fork from the original Compton because it seems to have become",
-      "unmaintained",
-      "(https://github.com/yshui/picom)"
-    ],
-    "name": "picom"
-  },
-  {
-    "#": [
-      "A small program for hiding the mouse cursor",
-      "(https://github.com/Airblader/unclutter-xfixes)"
-    ],
-    "name": "unclutter"
   },
   {
     "#": [
