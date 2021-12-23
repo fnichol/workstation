@@ -48,11 +48,11 @@ arch_install_headless_packages() {
 }
 
 arch_finalize_headless_setup() {
-  need_cmd systemctl
-
-  info "Enabling and starting 'tailscaled' service"
-  indent sudo systemctl enable tailscaled.service
-  indent sudo systemctl start tailscaled.service
+  local svc=tailscaled.service
+  if [ -f "/usr/lib/systemd/system/$svc" ]; then
+    arch_enable_service "$svc"
+    arch_start_service "$svc"
+  fi
 }
 
 arch_install_graphical_packages() {
@@ -65,16 +65,6 @@ arch_install_graphical_packages() {
 }
 
 arch_finalize_graphical_setup() {
-  need_cmd ln
-  need_cmd sudo
-
-  sudo ln -snf /etc/fonts/conf.avail/11-lcdfilter-default.conf \
-    /etc/fonts/conf.d
-  sudo ln -snf /etc/fonts/conf.avail/10-sub-pixel-rgb.conf \
-    /etc/fonts/conf.d
-  sudo ln -snf /etc/fonts/conf.avail/30-infinality-aliases.conf \
-    /etc/fonts/conf.d
-
   if [ "$(cat /sys/class/dmi/id/product_name)" = "XPS 13 9370" ]; then
     need_cmd cut
     need_cmd getent
@@ -86,8 +76,6 @@ arch_finalize_graphical_setup() {
     # Setup power management
     install_pkg powertop
     if [ ! -f /etc/systemd/system/powertop.service ]; then
-      need_cmd systemctl
-
       info "Setting up Powertop for power management tuning"
       cat <<-'EOF' | sudo tee /etc/systemd/system/powertop.service >/dev/null
 	[Unit]
@@ -101,9 +89,8 @@ arch_finalize_graphical_setup() {
 	WantedBy=multi-user.target
 	EOF
 
-      info "Enabling and starting 'powertop' service"
-      sudo systemctl enable powertop
-      sudo systemctl start powertop
+      arch_enable_service powertop
+      arch_start_service powertop
     fi
 
     if [ ! -f /etc/udev/rules.d/backlight.rules ]; then
@@ -124,8 +111,6 @@ arch_finalize_graphical_setup() {
   fi
 
   if [ "$(cat /sys/class/dmi/id/sys_vendor)" = "VMware, Inc." ]; then
-    need_cmd systemctl
-
     # Required for copy and pasting between the host and guest
     install_pkg gtkmm3
     install_pkg libxtst
@@ -134,9 +119,14 @@ arch_finalize_graphical_setup() {
     # See: https://bugs.archlinux.org/task/57473
     install_pkg xf86-video-vmware
 
-    info "Enabling and starting 'vmware-vmblock-fuse' service"
-    sudo systemctl enable vmware-vmblock-fuse.service
-    sudo systemctl start vmware-vmblock-fuse.service
+    arch_enable_service vmware-vmblock-fuse.service
+    arch_start_service vmware-vmblock-fuse.service
+  fi
+
+  local svc=NetworkManager.service
+  if [ -f "/usr/lib/systemd/system/$svc" ]; then
+    arch_enable_service "$svc"
+    arch_start_service "$svc"
   fi
 
   local xinitrc_d=/etc/X11/xinit/xinitrc.d/90-gnome-keyring-daemon.sh
@@ -246,4 +236,28 @@ arch_install_aur_pkgs_from_json() {
   json_items "$json" | while read -r pkg; do
     arch_install_aur_pkg "$pkg"
   done
+}
+
+arch_enable_service() {
+  local svc="$1"
+
+  need_cmd sudo
+  need_cmd systemctl
+
+  if ! systemctl is-enabled "$svc" >/dev/null; then
+    info "Enabling '$svc' service"
+    indent sudo systemctl enable "$svc"
+  fi
+}
+
+arch_start_service() {
+  local svc="$1"
+
+  need_cmd sudo
+  need_cmd systemctl
+
+  if ! systemctl is-active "$svc" >/dev/null; then
+    info "Starting '$svc' service"
+    indent sudo systemctl start "$svc"
+  fi
 }

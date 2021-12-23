@@ -5,6 +5,5 @@
   "kind",
   "kubeval-bin",
   "powershell-bin",
-  "starship-bin",
   "zoxide"
 ]

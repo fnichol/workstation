@@ -26,6 +26,13 @@
     ],
     "name": "gnome-keyring"
   },
+  {
+    "#": [
+      "View current processes and monitor system state",
+      "(https://wiki.gnome.org/Apps/SystemMonitor)"
+    ],
+    "name": "gnome-system-monitor"
+  },
   "ifplugd",
   {
     "#": [
@@ -37,6 +44,20 @@
   "mopidy",
   "mpc",
   "ncmpcpp",
+  {
+    "#": [
+      "Network connection manager and user application",
+      "(https://networkmanager.dev/)"
+    ],
+    "name": "networkmanager"
+  },
+  {
+    "#": [
+      "Applet for managing network connections",
+      "(https://wiki.gnome.org/Projects/NetworkManager/)"
+    ],
+    "name": "network-manager-applet"
+  },
   "otf-overpass",
   "playerctl",
   "pulseaudio-alsa",
@@ -47,6 +68,14 @@
       "(https://wiki.gnome.org/Apps/Seahorse)"
     ],
     "name": "seahorse"
+  },
+  {
+    "#": [
+      "a collection of performance monitoring tools",
+      "(iostat,isag,mpstat,pidstat,sadf,sar)",
+      "(http://pagesperso-orange.fr/sebastien.godard/)"
+    ],
+    "name": "sysstat"
   },
   "ttf-inconsolata",
   "ttf-jetbrains-mono",
