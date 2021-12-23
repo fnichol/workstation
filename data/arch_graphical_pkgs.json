@@ -8,6 +8,13 @@
   },
   "alsa-utils",
   "chromium",
+  {
+    "#": [
+      "The CUPS Printing System - daemon package",
+      "(https://openprinting.github.io/cups/)"
+    ],
+    "name": "cups"
+  },
   "darktable",
   {
     "#": [

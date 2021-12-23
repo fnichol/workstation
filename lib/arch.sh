@@ -129,6 +129,12 @@ arch_finalize_graphical_setup() {
     arch_start_service "$svc"
   fi
 
+  local svc=cups.service
+  if [ -f "/usr/lib/systemd/system/$svc" ]; then
+    arch_enable_service "$svc"
+    arch_start_service "$svc"
+  fi
+
   local xinitrc_d=/etc/X11/xinit/xinitrc.d/90-gnome-keyring-daemon.sh
   if [ ! -f "$xinitrc_d" ]; then
     need_cmd chmod
