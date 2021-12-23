@@ -12,11 +12,22 @@
     "name": "regolith-full"
   },
   {
+    "#": ["Slack Desktop (Beta) for Linux (https://slack.com/downloads)"],
+    "name": "slack-desktop"
+  },
+  {
     "#": [
       "A small program for hiding the mouse cursor",
       "unclutter-xfixes is a rewrite of unclutter using the x11-xfixes extension.",
       "(https://github.com/Airblader/unclutter-xfixes)"
     ],
     "name": "unclutter-xfixes-git"
+  },
+  {
+    "#": [
+      "Video Conferencing and Web Conferencing Service",
+      "(https://zoom.us)"
+    ],
+    "name": "zoom"
   }
 ]
