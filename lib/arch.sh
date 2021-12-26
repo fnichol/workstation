@@ -65,6 +65,8 @@ arch_install_graphical_packages() {
 }
 
 arch_finalize_graphical_setup() {
+  local svc
+
   if [ "$(cat /sys/class/dmi/id/product_name)" = "XPS 13 9370" ]; then
     need_cmd cut
     need_cmd getent
@@ -123,13 +125,35 @@ arch_finalize_graphical_setup() {
     arch_start_service vmware-vmblock-fuse.service
   fi
 
-  local svc=NetworkManager.service
+  if ! grep -q '^#greeter-session=' /etc/lightdm/lightdm.conf; then
+    info "Initializing lightdm greeter-session"
+    sudo sed -i -e 's|^#\(greeter-session\)=\(.*\)$|\1=\2|' \
+      /etc/lightdm/lightdm.conf
+  fi
+  if ! grep -q '^greeter-session=lightdm-webkit2-greeter$' \
+    /etc/lightdm/lightdm.conf; then
+    info "Setting lightdm greeter"
+    sudo sed -i -e 's|^\(greeter-session\)=.*$|\1=lightdm-webkit2-greeter|' \
+      /etc/lightdm/lightdm.conf
+  fi
+  if ! grep -q -E '^webkit_theme\s*=\s*litarvan$' \
+    /etc/lightdm/lightdm-webkit2-greeter.conf; then
+    info "Configuring lightdm-webkit2-greeter"
+    sudo sed -i -e 's|^\(webkit_theme *\)=.*$|\1= litarvan|' \
+      /etc/lightdm/lightdm-webkit2-greeter.conf
+  fi
+  svc=lightdm.service
+  if [ -f "/usr/lib/systemd/system/$svc" ]; then
+    arch_enable_service "$svc"
+  fi
+
+  svc=NetworkManager.service
   if [ -f "/usr/lib/systemd/system/$svc" ]; then
     arch_enable_service "$svc"
     arch_start_service "$svc"
   fi
 
-  local svc=cups.service
+  svc=cups.service
   if [ -f "/usr/lib/systemd/system/$svc" ]; then
     arch_enable_service "$svc"
     arch_start_service "$svc"

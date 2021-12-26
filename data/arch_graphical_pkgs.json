@@ -56,6 +56,27 @@
     ],
     "name": "light"
   },
+  {
+    "#": [
+      "A lightweight display manager",
+      "(https://github.com/canonical/lightdm)"
+    ],
+    "name": "lightdm"
+  },
+  {
+    "#": [
+      "LightDM greeter that uses WebKit2 for theming via HTML/JavaScript.",
+      "(https://github.com/antergos/web-greeter)"
+    ],
+    "name": "lightdm-webkit2-greeter"
+  },
+  {
+    "#": [
+      "Modern and full-featured LightDM theme",
+      "(https://github.com/Litarvan/lightdm-webkit-theme-litarvan)"
+    ],
+    "name": "lightdm-webkit-theme-litarvan"
+  },
   "mopidy",
   "mpc",
   "ncmpcpp",
