@@ -31,6 +31,10 @@ arch_setup_package_system() {
 arch_update_system() {
   indent sudo pacman -Su --noconfirm
   indent paru -Su --noconfirm
+
+  if [ -x /usr/bin/upgrade-kernel ]; then
+    indent sudo /usr/bin/upgrade-kernel
+  fi
 }
 
 arch_install_base_packages() {
