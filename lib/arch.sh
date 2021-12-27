@@ -129,7 +129,7 @@ arch_finalize_graphical_setup() {
     arch_start_service vmware-vmblock-fuse.service
   fi
 
-  if ! grep -q '^#greeter-session=' /etc/lightdm/lightdm.conf; then
+  if grep -q '^#greeter-session=' /etc/lightdm/lightdm.conf; then
     info "Initializing lightdm greeter-session"
     sudo sed -i -e 's|^#\(greeter-session\)=\(.*\)$|\1=\2|' \
       /etc/lightdm/lightdm.conf
@@ -138,6 +138,17 @@ arch_finalize_graphical_setup() {
     /etc/lightdm/lightdm.conf; then
     info "Setting lightdm greeter"
     sudo sed -i -e 's|^\(greeter-session\)=.*$|\1=lightdm-webkit2-greeter|' \
+      /etc/lightdm/lightdm.conf
+  fi
+  if grep -q '^#user-session=' /etc/lightdm/lightdm.conf; then
+    info "Initializing lightdm user-session"
+    sudo sed -i -e 's|^#\(user-session\)=\(.*\)$|\1=\2|' \
+      /etc/lightdm/lightdm.conf
+  fi
+  if ! grep -q '^user-session=regolith$' \
+    /etc/lightdm/lightdm.conf; then
+    info "Setting lightdm user-session"
+    sudo sed -i -e 's|^\(user-session\)=.*$|\1=regolith|' \
       /etc/lightdm/lightdm.conf
   fi
   if ! grep -q -E '^webkit_theme\s*=\s*litarvan$' \
