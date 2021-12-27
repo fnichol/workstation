@@ -22,6 +22,10 @@
     "name": "xf86-input-libinput"
   },
   {
+    "#": "Create an index of scalable font files for X",
+    "name": "xorg-mkfontscale"
+  },
+  {
     "#": "Xorg X server",
     "name": "xorg-server"
   },
