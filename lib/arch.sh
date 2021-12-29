@@ -52,7 +52,43 @@ arch_install_headless_packages() {
 }
 
 arch_finalize_headless_setup() {
-  local svc=tailscaled.service
+  local svc
+
+  # As prescribed by System76's support article for Arch Linux
+  #
+  # See: https://support.system76.com/articles/system76-software
+  if [ "$(cat /sys/class/dmi/id/product_name)" = "Thelio Major" ]; then
+    need_cmd getent
+
+    arch_install_aur_pkg system76-driver
+    svc=system76
+    arch_enable_service "$svc"
+    arch_start_service "$svc"
+
+    if ! getent group adm | grep -q "$USER"; then
+      need_cmd gpasswd
+
+      info "Adding '$USER' to adm group"
+      indent sudo gpasswd -a "$USER" adm
+    fi
+
+    svc=system76-firmware-daemon
+    arch_install_aur_pkg "$svc"
+    arch_enable_service "$svc"
+
+    arch_install_aur_pkg firmware-manager
+    arch_install_aur_pkg system76-dkms
+    arch_install_aur_pkg gnome-shell-extension-system76-power-git
+    arch_install_aur_pkg system76-io-dkms
+
+    svc=system76-power
+    arch_install_aur_pkg "$svc"
+    arch_enable_service "$svc"
+
+    arch_install_aur_pkg pm-utils
+  fi
+
+  svc=tailscaled.service
   if [ -f "/usr/lib/systemd/system/$svc" ]; then
     arch_enable_service "$svc"
     arch_start_service "$svc"
