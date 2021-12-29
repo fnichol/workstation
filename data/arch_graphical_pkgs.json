@@ -10,14 +10,6 @@
   "chromium",
   {
     "#": [
-      "An open-source, GPU-accelerated Electron application that emulates",
-      "the Apple Music website in a customizable interface.",
-      "(https://github.com/CiderApp/Apple-Music-Electron.git)"
-    ],
-    "name": "apple-music-electron-bin"
-  },
-  {
-    "#": [
       "The CUPS Printing System - daemon package",
       "(https://openprinting.github.io/cups/)"
     ],

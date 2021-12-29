@@ -5,6 +5,14 @@
   },
   {
     "#": [
+      "An open-source, GPU-accelerated Electron application that emulates",
+      "the Apple Music website in a customizable interface.",
+      "(https://github.com/CiderApp/Apple-Music-Electron.git)"
+    ],
+    "name": "apple-music-electron-bin"
+  },
+  {
+    "#": [
       "Patched font Inconsolata from the nerd-fonts library",
       "(https://github.com/ryanoasis/nerd-fonts)"
     ],
