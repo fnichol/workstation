@@ -1349,22 +1349,24 @@ install_pkgs_from_json() {
 
 manage_homesick_repo() {
   local repo="$1"
-  local repo_dir castle
+  local repo_dir castle cmd
 
   need_cmd bash
   need_cmd cut
 
   castle="$(echo "$repo" | cut -d '/' -f 2)"
   repo_dir="$HOME/.homesick/repos/$castle"
+  cmd="$HOME/.homesick/repos/homeshick/bin/homeshick"
 
   if [ ! -d "$repo_dir" ]; then
     info "Installing repo $repo for '$USER'"
-    indent bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
-      && homeshick --batch clone $repo"
+    indent "$cmd" --batch clone "$repo"
   fi
 
-  indent bash -c ". $HOME/.homesick/repos/homeshick/homeshick.sh \
-    && homeshick --batch pull $castle && homeshick --batch link $castle"
+  if ! "$cmd" check "$castle"; then
+    indent "$cmd" --batch pull "$castle"
+    indent "$cmd" --batch link "$castle"
+  fi
 }
 
 # Prints the latest stable release of Go.
