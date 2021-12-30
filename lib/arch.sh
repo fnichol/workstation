@@ -83,6 +83,7 @@ arch_finalize_headless_setup() {
     svc=system76-power
     arch_install_aur_pkg "$svc"
     arch_enable_service "$svc"
+    arch_start_service "$svc"
 
     arch_install_aur_pkg pm-utils
   fi
