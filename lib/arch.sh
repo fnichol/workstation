@@ -78,7 +78,6 @@ arch_finalize_headless_setup() {
 
     arch_install_aur_pkg firmware-manager
     arch_install_aur_pkg system76-dkms
-    arch_install_aur_pkg gnome-shell-extension-system76-power-git
     arch_install_aur_pkg system76-io-dkms
 
     svc=system76-power
