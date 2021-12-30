@@ -1361,6 +1361,7 @@ manage_homesick_repo() {
   if [ ! -d "$repo_dir" ]; then
     info "Installing repo $repo for '$USER'"
     indent "$cmd" --batch clone "$repo"
+    indent "$cmd" --batch link "$castle"
   fi
 
   if ! "$cmd" check "$castle"; then
