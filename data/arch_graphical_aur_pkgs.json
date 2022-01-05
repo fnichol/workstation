@@ -13,6 +13,13 @@
   },
   {
     "#": [
+      "Manage all your JetBrains Projects and Tools",
+      "(https://www.jetbrains.com/toolbox/)"
+    ],
+    "name": "jetbrains-toolbox"
+  },
+  {
+    "#": [
       "Patched font Inconsolata from the nerd-fonts library",
       "(https://github.com/ryanoasis/nerd-fonts)"
     ],
