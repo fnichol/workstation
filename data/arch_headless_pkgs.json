@@ -4,6 +4,7 @@
   "base-devel",
   "cmake",
   "docker",
+  "docker-compose",
   "eksctl",
   "fd",
   "ffmpeg",
