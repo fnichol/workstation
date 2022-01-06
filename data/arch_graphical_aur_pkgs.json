@@ -5,11 +5,12 @@
   },
   {
     "#": [
-      "An open-source, GPU-accelerated Electron application that emulates",
-      "the Apple Music website in a customizable interface.",
-      "(https://github.com/CiderApp/Apple-Music-Electron.git)"
+      "Project Cider. A new look into listening and enjoying music in style",
+      " and performance. This is a git package, thus it compiles straight",
+      "from the GitHub repository.",
+      "(https://github.com/CiderApp/Cider.git)"
     ],
-    "name": "apple-music-electron-bin"
+    "name": "cider"
   },
   {
     "#": [
