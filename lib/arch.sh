@@ -33,7 +33,7 @@ arch_update_system() {
   indent paru -Su --noconfirm
 
   if [ -x /usr/bin/upgrade-kernel ]; then
-    indent sudo /usr/bin/upgrade-kernel
+    sudo /usr/bin/upgrade-kernel
   fi
 }
 
