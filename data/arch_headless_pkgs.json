@@ -2,6 +2,7 @@
   "aws-cli",
   "axel",
   "base-devel",
+  "clang",
   "cmake",
   "docker",
   "docker-compose",
