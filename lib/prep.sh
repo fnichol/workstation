@@ -469,6 +469,20 @@ init() {
     # settings we’re about to change
     osascript -e 'tell application "System Preferences" to quit'
   fi
+  sanitize_path
+}
+
+sanitize_path() {
+  section "Sanitizing PATH entries that could affect package installation/setup"
+  # If a volta installation is detected, remove it from PATH so that
+  # built-from-source packages such as cider on Arch Linux won't use
+  # volta-provided Node/NPM packages and rather prefer system-provided versions
+  # (as those packages would expect)
+  local volta_bin_path="$HOME/.volta/bin"
+  if echo "$PATH" | tr ':' '\n' | grep -q "^${volta_bin_path}$"; then
+    info "Removing volta bin path '$volta_bin_path' from PATH"
+    PATH="$(echo "$PATH" | sed -e "s,${volta_bin_path}:\?,,")"
+  fi
 }
 
 set_hostname() {
