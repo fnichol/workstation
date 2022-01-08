@@ -17,6 +17,14 @@
   "lame",
   "libyaml",
   "lld",
+  {
+    "#": [
+      "Fast DNS library supporting recent RFCs.",
+      "Includes drill which replaces dig.",
+      "(https://www.nlnetlabs.nl/projects/ldns/)"
+    ],
+    "name": "ldns"
+  },
   "lynx",
   "mercurial",
   "mold",
