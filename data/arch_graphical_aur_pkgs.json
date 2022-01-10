@@ -42,6 +42,15 @@
     "name": "regolith-full"
   },
   {
+    "#": [
+      "Keybinding viewer for i3 and other programs.",
+      "Even though this is included with `regolith-full`, it is included as",
+      "it's used by `fnichol/dotx`'s i3 configuration.",
+      "(https://github.com/regolith-linux/regolith-desktop)"
+    ],
+    "name": "remontoire-regolith"
+  },
+  {
     "#": ["Slack Desktop (Beta) for Linux (https://slack.com/downloads)"],
     "name": "slack-desktop"
   },

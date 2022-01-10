@@ -86,7 +86,14 @@
     ],
     "name": "network-manager-applet"
   },
-  "otf-overpass",
+  {
+    "#": [
+      "X compositor that may fix tearing issues.",
+      "Used by `fnichol/dotx`'s i3 configuration.",
+      "(https://github.com/yshui/picom)"
+    ],
+    "name": "picom"
+  },
   "playerctl",
   "pulseaudio-alsa",
   "pulsemixer",
@@ -110,9 +117,26 @@
   "vlc",
   {
     "#": [
+      "Command line tools that assist applications with a variety of desktop",
+      "integration tasks, including programs such as",
+      "`xdg-open` and `xdg-settings`",
+      "(https://www.freedesktop.org/wiki/Software/xdg-utils/)"
+    ],
+    "name": "xdg-utils"
+  },
+  {
+    "#": [
       "Used to support clipboard copy/paste with the",
       "terminal for aliases such as `pbcopy` and `pbpaste`."
     ],
     "name": "xsel"
+  },
+  {
+    "#": [
+      "Display graphical dialog boxes from shell scripts.",
+      "Used by `fnichol/dotx`'s i3 configuration.",
+      "(https://gitlab.gnome.org/GNOME/zenity)"
+    ],
+    "name": "zenity"
   }
 ]
