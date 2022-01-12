@@ -12,6 +12,7 @@
   "libxml2",
   "lynx",
   "mercurial",
+  "neovim",
   "parallel",
   "pkg-config",
   "rsnapshot",

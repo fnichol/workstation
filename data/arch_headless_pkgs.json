@@ -30,6 +30,7 @@
   "mercurial",
   "mold",
   "minikube",
+  "neovim",
   "openbsd-netcat",
   "packer",
   "parallel",

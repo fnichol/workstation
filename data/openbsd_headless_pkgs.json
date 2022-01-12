@@ -18,6 +18,7 @@
   "lynx",
   "m4",
   "mercurial",
+  "neovim",
   "packer",
   "parallel",
   "protobuf",
