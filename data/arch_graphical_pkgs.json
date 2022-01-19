@@ -88,6 +88,15 @@
   },
   {
     "#": [
+      "Google Noto emoji fonts.",
+      "A font supporting emoji is required for full support with the",
+      "starship prompt.",
+      "(https://www.google.com/get/noto/)"
+    ],
+    "name": "noto-fonts-emoji"
+  },
+  {
+    "#": [
       "X compositor that may fix tearing issues.",
       "Used by `fnichol/dotx`'s i3 configuration.",
       "(https://github.com/yshui/picom)"
