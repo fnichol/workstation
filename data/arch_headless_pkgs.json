@@ -11,6 +11,7 @@
   "ffmpeg",
   "flac",
   "fzf",
+  "github-cli",
   "gnupg",
   "graphviz",
   "helm",
