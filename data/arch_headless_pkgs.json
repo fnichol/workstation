@@ -36,6 +36,7 @@
   "packer",
   "parallel",
   "protobuf",
+  "python-pip",
   "rsnapshot",
   "rsync",
   "shellcheck",
