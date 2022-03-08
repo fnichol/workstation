@@ -9,6 +9,7 @@
   "flac",
   "fzf",
   "gettext",
+  "git-delta",
   "gmake",
   "graphviz",
   "helm",

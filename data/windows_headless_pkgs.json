@@ -1,6 +1,7 @@
 [
   "bat",
   "cmake",
+  "delta",
   "docker-for-windows",
   "fd",
   "fzf",
