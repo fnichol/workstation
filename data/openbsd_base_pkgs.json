@@ -1,6 +1,7 @@
 [
   "bash",
   "curl",
+  "delta",
   "gawk",
   "git",
   "ggrep",

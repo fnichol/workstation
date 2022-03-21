@@ -4,6 +4,7 @@
   "curl",
   "gawk",
   "git",
+  "git-delta",
   "gvim",
   "htop",
   "inetutils",

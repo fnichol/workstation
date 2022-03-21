@@ -5,6 +5,7 @@
   "curl",
   "gawk",
   "git",
+  "git-delta",
   "htop",
   "mg",
   "mosh",
