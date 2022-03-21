@@ -751,7 +751,7 @@ install_base_dot_configs() {
 
   if [ ! -f "$HOME/.homesick/repos/homeshick/homeshick.sh" ]; then
     info "Installing homeshick for '$USER'"
-    indent git clone --depth 1 git://github.com/andsens/homeshick.git \
+    indent git clone --depth 1 https://github.com/andsens/homeshick.git \
       "$HOME/.homesick/repos/homeshick"
   fi
 
