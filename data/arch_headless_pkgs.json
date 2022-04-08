@@ -35,6 +35,7 @@
   "openbsd-netcat",
   "packer",
   "parallel",
+  "postgresql-libs",
   "protobuf",
   "python-pip",
   "rsnapshot",
