@@ -35,6 +35,14 @@
   "firefox",
   {
     "#": [
+      "Free implementation of the Remote Desktop Protocol (RDP).",
+      "Used as the RDP implementation with Remmina as the main GUI.",
+      "(https://www.freerdp.com/)"
+    ],
+    "name": "freerdp"
+  },
+  {
+    "#": [
       "Stores passwords and encryption keys",
       "(https://wiki.gnome.org/Projects/GnomeKeyring)"
     ],
@@ -120,6 +128,13 @@
   },
   "pulseaudio-alsa",
   "pulsemixer",
+  {
+    "#": [
+      "Remote desktop client written in GTK+.",
+      "(https://www.remmina.org/)"
+    ],
+    "name": "remmina"
+  },
   {
     "#": [
       "GNOME application for managing keys in GNOME keyring",
