@@ -46,6 +46,13 @@
   "sqlite",
   "sshuttle",
   "starship",
+  {
+    "#": [
+      "Terminal UI stress test and monitoring tool.",
+      "(https://github.com/amanusk/s-tui)"
+    ],
+    "name": "s-tui"
+  },
   "syncthing",
   "tailscale",
   "unrar",

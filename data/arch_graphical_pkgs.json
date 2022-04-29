@@ -111,6 +111,13 @@
     "name": "picom"
   },
   "playerctl",
+  {
+    "#": [
+      "Graphical hardware temperature monitoring application.",
+      "(https://wpitchoune.net/psensor)"
+    ],
+    "name": "psensor"
+  },
   "pulseaudio-alsa",
   "pulsemixer",
   {
