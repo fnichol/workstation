@@ -251,6 +251,35 @@ arch_finalize_graphical_setup() {
     ' /etc/pam.d/login >"$tmp_login"
     sudo install -m 644 -o root -g root "$tmp_login" /etc/pam.d/login
   fi
+
+  local xinitrc_d=/etc/X11/xinit/xinitrc.d/95-user-xinitrc.d.sh
+  if [ ! -f "$xinitrc_d" ]; then
+    need_cmd chmod
+    need_cmd tee
+
+    info "Creating '$xinitrc_d'"
+    cat <<-'EOF' | sudo tee "$xinitrc_d" >/dev/null
+	#!/bin/sh
+
+	if [ -d $HOME/.xinit/xinitrc.d ] ; then
+	 for f in $HOME/.xinit/xinitrc.d/?*.sh ; do
+	  [ -x "$f" ] && . "$f"
+	 done
+	 unset f
+	fi
+	EOF
+    sudo chmod 0755 "$xinitrc_d"
+  fi
+
+  if ! grep -q -E '^# regolith 1.x compat$' /etc/regolith/i3/config; then
+    info "Adding Regolith Linux 1.x compat config.d includes"
+    cat <<-'EOF' | sudo tee -a /etc/regolith/i3/config >/dev/null
+
+	# regolith 1.x compat
+	# Include any user i3 partials
+	include $HOME/.config/regolith/i3/config.d/*
+	EOF
+  fi
 }
 
 arch_build_paru() {
