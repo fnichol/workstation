@@ -80,8 +80,8 @@ arch_finalize_headless_setup() {
     arch_install_aur_pkg system76-dkms
     arch_install_aur_pkg system76-io-dkms
 
-    svc=system76-power
-    arch_install_aur_pkg "$svc"
+    svc=com.system76.PowerDaemon.service
+    arch_install_aur_pkg "system76-power"
     arch_enable_service "$svc"
     arch_start_service "$svc"
 
