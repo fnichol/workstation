@@ -93,6 +93,10 @@ arch_finalize_headless_setup() {
     arch_enable_service "$svc"
     arch_start_service "$svc"
   fi
+
+  svc="syncthing@$USER.service"
+  arch_enable_service "$svc"
+  arch_start_service "$svc"
 }
 
 arch_install_graphical_packages() {
