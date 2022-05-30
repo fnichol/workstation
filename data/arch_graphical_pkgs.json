@@ -6,7 +6,6 @@
     ],
     "name": "alacritty"
   },
-  "alsa-utils",
   "chromium",
   {
     "#": [
@@ -119,6 +118,13 @@
   },
   {
     "#": [
+      "PulseAudio Volume Control",
+      "(https://freedesktop.org/software/pulseaudio/pavucontrol/)"
+    ],
+    "name": "pavucontrol"
+  },
+  {
+    "#": [
       "X compositor that may fix tearing issues.",
       "Used by `fnichol/dotx`'s i3 configuration.",
       "(https://github.com/yshui/picom)"
@@ -133,8 +139,48 @@
     ],
     "name": "psensor"
   },
-  "pulseaudio-alsa",
-  "pulsemixer",
+  {
+    "#": [
+      "Session / policy manager implementation for PipeWire",
+      "",
+      "NOTE: this package should be installed before the other PipeWire",
+      "       packages so that no explicit user choices get forced",
+      "(https://pipewire.pages.freedesktop.org/wireplumber/)"
+    ],
+    "name": "wireplumber"
+  },
+  {
+    "#": [
+      "Low-latency audio/video router and processor",
+      "(https://pipewire.org/)"
+    ],
+    "name": "pipewire"
+  },
+  {
+    "#": [
+      "Low-latency audio/video router and processor - ALSA configuration"
+    ],
+    "name": "pipewire-alsa"
+  },
+  {
+    "#": [
+      "Low-latency audio/video router and processor - JACK support"
+    ],
+    "name": "pipewire-jack"
+  },
+  {
+    "#": [
+      "Low-latency audio/video router and processor - PulseAudio replacement"
+    ],
+    "name": "pipewire-pulse"
+  },
+  {
+    "#": [
+      "PipeWire Graph Qt GUI Interface",
+      "(https://gitlab.freedesktop.org/rncbc/qpwgraph)"
+    ],
+    "name": "qpwgraph"
+  },
   {
     "#": [
       "Remote desktop client written in GTK+.",
