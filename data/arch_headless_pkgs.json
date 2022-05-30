@@ -46,6 +46,7 @@
   "sqlite",
   "sshuttle",
   "starship",
+  "stylua",
   {
     "#": [
       "Terminal UI stress test and monitoring tool.",
