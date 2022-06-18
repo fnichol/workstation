@@ -13,12 +13,17 @@
 .PARAMETER Skip
     Tasks to skip
     [values:  Hostname, PkgInit, UpdateSystem, BasePkgs, Preferences,
-              HeadlessPkgs, Rust, Ruby, Go, Node, GraphicalPkgs]
+              SSH, BaseFinalize, HeadlessPkgs, Rust, Ruby, Go,
+              Node, HeadlessFinalize, GraphicalPkgs, GraphicalFinalize]
 
 .PARAMETER Only
     Single tasks to run
     [values:  Hostname, PkgInit, UpdateSystem, BasePkgs, Preferences,
-              HeadlessPkgs, Rust, Ruby, Go, Node, GraphicalPkgs]
+              SSH, BaseFinalize, HeadlessPkgs, Rust, Ruby, Go,
+              Node, HeadlessFinalize, GraphicalPkgs, GraphicalFinalize]
+
+.PARAMETER Hostname
+    Hostname for system
 #>
 
 param (
@@ -26,14 +31,18 @@ param (
   [string]$Profile = "Graphical",
 
   [ValidateSet("Hostname", "PkgInit", "UpdateSystem", "BasePkgs", "Preferences",
-    "SSH", "HeadlessPkgs", "Rust", "Ruby", "Go", "Node", "GraphicalPkgs")]
+    "SSH", "BaseFinalize", "HeadlessPkgs", "Rust", "Ruby", "Go", "Node",
+    "HeadlessFinalize", "GraphicalPkgs", "GraphicalFinalize")]
   [AllowEmptyCollection()]
   [string[]]$Skip = @(),
 
   [ValidateSet("Hostname", "PkgInit", "UpdateSystem", "BasePkgs", "Preferences",
-    "SSH", "HeadlessPkgs", "Rust", "Ruby", "Go", "Node", "GraphicalPkgs")]
+    "SSH", "BaseFinalize", "HeadlessPkgs", "Rust", "Ruby", "Go", "Node",
+    "HeadlessFinalize", "GraphicalPkgs", "GraphicalFinalize")]
   [AllowEmptyCollection()]
-  [string[]]$Only = @()
+  [string[]]$Only = @(),
+
+  [string]$Hostname
 )
 
 function Invoke-Main {
@@ -44,26 +53,33 @@ function Invoke-Main {
 
   Init
 
-  if (Test-InvokeTask "Hostname")     { Set-Hostname }
-  if (Test-InvokeTask "PkgInit")      { Init-PackageSystem }
-  if (Test-InvokeTask "UpdateSystem") { Update-System }
-  if (Test-InvokeTask "BasePkgs")     { Install-BasePackages }
-  if (Test-InvokeTask "Preferences")  { Set-Preferences }
-
-  if (($Profile -eq "Headless") -or ($Profile -eq "Graphical")) {
+  try {
+    if (Test-InvokeTask "Hostname")     { Set-Hostname }
+    if (Test-InvokeTask "PkgInit")      { Initialize-PackageSystem }
+    if (Test-InvokeTask "UpdateSystem") { Update-System }
+    if (Test-InvokeTask "BasePkgs")     { Install-BasePackages }
+    if (Test-InvokeTask "Preferences")  { Set-Preferences }
     if (Test-InvokeTask "SSH")          { Install-SSH }
-    if (Test-InvokeTask "HeadlessPkgs") { Install-HeadlessPackages }
-    if (Test-InvokeTask "Rust")         { Install-Rust }
-    if (Test-InvokeTask "Ruby")         { Install-Ruby }
-    if (Test-InvokeTask "Go")           { Install-Go }
-    if (Test-InvokeTask "Node")         { Install-Node }
-  }
+    if (Test-InvokeTask "BaseFinalize") { Invoke-BaseFinalize }
 
-  if ($Profile -eq "Graphical") {
-    if (Test-InvokeTask "GraphicalPkgs") { Install-GraphicalPackages }
-  }
+    if (($Profile -eq "Headless") -or ($Profile -eq "Graphical")) {
+      if (Test-InvokeTask "HeadlessPkgs")     { Install-HeadlessPackages }
+      if (Test-InvokeTask "Rust")             { Install-Rust }
+      if (Test-InvokeTask "Ruby")             { Install-Ruby }
+      if (Test-InvokeTask "Go")               { Install-Go }
+      if (Test-InvokeTask "Node")             { Install-Node }
+      if (Test-InvokeTask "HeadlessFinalize") { Invoke-HeadlessFinalize }
+    }
 
-  Finish
+    if ($Profile -eq "Graphical") {
+      if (Test-InvokeTask "GraphicalPkgs") { Install-GraphicalPackages }
+      if (Test-InvokeTask "GraphicalFinalize") { Invoke-GraphicalFinalize }
+    }
+
+    Finish
+  } finally {
+    Invoke-Cleanup
+  }
 }
 
 Invoke-Main

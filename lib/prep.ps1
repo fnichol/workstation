@@ -11,7 +11,16 @@ function Init {
 
   Write-HeaderLine "Setting up workstation '$name'"
 
-  Ensure-AdministratorPrivileges
+  Assert-NonAdministrativePrivileges
+  Install-Gsudo
+  Get-Sudo
+}
+
+function Install-Gsudo {
+  if (-not (Get-Command gsudo -ErrorAction SilentlyContinue)) {
+    Install-Scoop
+    Install-Package "gsudo"
+  }
 }
 
 function Set-Hostname {
@@ -19,20 +28,58 @@ function Set-Hostname {
     return
   }
 
-  # TODO fn: implement!
-  Write-Output "Set-Hostname not implemented yet"
+  $current = (Get-ComputerInfo).CsName
+  if (-not ("$current" -eq "$Hostname")) {
+    Write-HeaderLine "Setting hostname to '$Hostname"
+    $newname = $Hostname.Split('.')[0]
+    gsudo Rename-Computer -NewName "$newname" -Confirm
+
+    Write-WarnLine ""
+    Write-WarnLine `
+      "Setting hostname requires restart. Reboot, then re-run $program"
+    Write-WarnLine ""
+    Write-Failure "Reboot Required"
+  }
 }
 
-function Init-PackageSystem {
-  Write-HeaderLine "Setting up package system"
+function Initialize-PackageSystem {
+  Write-HeaderLine "Setting up package systems"
 
-  if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-    $env:chocolateyUseWindowsCompression = 'true'
-    Set-ExecutionPolicy Bypass -Scope Process -Force
-    [System.Net.ServicePointManager]::SecurityProtocol =
-      [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-    Invoke-Expression ((New-Object System.Net.WebClient).
-      DownloadString('https://chocolatey.org/install.ps1'))
+  Install-Scoop
+  Install-Chocolatey
+}
+
+function Install-Scoop {
+  if (-not (Test-Command scoop)) {
+    Write-InfoLine "Installing the Scoop command-line installer"
+
+    Set-ExecutionPolicy RemoteSigned -scope CurrentUser -Force
+    Invoke-RestMethod https://get.scoop.sh | Invoke-Expression
+  }
+
+  $buckets = @(scoop bucket list | ForEach-Object { $_.Name })
+  foreach ($bucket in @("extras", "nerd-fonts")) {
+    if (-not ($buckets -contains "$bucket")) {
+      Write-InfoLine "Adding Scoop bucket '$bucket"
+      scoop bucket add "$bucket"
+    }
+  }
+}
+
+function Install-Chocolatey {
+  if (-not (Test-Command choco)) {
+    Write-InfoLine "Installing the Chocolatey package manager"
+
+    Confirm-Command gsudo
+
+    Invoke-gsudo {
+      $env:chocolateyUseWindowsCompression = 'true'
+      Set-ExecutionPolicy Bypass -Scope Process -Force
+      [System.Net.ServicePointManager]::SecurityProtocol =
+        [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+      Invoke-Expression ((New-Object System.Net.WebClient).
+        DownloadString('https://chocolatey.org/install.ps1'))
+    }
   }
 }
 
@@ -40,12 +87,24 @@ function Update-System {
   Write-HeaderLine "Applying system updates"
 
   if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
-    Install-PackageProvider -Name NuGet -Force
-    Install-Module PSWindowsUpdate -Force
+    Write-InfoLine "Installing PSWindowsUpdate commandlet"
+    gsudo Install-PackageProvider -Name NuGet -Force
+    gsudo Install-Module PSWindowsUpdate -Force
   }
 
+  Write-InfoLine "Installing Windows updates"
   # TODO fn: stop this from blocking
-  # Get-WUInstall -AcceptAll -AutoReboot -Verbose
+  Invoke-gsudo { Get-WUInstall -AcceptAll -AutoReboot -Verbose }
+
+  Write-InfoLine "Updating Scoop packages"
+  Confirm-Command scoop
+  Install-Package git
+  scoop update
+  scoop update --all
+
+  Write-InfoLine "Updating Chocolatey packages"
+  Confirm-Command choco
+  gsudo choco upgrade all
 }
 
 function Install-BasePackages {
@@ -53,7 +112,8 @@ function Install-BasePackages {
   Install-PkgsFromJson "$dataPath\windows_base_pkgs.json"
 
   if (-not (Get-Module -ListAvailable -Name posh-git)) {
-    Install-Module posh-git -Force
+    Write-InfoLine "Installing posh-git module"
+    gsudo Install-Module posh-git -Force
   }
 }
 
@@ -64,6 +124,7 @@ function Set-Preferences {
   Write-Host "Set-Preferences not implemented yet"
 }
 
+# @TODO(fnichol): finish up!
 function Install-SSH {
   Write-HeaderLine "Setting up SSH"
 
@@ -84,41 +145,39 @@ function Install-SSH {
   }
 }
 
+function Invoke-BaseFinalize {
+  Write-HeaderLine "Finalizing base setup"
+}
+
 function Install-HeadlessPackages {
   Write-HeaderLine "Installing headless packages"
   Install-PkgsFromJson "$dataPath\windows_headless_pkgs.json"
+  Install-ChocolateyPkgsFromJson `
+    "$dataPath\windows_headless_chocolatey_pkgs.json"
+  Install-Wsl
+}
 
-  $wslstate = (Get-WindowsOptionalFeature -Online `
-    -FeatureName Microsoft-Windows-Subsystem-Linux).State
+function Install-Wsl {
+  $wslstate = Invoke-gsudo {
+    (Get-WindowsOptionalFeature -Online `
+      -FeatureName Microsoft-Windows-Subsystem-Linux).State
+  }
 
   # Install Windows Subsystem for Linux if it is disabled
-  if ($wslstate -eq "Disabled") {
-    Write-InfoLine "Installing 'Microsoft-Windows-Subsystem-Linux'"
-    Enable-WindowsOptionalFeature -Online `
-      -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
-  }
-
-  $wsldistro = "wsl-ubuntu-1804"
-  $wslroot = "$env:SystemDrive\Distros"
-  $wsldst = "$wslroot\$wsldistro"
-
-  # Download and install the Linux distribution if not found
-  if (-not (Test-Path "$wsldst")) {
-    $wslzip = "$env:TEMP\$wsldistro.zip"
-
-    Write-InfoLine "Downloading '$wsldistro'"
-    # Disable download progress bar which slows the download
-    $ProgressPreference = 'silentlyContinue'
-    Invoke-WebRequest -Uri "https://aka.ms/$wsldistro" `
-      -OutFile "$wslzip" -UseBasicParsing
-    $ProgressPreference = 'Continue'
-    if (-not (Test-Path "$wslroot")) {
-      New-Item -ItemType directory -Path "$wslroot"
+  if ($wslstate.Value -eq "Disabled") {
+    Write-InfoLine "Enabling 'wsl'"
+    Invoke-gsudo {
+      Enable-WindowsOptionalFeature -Online `
+        -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
     }
-    Write-InfoLine "Extracting '$wsldistro' into $wsldst"
-    Expand-Archive "$wslzip" "$wsldst"
-    Remove-Item "$wslzip"
+
+    Write-WarnLine ""
+    Write-WarnLine "Enabling WSL requires restart. Reboot, then re-run $program"
+    Write-WarnLine ""
+    Write-Failure "Reboot Required"
   }
+
+  Install-Package "archwsl"
 }
 
 function Install-Rust {
@@ -158,21 +217,66 @@ function Install-Ruby {
 
 function Install-Go {
   Write-HeaderLine "Setting up Go"
-  Install-Package "golang"
+  Install-Package "go"
 }
 
 function Install-Node {
   Write-HeaderLine "Setting up Node"
-  Install-Package "nodejs-lts"
+  Install-Package "nodejs"
+}
+
+function Invoke-HeadlessFinalize {
+  Write-HeaderLine "Finalizing headless setup"
 }
 
 function Install-GraphicalPackages {
   Write-HeaderLine "Installing graphical packages"
   Install-PkgsFromJson "$dataPath\windows_graphical_pkgs.json"
+  Install-ChocolateyPkgsFromJson `
+    "$dataPath\windows_graphical_chocolatey_pkgs.json"
+}
+
+function Invoke-GraphicalFinalize {
+  Write-HeaderLine "Finalizing graphical setup"
 }
 
 function Finish {
   Write-HeaderLine "Finished setting up workstation, enjoy!"
+}
+
+function Install-Package($Pkg) {
+  Install-WindowsPackage "$Pkg"
+}
+
+function Install-WindowsPackage($Pkg) {
+  Install-ScoopPackage($Pkg)
+}
+
+function Install-ScoopPackage($Pkg) {
+  $installed = @(
+    @(scoop export) | ForEach-Object { $_.split(' (')[0] }
+  )
+
+  if ($installed -contains "$Pkg") {
+    return
+  }
+
+  Write-InfoLine "Installing Scoop package '$Pkg'"
+  scoop install "$Pkg"
+}
+
+function Install-ChocolateyPackage($Pkg) {
+  $installed = @(
+    @(choco list --limit-output --local-only) |
+      ForEach-Object { $_.split('|')[0] }
+  )
+
+  if ($installed -contains "$Pkg") {
+    return
+  }
+
+  Write-InfoLine "Installing Chocolatey package '$Pkg'"
+  gsudo choco install -y "$Pkg"
 }
 
 function Install-PkgsFromJson($Json) {
@@ -183,16 +287,10 @@ function Install-PkgsFromJson($Json) {
   }
 }
 
-function Install-Package($Pkg) {
-  $installed = @(
-    @(choco list --limit-output --local-only) |
-      ForEach-Object { $_.split('|')[0] }
-  )
+function Install-ChocolateyPkgsFromJson($Json) {
+  $pkgs = Get-Content "$Json" | ConvertFrom-Json
 
-  if ($installed -contains "$Pkg") {
-    return
+  foreach ($pkg in $pkgs) {
+    Install-ChocolateyPackage "$pkg"
   }
-
-  Write-InfoLine "Installing package '$Pkg'"
-  choco install -y "$Pkg"
 }

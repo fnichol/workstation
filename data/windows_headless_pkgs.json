@@ -1,17 +1,17 @@
 [
-  "bat",
   "cmake",
-  "docker-for-windows",
+  "direnv",
   "fd",
   "fzf",
-  "helm",
-  "kind",
-  "minikube",
-  "protoc",
-  "ripgrep",
+  "hadolint",
+  "jo",
+  "neovim",
+  "shellcheck",
+  "shfmt",
   "starship",
-  "tailscale",
-  "visualstudio2019buildtools",
-  "visualstudio2019-workload-vctools",
-  "watchexec"
+  "stylua",
+  "vcredist2005",
+  "vcredist2022",
+  "watchexec",
+  "zoxide"
 ]
