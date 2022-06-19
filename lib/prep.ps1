@@ -32,13 +32,15 @@ function Set-Hostname {
   if (-not ("$current" -eq "$Hostname")) {
     Write-HeaderLine "Setting hostname to '$Hostname"
     $newname = $Hostname.Split('.')[0]
-    gsudo Rename-Computer -NewName "$newname" -Confirm
+    Invoke-gsudo { Rename-Computer -NewName "$using:newname" }
 
-    Write-WarnLine ""
-    Write-WarnLine `
-      "Setting hostname requires restart. Reboot, then re-run $program"
-    Write-WarnLine ""
-    Write-Failure "Reboot Required"
+    if (-not ($NoReboot)) {
+      Write-WarnLine ""
+      Write-WarnLine `
+        "Setting hostname requires restart. Reboot, then re-run $program"
+      Write-WarnLine ""
+      Restart-Computer -Force
+    }
   }
 }
 
@@ -182,10 +184,12 @@ function Install-Wsl {
         -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
     }
 
-    Write-WarnLine ""
-    Write-WarnLine "Enabling WSL requires restart. Reboot, then re-run $program"
-    Write-WarnLine ""
-    Write-Failure "Reboot Required"
+    if (-not ($NoReboot)) {
+      Write-WarnLine ""
+      Write-WarnLine "Enabling WSL requires restart. Reboot, then re-run $program"
+      Write-WarnLine ""
+      Restart-Computer -Force
+    }
   }
 
   Install-Package "archwsl"

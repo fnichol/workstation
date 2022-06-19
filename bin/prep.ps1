@@ -24,6 +24,9 @@
 
 .PARAMETER Hostname
     Hostname for system
+
+.PARAMETER NoReboot
+    Avoid restarting system, even when it might be necessary
 #>
 
 param (
@@ -42,7 +45,9 @@ param (
   [AllowEmptyCollection()]
   [string[]]$Only = @(),
 
-  [string]$Hostname
+  [string]$Hostname,
+
+  [switch]$NoReboot
 )
 
 function Invoke-Main {
