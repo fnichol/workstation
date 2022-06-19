@@ -164,9 +164,9 @@ function Invoke-BaseFinalize {
 
 function Install-HeadlessPackages {
   Write-HeaderLine "Installing headless packages"
-  Install-PkgsFromJson "$dataPath\windows_headless_pkgs.json"
   Install-ChocolateyPkgsFromJson `
     "$dataPath\windows_headless_chocolatey_pkgs.json"
+  Install-PkgsFromJson "$dataPath\windows_headless_pkgs.json"
   Install-Wsl
 }
 
@@ -246,9 +246,9 @@ function Invoke-HeadlessFinalize {
 
 function Install-GraphicalPackages {
   Write-HeaderLine "Installing graphical packages"
-  Install-PkgsFromJson "$dataPath\windows_graphical_pkgs.json"
   Install-ChocolateyPkgsFromJson `
     "$dataPath\windows_graphical_chocolatey_pkgs.json"
+  Install-PkgsFromJson "$dataPath\windows_graphical_pkgs.json"
 }
 
 function Invoke-GraphicalFinalize {
