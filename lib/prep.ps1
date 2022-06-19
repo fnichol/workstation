@@ -81,6 +81,12 @@ function Install-Chocolatey {
         DownloadString('https://chocolatey.org/install.ps1'))
     }
   }
+
+  $binpath = "$env:SystemDrive\ProgramData\chocolatey\bin"
+  if (-not (("$env:PATH" -split ";") -contains "$binpath")) {
+    Write-InfoLine "Adding '$binpath' to env:PATH"
+    $env:PATH += ";$binpath"
+  }
 }
 
 function Update-System {
