@@ -17,9 +17,9 @@ function Init {
 }
 
 function Install-Gsudo {
-  if (-not (Get-Command gsudo -ErrorAction SilentlyContinue)) {
+  if (-not (Test-Command gsudo)) {
     Install-Scoop
-    Install-Package "gsudo"
+    Install-Package gsudo
   }
 }
 
@@ -70,8 +70,6 @@ function Install-Chocolatey {
   if (-not (Test-Command choco)) {
     Write-InfoLine "Installing the Chocolatey package manager"
 
-    Confirm-Command gsudo
-
     Invoke-gsudo {
       $env:chocolateyUseWindowsCompression = 'true'
       Set-ExecutionPolicy Bypass -Scope Process -Force
@@ -94,13 +92,19 @@ function Update-System {
 
   if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
     Write-InfoLine "Installing PSWindowsUpdate commandlet"
-    gsudo Install-PackageProvider -Name NuGet -Force
-    gsudo Install-Module PSWindowsUpdate -Force
+    Invoke-gsudo {
+      Install-PackageProvider -Name NuGet -Force
+      Install-Module PSWindowsUpdate -Force
+    }
   }
 
   Write-InfoLine "Installing Windows updates"
   # TODO fn: stop this from blocking
-  Invoke-gsudo { Get-WUInstall -AcceptAll -AutoReboot -Verbose }
+  if ($NoReboot) {
+    Invoke-gsudo { Get-WUInstall -AcceptAll -Verbose }
+  } else {
+    Invoke-gsudo { Get-WUInstall -AcceptAll -Verbose -AutoReboot }
+  }
 
   Write-InfoLine "Updating Scoop packages"
   Confirm-Command scoop
@@ -110,7 +114,7 @@ function Update-System {
 
   Write-InfoLine "Updating Chocolatey packages"
   Confirm-Command choco
-  gsudo choco upgrade all
+  Invoke-gsudo { choco upgrade all }
 }
 
 function Install-BasePackages {
@@ -119,7 +123,7 @@ function Install-BasePackages {
 
   if (-not (Get-Module -ListAvailable -Name posh-git)) {
     Write-InfoLine "Installing posh-git module"
-    gsudo Install-Module posh-git -Force
+    Invoke-gsudo { Install-Module posh-git -Force }
   }
 }
 
@@ -282,7 +286,7 @@ function Install-ChocolateyPackage($Pkg) {
   }
 
   Write-InfoLine "Installing Chocolatey package '$Pkg'"
-  gsudo choco install -y "$Pkg"
+  Invoke-gsudo { choco install -y "$using:Pkg" }
 }
 
 function Install-PkgsFromJson($Json) {
