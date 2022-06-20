@@ -1,5 +1,7 @@
 [
   "tailscale",
+  "vcredist2005",
+  "vcredist140",
   "visualstudio2022buildtools",
   "visualstudio2022-workload-vctools"
 ]
