@@ -56,4 +56,4 @@ task:
       windows_container:
         dockerfile: .ci/Dockerfile.windowsservercore
         os_version: 2019
-      run_script: .\bin\prep.ps1 -Profile "$env:PROFILE -NoReboot"
+      run_script: .\bin\prep.ps1 -Profile "$env:PROFILE" -NoReboot
