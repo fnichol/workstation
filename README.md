@@ -11,17 +11,21 @@
 
 - [Supported Platforms](#supported-platforms)
 - [Installation](#installation)
-  * [New System](#new-system)
-  * [Existing System](#existing-system)
+  - [New System](#new-system)
+    - [Unix Platforms](#unix-platforms)
+    - [Windows Platforms](#windows-platforms)
+  - [Existing System](#existing-system)
 - [Usage](#usage)
+  - [Unix Platforms](#unix-platforms-1)
+  - [Windows Platforms](#windows-platforms-1)
 - [Development and Testing](#development-and-testing)
-  * [Alpine Linux](#alpine-linux)
-  * [Arch Linux](#arch-linux)
-  * [CentOS Linux](#centos-linux)
-  * [FreeBSD](#freebsd)
-  * [macOS](#macos)
-  * [OpenBSD](#openbsd)
-  * [Ubuntu Linux](#ubuntu-linux)
+  - [Alpine Linux](#alpine-linux)
+  - [Arch Linux](#arch-linux)
+  - [CentOS Linux](#centos-linux)
+  - [FreeBSD](#freebsd)
+  - [macOS](#macos)
+  - [OpenBSD](#openbsd)
+  - [Ubuntu Linux](#ubuntu-linux)
 - [Code of Conduct](#code-of-conduct)
 - [Issues](#issues)
 - [Contributing](#contributing)
@@ -40,9 +44,9 @@ also work):
 - CentOS (8)
 - FreeBSD (13.0)
 - macOS (10.15)
-- OpenBSD (7.0)
+- OpenBSD (7.1)
 - Ubuntu Linux (20.04)
-- Windows 10 (2004)
+- Windows 10 (21H2)
 
 ## Installation
 
@@ -50,6 +54,8 @@ There are probably 2 use cases: running on a brand new system (before Git is
 even installed), and on an existing system (presumably with Git installed).
 
 ### New System
+
+#### Unix Platforms
 
 ```sh
 wget https://github.com/fnichol/workstation/archive/master.tar.gz
@@ -63,7 +69,19 @@ Alternatively, if `wget` is not present you can use `curl`:
 curl -LO https://github.com/fnichol/workstation/archive/master.tar.gz
 ```
 
+#### Windows Platforms
+
+From a non-administrative PowerShell session:
+
+```ps1
+irm https://github.com/fnichol/workstation/archive/master.zip -OutFile master.zip
+Expand-Archive master.zip
+cd master\workstation-master
+```
+
 ### Existing System
+
+On either Windows or Unix platforms:
 
 ```sh
 git clone https://github.com/fnichol/workstation.git
@@ -71,6 +89,8 @@ cd workstation
 ```
 
 ## Usage
+
+### Unix Platforms
 
 To run the workstation prep with the `graphical` profile and set a hostname,
 provide your FQDN as the argument:
@@ -92,7 +112,7 @@ the `headless` profile can be done with:
 A full usage is reported with the `--help` flag:
 
 ```console
-> prep --help
+❯ prep --help
 prep 0.5.0
 
 Workstation Setup
@@ -112,17 +132,19 @@ OPTIONS:
     -o, --only=<T>[,<T>..]  Only run specific tasks
                             [values: hostname, pkg-init, update-system,
                             base-pkgs, preferences, keys, bashrc,
-                            base-dot-configs, base-finalize, headless-pkgs,
-                            rust, ruby, go, node, headless-finalize,
-                            graphical-pkgs, graphical-dot-configs,
-                            graphical-finalize]
+                            base-dot-configs, base-finalize,
+                            headless-pkgs, rust, ruby, go, node,
+                            headless-finalize, graphical-pkgs,
+                            graphical-dot-configs, graphical-finalize, vim,
+                            finish-base, finish-headless, finish-graphical]
     -s, --skip=<T>[,<T>..]  Skip specific tasks
                             [values: hostname, pkg-init, update-system,
                             base-pkgs, preferences, keys, bashrc,
-                            base-dot-configs, base-finalize, headless-pkgs,
-                            rust, ruby, go, node, headless-finalize,
-                            graphical-pkgs, graphical-dot-configs,
-                            graphical-finalize]
+                            base-dot-configs, base-finalize,
+                            headless-pkgs, rust, ruby, go, node,
+                            headless-finalize, graphical-pkgs,
+                            graphical-dot-configs, graphical-finalize, vim,
+                            finish-base, finish-headless, finish-graphical]
 
 ARGS:
     <FQDN>  The name for this workstation
@@ -137,6 +159,71 @@ To update the codebase to the current state of the main branch you can run:
 
 ```sh
 ./bin/update
+```
+
+### Windows Platforms
+
+On new Windows platforms, you'll need to update your execution policy to allow
+the current user to run external PowerShell scripts:
+
+```ps1
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+```
+
+To run the workstation prep with the `graphical` profile and set a hostname,
+provide your hostname with the `-Hostname` option:
+
+```ps1
+.\bin\prep -Hostname <HOSTNAME>
+
+```
+
+If a hostname isn't provided, then your hostname is left as-is.
+
+There are currently 3 profiles to select from: `base`, `headless`, and
+`graphical` with each profile building on the previous one. For example, running
+the `headless` profile can be done with:
+
+```ps1
+.\bin\prep -Profile headless
+
+```
+
+A full usage is provided using the `Get-Help` cmdlet with:
+
+```console
+PS workstation> Get-Help .\bin\prep
+
+NAME
+    .\bin\prep.ps1
+
+SYNOPSIS
+    Workstation setup
+
+
+SYNTAX
+    .\bin\prep.ps1 [[-Profile] <String>] [[-Skip] <String[]>]
+		[[-Only] <String[]>] [[-Hostname] <String>] [-NoReboot]
+    [<CommonParameters>]
+
+
+DESCRIPTION
+    This program sets up a workstation
+
+
+RELATED LINKS
+
+REMARKS
+    To see the examples, type: "get-help .\bin\prep.ps1 -examples".
+    For more information, type: "get-help .\bin\prep.ps1 -detailed".
+    For technical information, type: "get-help .\bin\prep.ps1 -full".
+
+```
+
+To update the codebase to the current state of the main branch you can run:
+
+```ps1
+.\bin\update
 ```
 
 ## Development and Testing
