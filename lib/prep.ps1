@@ -269,7 +269,7 @@ function Install-WindowsPackage($Pkg) {
 
 function Install-ScoopPackage($Pkg) {
   $installed = @(
-    @(scoop export) | ForEach-Object { $_.split(' (')[0] }
+    (scoop export | ConvertFrom-Json).apps | ForEach-Object { $_.Name }
   )
 
   if ($installed -contains "$Pkg") {
