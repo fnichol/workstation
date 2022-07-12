@@ -123,6 +123,7 @@
     ],
     "name": "pavucontrol"
   },
+  "pgadmin4",
   {
     "#": [
       "X compositor that may fix tearing issues.",
