@@ -118,6 +118,14 @@
   },
   {
     "#": [
+      "A powerful knowledge base that works on top of a local folder",
+      "of plain text Markdown files",
+      "(https://obsidian.md/)"
+    ],
+    "name": "obsidian"
+  },
+  {
+    "#": [
       "PulseAudio Volume Control",
       "(https://freedesktop.org/software/pulseaudio/pavucontrol/)"
     ],
