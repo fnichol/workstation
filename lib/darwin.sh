@@ -277,7 +277,7 @@ darwin_install_homebrew() {
     download \
       https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh \
       "$install_sh"
-    indent bash "$install_sh"
+    indent bash "$install_sh" </dev/null
   fi
 
   indent brew update
