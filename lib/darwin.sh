@@ -75,6 +75,9 @@ darwin_set_preferences() {
   info "Enable Dock magnification"
   defaults write com.apple.dock magnification -bool true
 
+  info "Disable recent apps in the Dock"
+  defaults write com.apple.dock show-recents -bool false
+
   info "Enable password immediately after screen saver starts"
   local domain=com.fnichol
   local organization=fnichol
