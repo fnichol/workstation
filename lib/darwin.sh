@@ -179,8 +179,6 @@ darwin_set_preferences() {
 
   info "Use all function keys as function keys by default"
   defaults write -g com.apple.keyboard.fnState -bool true
-
-  darwin_install_iterm2_settings
 }
 
 darwin_finalize_base_setup() {
@@ -479,25 +477,6 @@ darwin_install_beets() {
   install_pkg lame
 
   install_beets_pip_pkgs
-}
-
-darwin_install_iterm2_settings() {
-  need_cmd bash
-
-  local plist="$HOME/Library/Preferences/com.googlecode.iterm2.plist"
-  if [ -f "$plist" ]; then
-    return 0
-  fi
-
-  local install_sh
-  install_sh="$(mktemp_file)"
-  cleanup_file "$install_sh"
-
-  info "Installing iTerm2 settings"
-  download \
-    https://raw.githubusercontent.com/fnichol/macosx-iterm2-settings/master/contrib/install-settings.sh \
-    "$install_sh"
-  indent bash "$install_sh"
 }
 
 darwin_set_bash_shell() {
