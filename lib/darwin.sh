@@ -267,18 +267,17 @@ darwin_install_xcode_cli_tools() {
 
 darwin_install_homebrew() {
   if ! command -v brew >/dev/null; then
-    need_cmd cat
-    need_cmd ruby
+    need_cmd bash
 
-    local install_rb
-    install_rb="$(mktemp_file)"
-    cleanup_file "$install_rb"
+    local install_sh
+    install_sh="$(mktemp_file)"
+    cleanup_file "$install_sh"
 
     info "Installing Homebrew"
     download \
-      https://raw.githubusercontent.com/Homebrew/install/master/install \
-      "$install_rb"
-    indent ruby -e "$(cat "$install_rb")" </dev/null
+      https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh \
+      "$install_sh"
+    indent bash "$install_sh)"
   fi
 
   indent brew update
