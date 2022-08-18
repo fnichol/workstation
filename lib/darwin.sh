@@ -206,16 +206,16 @@ darwin_install_graphical_packages() {
   killall Finder
 }
 
-# Implementation graciously borrowed and modified from the build-essential
-# Chef cookbook which has been graciously borrowed and modified from Tim
-# Sutton's osx-vm-templates project.
+# Implementation graciously borrowed and modified from the build-essential Chef
+# cookbook which has been graciously borrowed and modified from Tim Sutton's
+# osx-vm-templates project. Newer fallback case (which sadly seems to be the
+# new default) is from Homebrew's `install.sh`
 #
 # Source: https://github.com/chef-cookbooks/build-essential/blob/a4f9621020e930a0e4fa0ccb5b7957dbef8ab347/libraries/xcode_command_line_tools.rb#L182-L188
 # Source: https://github.com/timsutton/osx-vm-templates/blob/d029e89e04871b6c7a6c1cd0ec5beb7fa976f345/scripts/xcode-cli-tools.sh
+# Source: https://github.com/Homebrew/install/blob/c017ced9ca817138cc03acabb59454a0a0ca889e/install.sh#L870-L878
 darwin_install_xcode_cli_tools() {
-  need_cmd pkgutil
-
-  if pkgutil --pkgs=com.apple.pkg.CLTools_Executables >/dev/null; then
+  if [ -e "/Library/Developer/CommandLineTools/usr/bin/git" ]; then
     return 0
   fi
 
@@ -225,15 +225,14 @@ darwin_install_xcode_cli_tools() {
   need_cmd rm
   need_cmd sed
   need_cmd softwareupdate
-  need_cmd sw_vers
+  need_cmd sudo
   need_cmd touch
   need_cmd tr
+  need_cmd /usr/bin/xcode-select
 
-  local product os_vers
+  local product
 
-  info "Installing Xcode CLI Tools"
-
-  os_vers="$(sw_vers -productVersion | awk -F. '{print $1"."$2}')"
+  info "Installing Xcode Command Line Tools"
 
   # Create the placeholder file that's checked by the CLI Tools update .dist
   # code in Apple's SUS catalog
@@ -241,16 +240,28 @@ darwin_install_xcode_cli_tools() {
   # Find the CLI Tools update
   product="$(softwareupdate -l \
     | grep "\*.*Command Line" \
-    | grep "$os_vers" \
     | tail -n 1 \
     | awk -F"*" '{print $2}' \
     | sed -e 's/^ *//' \
     | tr -d '\n')"
-  # Install the update
-  indent softwareupdate -i "$product" --verbose
+  if [ -n "$product" ]; then
+    # Install the update
+    indent softwareupdate -i "$product" --verbose
+    sudo /usr/bin/xcode-select --switch /Library/Developer/CommandLineTools
+  fi
   # Remove the placeholder to prevent perpetual appearance in the update
   # utility
   rm -f /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+
+  if [ -z "$product" ]; then
+    info "Installing Command Line Tools via GUI (sorry!)"
+    sudo /usr/bin/xcode-select --install
+    echo
+    info "Press 'Enter' when the installation is completed"
+    echo
+    read -r
+    sudo /usr/bin/xcode-select --switch /Library/Developer/CommandLineTools
+  fi
 }
 
 darwin_install_homebrew() {
