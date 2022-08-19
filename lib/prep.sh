@@ -28,7 +28,7 @@ print_usage() {
                                 base-dot-configs, base-finalize,
                                 headless-pkgs, rust, ruby, go, node,
                                 headless-finalize, graphical-pkgs,
-                                graphical-dot-configs, graphical-finalize, vim,
+                                graphical-dot-configs, graphical-finalize,
                                 finish-base, finish-headless, finish-graphical]
         -s, --skip=<T>[,<T>..]  Skip specific tasks
                                 [values: hostname, pkg-init, update-system,
@@ -36,7 +36,7 @@ print_usage() {
                                 base-dot-configs, base-finalize,
                                 headless-pkgs, rust, ruby, go, node,
                                 headless-finalize, graphical-pkgs,
-                                graphical-dot-configs, graphical-finalize, vim,
+                                graphical-dot-configs, graphical-finalize,
                                 finish-base, finish-headless, finish-graphical]
 
     ARGS:
@@ -260,9 +260,6 @@ prepare_workstation() {
     fi
   fi
 
-  if should_run_task "vim" "$skips" "$onlys"; then
-    update_vim_config
-  fi
   if should_run_task "finish-base" "$skips" "$onlys"; then
     finish_base_setup
   fi
@@ -332,7 +329,7 @@ is_task_valid() {
     hostname | pkg-init | update-system | base-pkgs | preferences | keys | \
       bashrc | base-dot-configs | base-finalize | headless-pkgs | rust | \
       ruby | go | node | headless-finalize | graphical-pkgs | \
-      graphical-dot-configs | graphical-finalize | vim | finish-base | \
+      graphical-dot-configs | graphical-finalize | finish-base | \
       finish-headless | finish-graphical)
       return 0
       ;;
@@ -1160,13 +1157,6 @@ finalize_graphical_setup() {
       warn "Finalizing graphical setup on $_os not yet supported, skipping"
       ;;
   esac
-}
-
-update_vim_config() {
-  if [ -x "$HOME/.vim/update.sh" ] && [ ! -f "$HOME/.vim/.skip_update" ]; then
-    section "Updating vim configuration"
-    "$HOME/.vim/update.sh" >/dev/null 2>&1
-  fi
 }
 
 finish_base_setup() {
