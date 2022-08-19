@@ -434,8 +434,11 @@ darwin_add_homebrew_tap() {
 }
 
 darwin_install_apps_from_json() {
+  need_cmd awk
   need_cmd jq
+  need_cmd sw_vers
 
+  local ver_maj
   local app
   local id
   local json="$1"
@@ -447,8 +450,12 @@ darwin_install_apps_from_json() {
 
   install_pkg mas
 
-  if ! mas account | grep -q '@'; then
-    die "Not logged into App Store"
+  ver_maj="$(sw_vers -ProductVersion | awk -F. '{ print $1 }')"
+
+  if [ "$ver_maj" -lt 12 ]; then
+    if ! mas account | grep -q '@'; then
+      die "Not logged into App Store"
+    fi
   fi
 
   jq -r '. | to_entries | .[] | @sh "app=\(.key); id=\(.value)"' "$json" \
