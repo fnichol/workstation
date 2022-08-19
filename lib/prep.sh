@@ -1047,7 +1047,7 @@ finalize_headless_setup() {
       arch_finalize_headless_setup
       ;;
     Darwin)
-      # Nothing to do yet
+      darwin_finalize_headless_setup
       ;;
     FreeBSD)
       # Nothing to do yet
