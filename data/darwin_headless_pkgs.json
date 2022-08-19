@@ -24,6 +24,7 @@
   "mercurial",
   "minikube",
   "neovim",
+  "openjdk",
   "packer",
   "parallel",
   "pkg-config",

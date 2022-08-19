@@ -1,7 +1,6 @@
 [
   "dropshare",
   "homebrew/cask/docker",
-  "openjdk",
   "pgadmin4",
   "powershell",
   "vagrant",
