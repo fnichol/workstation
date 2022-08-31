@@ -861,9 +861,12 @@ install_rust() {
   json_items "$_data_path/rust_cargo_plugins.json" | while read -r plugin; do
     if ! echo "$installed_plugins" | grep -q "^$plugin\$"; then
       info "Installing $plugin"
-      indent "$cargo" install --verbose "$plugin"
+      indent "$cargo" install --locked "$plugin"
     fi
   done
+
+  info "Updating Cargo plugins"
+  indent "$cargo" install-update --all
 }
 
 install_ruby() {
