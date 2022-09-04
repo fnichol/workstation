@@ -297,10 +297,15 @@ darwin_install_homebrew() {
 darwin_install_pkg() {
   need_cmd basename
   need_cmd brew
+  need_cmd cut
   need_cmd wc
 
-  local pkg
-  pkg="$(basename "$1")"
+  local pkg extra_args
+  pkg="$(basename "$1" | cut -d' ' -f 1)"
+  extra_args="$(basename "$1" | cut -d' ' -f 2-)"
+  if [ "$pkg" = "$extra_args" ]; then
+    extra_args=""
+  fi
 
   if [ -n "${2:-}" ]; then
     need_cmd grep
@@ -326,18 +331,30 @@ darwin_install_pkg() {
     return 0
   fi
 
-  info "Installing package '$pkg'"
-  indent env HOMEBREW_NO_AUTO_UPDATE=true brew install "$pkg" </dev/null
+  if [ -n "$extra_args" ]; then
+    info "Installing package '$pkg' ($extra_args)"
+    # shellcheck disable=2086
+    indent env HOMEBREW_NO_AUTO_UPDATE=true brew install \
+      "$pkg" $extra_args </dev/null
+  else
+    info "Installing package '$pkg'"
+    indent env HOMEBREW_NO_AUTO_UPDATE=true brew install "$pkg" </dev/null
+  fi
 }
 
 darwin_install_cask_pkg() {
   need_cmd basename
   need_cmd brew
+  need_cmd cut
   need_cmd wc
 
-  local pkg pkg
-  pkg="$1"
-  pkg_name="$(basename "$pkg")"
+  local pkg pkg_name extra_args
+  pkg="$(echo "$1" | cut -d' ' -f 1)"
+  pkg_name="$(basename "$1" | cut -d' ' -f 1)"
+  extra_args="$(basename "$1" | cut -d' ' -f 2-)"
+  if [ "$pkg_name" = "$extra_args" ]; then
+    extra_args=""
+  fi
 
   if [ -n "${2:-}" ]; then
     need_cmd grep
@@ -363,8 +380,15 @@ darwin_install_cask_pkg() {
     return 0
   fi
 
-  info "Installing cask package '$pkg'"
-  indent env HOMEBREW_NO_AUTO_UPDATE=true brew install "$pkg" </dev/null
+  if [ -n "$extra_args" ]; then
+    info "Installing cask package '$pkg' ($extra_args)"
+    # shellcheck disable=2086
+    indent env HOMEBREW_NO_AUTO_UPDATE=true brew install \
+      "$pkg" $extra_args </dev/null
+  else
+    info "Installing cask package '$pkg'"
+    indent env HOMEBREW_NO_AUTO_UPDATE=true brew install "$pkg" </dev/null
+  fi
 }
 
 darwin_install_app() {
