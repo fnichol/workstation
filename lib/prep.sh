@@ -1111,7 +1111,7 @@ install_graphical_dot_configs() {
       manage_homesick_repo "fnichol/dotx"
       ;;
     Darwin)
-      # Nothing to do yet
+      manage_homesick_repo "fnichol/dotmac"
       ;;
     FreeBSD)
       # Nothing to do yet
@@ -1142,7 +1142,7 @@ finalize_graphical_setup() {
       arch_finalize_graphical_setup
       ;;
     Darwin)
-      # Nothing to do yet
+      darwin_finalize_graphical_setup
       ;;
     FreeBSD)
       # Nothing to do yet

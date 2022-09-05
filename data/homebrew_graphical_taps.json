@@ -1,1 +1,4 @@
-["homebrew/cask-fonts"]
+[
+  "homebrew/cask-fonts",
+  "koekeishiya/formulae"
+]
