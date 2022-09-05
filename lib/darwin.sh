@@ -539,7 +539,7 @@ darwin_install_apps_from_json() {
 
   install_pkg mas
 
-  ver_maj="$(sw_vers -ProductVersion | awk -F. '{ print $1 }')"
+  ver_maj="$(sw_vers -productVersion | awk -F. '{ print $1 }')"
 
   if [ "$ver_maj" -lt 12 ]; then
     if ! mas account | grep -q '@'; then
