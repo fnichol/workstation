@@ -25,6 +25,26 @@ openbsd_install_base_packages() {
   install_pkgs_from_json "$data_path/openbsd_base_pkgs.json"
 }
 
+openbsd_finalize_base_setup() {
+  openbsd_install_alacritty_terminfo
+}
+
+openbsd_install_alacritty_terminfo() {
+  need_cmd infocmp
+
+  if ! infocmp alacritty >/dev/null 2>&1; then
+    local alacrity_info
+    alacrity_info="$(mktemp_file)"
+    cleanup_file "$alacrity_info"
+
+    info "Adding alacritty to terminfo"
+    download \
+      https://raw.githubusercontent.com/alacritty/alacritty/master/extra/alacritty.info \
+      "$alacrity_info"
+    indent doas tic -xe alacritty,alacritty-direct "$alacrity_info"
+  fi
+}
+
 openbsd_install_headless_packages() {
   local data_path="$1"
 

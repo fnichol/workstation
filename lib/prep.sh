@@ -774,7 +774,7 @@ finalize_base_setup() {
       # Nothing to do yet
       ;;
     OpenBSD)
-      # Nothing to do yet
+      openbsd_finalize_base_setup
       ;;
     RedHat)
       # Nothing to do yet
