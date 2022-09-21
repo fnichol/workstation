@@ -912,7 +912,7 @@ install_ruby() {
   if [ ! -f "$checked_versions" ] \
     || [ -n "$(find "$checked_versions" -mmin +720)" ]; then
     info "Updating the list of Ruby versions"
-    indent ruby-install --latest
+    indent ruby-install --update
   fi
 
   # Install latest stable version of Ruby
