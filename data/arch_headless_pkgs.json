@@ -5,6 +5,7 @@
   "clang",
   "cmake",
   "docker",
+  "docker-buildx",
   "docker-compose",
   "eksctl",
   "fd",
