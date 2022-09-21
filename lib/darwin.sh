@@ -236,7 +236,7 @@ darwin_finalize_graphical_setup() {
     cmd="$(command -v yabai)"
     sha="$(shasum -a 256 "$cmd" | cut -d' ' -f 1)"
     sudoers="$USER ALL = (root) NOPASSWD: sha256:$sha $cmd --load-sa"
-    if [ ! -f "$dst" ] || ! grep -q -E "^${sudoers}$" "$dst"; then
+    if [ ! -f "$dst" ] || ! grep -q "^${sudoers}$" "$dst"; then
       info "Creating $dst"
       echo "$sudoers" | sudo tee "$dst" >/dev/null
     fi
