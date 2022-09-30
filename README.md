@@ -67,6 +67,8 @@ Alternatively, if `wget` is not present you can use `curl`:
 
 ```sh
 curl -LO https://github.com/fnichol/workstation/archive/master.tar.gz
+tar xfz master.tar.gz
+cd workstation-master
 ```
 
 #### Windows Platforms
