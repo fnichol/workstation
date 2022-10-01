@@ -189,8 +189,11 @@ darwin_finalize_base_setup() {
 }
 
 darwin_finalize_headless_setup() {
-  local src=/usr/local/opt/openjdk/libexec/openjdk.jdk
-  local dst=/Library/Java/JavaVirtualMachines/openjdk.jdk
+  need_cmd brew
+
+  local src dst
+  src="$(brew --prefix)/opt/openjdk/libexec/openjdk.jdk"
+  dst=/Library/Java/JavaVirtualMachines/openjdk.jdk
 
   if [ -d "$src" ] && [ ! -L "$dst" ]; then
     info "Symlinking OpenJDK to $dst"
