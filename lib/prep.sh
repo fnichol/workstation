@@ -405,6 +405,19 @@ init() {
     _os="Unknown"
   fi
 
+  _arch="$(uname -m)"
+  if [ "$_os" = "Darwin" ] && [ "$_arch" = "x86_64" ]; then
+    if [ "$(sysctl -in sysctl.proc_translated)" = "1" ]; then
+      # If we're on a Mac and the reported architecture is x86_64, then double
+      # check that the shell process isn't running under Rosetta 2 emulation,
+      # otherwise we can't determine the true underlying system architecture.
+      #
+      # See:
+      # https://indiespark.top/software/detecting-apple-silicon-shell-script/
+      _arch="arm64"
+    fi
+  fi
+
   case "$_system" in
     Darwin)
       # shellcheck source=lib/unix.sh
@@ -479,6 +492,17 @@ sanitize_path() {
   if echo "$PATH" | tr ':' '\n' | grep -q "^${volta_bin_path}$"; then
     info "Removing volta bin path '$volta_bin_path' from PATH"
     PATH="$(echo "$PATH" | sed -e "s,${volta_bin_path}:\?,,")"
+  fi
+
+  if [ "$_os" = "Darwin" ] && [ "$_arch" = "arm64" ]; then
+    local homebrew_prefix="/opt/homebrew"
+    local p
+    for p in sbin bin; do
+      if ! echo "$PATH" | tr ':' '\n' | grep -q "^$homebrew_prefix/$p$"; then
+        info "Adding homebrew $p path '$homebrew_prefix/$p' to PATH"
+        PATH="$homebrew_prefix/$p:$PATH"
+      fi
+    done
   fi
 }
 
