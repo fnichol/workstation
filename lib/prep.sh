@@ -1010,13 +1010,16 @@ install_go() {
 
   local arch kernel machine tar
   kernel="$(uname -s | tr '[:upper:]' '[:lower:]')"
-  machine="$(uname -m)"
+  machine="$_arch"
   tar="$(mktemp_file)"
   cleanup_file "$tar"
 
   case "$machine" in
     x86_64 | amd64)
       arch="amd64"
+      ;;
+    arm64)
+      arch="arm64"
       ;;
     i686)
       arch="386"
