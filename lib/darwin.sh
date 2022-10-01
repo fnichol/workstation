@@ -34,6 +34,7 @@ darwin_set_hostname() {
 
 darwin_setup_package_system() {
   darwin_install_xcode_cli_tools
+  darwin_install_rosetta
   darwin_install_homebrew
 }
 
@@ -341,6 +342,15 @@ darwin_install_xcode_cli_tools() {
     echo
     read -r
     sudo /usr/bin/xcode-select --switch /Library/Developer/CommandLineTools
+  fi
+}
+
+darwin_install_rosetta() {
+  if [ "$_arch" = "amd64" ]; then
+    if ! pgrep oahd >/dev/null 2>&1; then
+      info "Installing Rosetta 2 on Apple silicon"
+      /usr/sbin/softwareupdate --install-rosetta --agree-to-license
+    fi
   fi
 }
 
