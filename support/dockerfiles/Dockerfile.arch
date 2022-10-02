@@ -1,10 +1,11 @@
-ARG VERSION=latest
+ARG VERSION=base-20220925.0.89186
 FROM archlinux:$VERSION
 
 ARG VERSION
 ARG USER=jdoe
 ARG GROUP=$USER
 
+# hadolint ignore=DL4006
 RUN pacman -Syyu --noconfirm \
   && pacman -Scc --noconfirm \
   && pacman-key --init \
