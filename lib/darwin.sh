@@ -346,6 +346,7 @@ darwin_install_xcode_cli_tools() {
 }
 
 darwin_install_rosetta() {
+  # shellcheck disable=2154
   if [ "$_arch" = "amd64" ]; then
     if ! pgrep oahd >/dev/null 2>&1; then
       info "Installing Rosetta 2 on Apple silicon"
