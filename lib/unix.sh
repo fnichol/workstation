@@ -114,23 +114,27 @@ unix_install_volta() {
 }
 
 unix_latest_chruby_version() {
-  unix_latest_version "https://github.com/postmodern/chruby"
+  unix_latest_github_release "postmodern/chruby"
 }
 
 unix_latest_ruby_install_version() {
-  unix_latest_version "https://github.com/postmodern/ruby-install"
+  unix_latest_github_release "postmodern/ruby-install"
 }
 
 unix_latest_volta_version() {
-  unix_latest_version "https://github.com/volta-cli/volta"
+  unix_latest_github_release "volta-cli/volta"
 }
 
-unix_latest_version() {
+unix_latest_github_release() {
   local repo="$1"
+  local latest
+  latest="$(mktemp_file)"
+  cleanup_file "$latest"
 
-  need_cmd awk
+  need_cmd jq
+  need_cmd sed
 
-  sorted_git_tags "$repo" | awk -F/ '
-      ($NF ~ /^v[0-9]+\./ && $NF !~ /\^\{\}$/) { last = $NF }
-      END { sub(/^v/, "", last); print last }'
+  download "https://api.github.com/repos/$repo/releases/latest" \
+    "$latest" >/dev/null
+  jq -r .tag_name <"$latest" | sed 's/^v//'
 }
