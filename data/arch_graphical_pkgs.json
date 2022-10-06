@@ -63,6 +63,15 @@
   "ifplugd",
   {
     "#": [
+      "Cross-platform C libraries that allow you to easily implement VNC",
+      "server or client functionality.",
+      "Used as the VNC implementation with Remmina as the main GUI.",
+      "(https://libvnc.github.io/)"
+    ],
+    "name": "libvncserver"
+  },
+  {
+    "#": [
       "Control brightness on backlit-controllers",
       "(https://github.com/haikarainen/light)"
     ],
