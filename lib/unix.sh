@@ -114,15 +114,25 @@ unix_install_volta() {
 }
 
 unix_latest_chruby_version() {
-  unix_latest_github_release "postmodern/chruby"
+  unix_latest_git_tag "https://github.com/postmodern/chruby"
 }
 
 unix_latest_ruby_install_version() {
-  unix_latest_github_release "postmodern/ruby-install"
+  unix_latest_git_tag "https://github.com/postmodern/ruby-install"
 }
 
 unix_latest_volta_version() {
   unix_latest_github_release "volta-cli/volta"
+}
+
+unix_latest_git_tag() {
+  local repo="$1"
+
+  need_cmd awk
+
+  sorted_git_tags "$repo" | awk -F/ '
+    ($NF ~ /^v[0-9]+\./ && $NF !~ /\^\{\}$/) { last = $NF }
+    END { sub(/^v/, "", last); print last }'
 }
 
 unix_latest_github_release() {
