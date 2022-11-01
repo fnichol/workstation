@@ -1,6 +1,7 @@
 [
   "awscli",
   "axel",
+  "butane",
   "cmake",
   "coreutils",
   "direnv",
