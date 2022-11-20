@@ -114,6 +114,10 @@ darwin_set_preferences() {
   defaults write com.apple.menuextra.clock DateFormat -string "HH:mm::ss"
   defaults write com.apple.menuextra.clock FlashDateSeparators -bool false
   defaults write com.apple.menuextra.clock IsAnalog -bool false
+  defaults write com.apple.menuextra.clock ShowAMPM -bool true
+  defaults write com.apple.menuextra.clock Show24Hour -bool true
+  defaults write com.apple.menuextra.clock ShowSeconds -bool true
+  defaults write com.apple.menuextra.clock ShowDayOfWeek -bool false
 
   info "Announce time on the hour"
   defaults write com.apple.speech.synthesis.general.prefs \
