@@ -209,40 +209,23 @@ darwin_finalize_graphical_setup() {
 
   if ! csrutil status \
     | grep -q "System Integrity Protection status: enabled"; then
-    need_cmd yabai
-    need_cmd sudo
-
-    if ! yabai --check-sa; then
-      if [ "$(darwin_yabai_service_status)" != "none" ]; then
-        info "Stopping yabai service"
-        indent brew services stop yabai
-      fi
-
-      info "Installing yabai scripting-addition"
-      sudo yabai --uninstall-sa || true
-      sudo yabai --install-sa
-      info "Loading yabai scripting-addition"
-      sudo yabai --load-sa
-
-    fi
-
-    if [ "$(darwin_yabai_service_status)" = "none" ]; then
-      info "Starting yabai service"
-      indent brew services start yabai
-    fi
-
     need_cmd shasum
     need_cmd cut
     need_cmd tee
 
     local dst cmd sha sudoers
     dst=/etc/sudoers.d/yabai
-    cmd="$(command -v yabai)"
+    cmd="$(brew --prefix yabai)/bin/yabai"
     sha="$(shasum -a 256 "$cmd" | cut -d' ' -f 1)"
     sudoers="$USER ALL = (root) NOPASSWD: sha256:$sha $cmd --load-sa"
     if [ ! -f "$dst" ] || ! grep -q "^${sudoers}$" "$dst"; then
       info "Creating $dst"
       echo "$sudoers" | sudo tee "$dst" >/dev/null
+    fi
+
+    if [ "$(darwin_yabai_service_status)" = "none" ]; then
+      info "Starting yabai service"
+      indent brew services start yabai
     fi
 
     if [ "$(darwin_skhd_service_status)" = "none" ]; then
