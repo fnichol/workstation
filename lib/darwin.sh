@@ -191,6 +191,7 @@ darwin_set_preferences() {
 
 darwin_finalize_base_setup() {
   darwin_set_bash_shell
+  darwin_install_terminfo_entries
 }
 
 darwin_finalize_headless_setup() {
@@ -612,4 +613,29 @@ darwin_set_bash_shell() {
     info "Setting '$bash_shell' as default shell for '$USER'"
     indent sudo chsh -s "$bash_shell" "$USER"
   fi
+}
+
+# Ensure that common and useful terminfo entries are present on system's
+# ncurses database which is old and out-of-date.
+#
+# See:
+# https://gpanders.com/blog/the-definitive-guide-to-using-tmux-256color-on-macos/
+darwin_install_terminfo_entries() {
+  local entries="alacritty alacritty-direct tmux-256color screen-256color"
+  local entry
+
+  need_cmd brew
+  need_cmd sudo
+
+  for entry in $entries; do
+    if ! /usr/bin/infocmp "$entry" >/dev/null 2>&1; then
+      local info
+      info="$(mktemp_file)"
+      cleanup_file "$info"
+
+      info "Adding '$entry' to terminfo"
+      "$(brew --prefix ncurses)/bin/infocmp" -x "$entry" >"$info"
+      sudo /usr/bin/tic -x "$info"
+    fi
+  done
 }
