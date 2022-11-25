@@ -918,15 +918,23 @@ install_ruby() {
 
   need_cmd uname
 
-  local sudo
+  local sudo prefix
   case "$(uname -s)" in
     OpenBSD)
       need_cmd doas
       sudo="doas"
+      prefix="/usr/local"
+      ;;
+    Darwin)
+      need_cmd brew
+      need_cmd sudo
+      sudo="sudo"
+      prefix="$(brew --prefix)"
       ;;
     *)
       need_cmd sudo
       sudo="sudo"
+      prefix="/usr/local"
       ;;
   esac
 
@@ -947,8 +955,8 @@ install_ruby() {
   if [ ! -f /etc/profile.d/chruby.sh ]; then
     info "Creating /etc/profile.d/chruby.sh"
     cat <<-EOF | "$sudo" tee /etc/profile.d/chruby.sh >/dev/null
-	source /usr/local/share/chruby/chruby.sh
-	source /usr/local/share/chruby/auto.sh
+	source $prefix/share/chruby/chruby.sh
+	source $prefix/share/chruby/auto.sh
 	EOF
   fi
 
