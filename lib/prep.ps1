@@ -88,6 +88,14 @@ function Install-Chocolatey {
     Write-InfoLine "Adding '$binpath' to env:PATH"
     $env:PATH += ";$binpath"
   }
+
+  $feature = "allowGlobalConfirmation"
+  $confirmDisabled = choco feature list -r `
+    | Select-String -Pattern "^$feature\|Disabled\|" -Quiet
+  if ($confirmDisabled) {
+    Write-InfoLine "Enabling Chocolatey feature: '$feature'"
+    Invoke-gsudo { choco feature enable -n "$feature" }
+  }
 }
 
 function Update-System {
