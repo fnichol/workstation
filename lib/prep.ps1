@@ -60,7 +60,7 @@ function Install-Scoop {
   }
 
   $buckets = @(scoop bucket list | ForEach-Object { $_.Name })
-  foreach ($bucket in @("extras", "nerd-fonts")) {
+  foreach ($bucket in @("extras", "nerd-fonts", "sysinternals")) {
     if (-not ($buckets -contains "$bucket")) {
       Install-Package git
       Write-InfoLine "Adding Scoop bucket '$bucket"

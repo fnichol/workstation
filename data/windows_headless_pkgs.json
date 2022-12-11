@@ -6,6 +6,7 @@
   "hadolint",
   "jo",
   "neovim",
+  "pstools",
   "shellcheck",
   "shfmt",
   "starship",
