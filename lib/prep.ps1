@@ -94,7 +94,7 @@ function Install-Chocolatey {
     | Select-String -Pattern "^$feature\|Disabled\|" -Quiet
   if ($confirmDisabled) {
     Write-InfoLine "Enabling Chocolatey feature: '$feature'"
-    Invoke-gsudo { choco feature enable -n "$feature" }
+    Invoke-gsudo { choco feature enable --name=$using:feature }
   }
 }
 
