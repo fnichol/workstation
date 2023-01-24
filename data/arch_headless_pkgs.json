@@ -1,6 +1,7 @@
 [
   "aws-cli",
   "axel",
+  "b3sum",
   "base-devel",
   "clang",
   "cmake",

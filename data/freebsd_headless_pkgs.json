@@ -1,6 +1,7 @@
 [
   "autoconf",
   "axel",
+  "b3sum",
   "cmake",
   "ctags",
   "direnv",

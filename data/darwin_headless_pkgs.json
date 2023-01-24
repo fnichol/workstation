@@ -1,6 +1,7 @@
 [
   "awscli",
   "axel",
+  "b3sum",
   "butane",
   "cmake",
   "coreutils",

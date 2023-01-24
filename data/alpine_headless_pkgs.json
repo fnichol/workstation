@@ -1,6 +1,7 @@
 [
   "ack",
   "axel",
+  "b3sum",
   "build-base",
   "cmake",
   "fd",
