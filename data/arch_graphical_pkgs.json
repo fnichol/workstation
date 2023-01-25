@@ -221,7 +221,21 @@
     "name": "sysstat"
   },
   "ttf-inconsolata",
+  {
+    "#": [
+      "Patched font Inconsolata from the nerd-fonts library",
+      "(https://github.com/ryanoasis/nerd-fonts)"
+    ],
+    "name": "ttf-inconsolata-nerd"
+  },
   "ttf-jetbrains-mono",
+  {
+    "#": [
+      "A Nerd Font patched version of JetBrains Mono",
+      "(https://www.nerdfonts.com)"
+    ],
+    "name": "ttf-jetbrains-mono-nerd"
+  },
   "vlc",
   {
     "#": [

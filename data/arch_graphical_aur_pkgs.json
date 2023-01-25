@@ -21,20 +21,6 @@
   },
   {
     "#": [
-      "Patched font Inconsolata from the nerd-fonts library",
-      "(https://github.com/ryanoasis/nerd-fonts)"
-    ],
-    "name": "nerd-fonts-inconsolata"
-  },
-  {
-    "#": [
-      "A Nerd Font patched version of JetBrains Mono",
-      "(https://www.nerdfonts.com)"
-    ],
-    "name": "nerd-fonts-jetbrains-mono"
-  },
-  {
-    "#": [
       "Full Regolith Desktop Environment, for the full stock experience.",
       "An Arch Linux port of the Regolith Linux Desktop.",
       "(https://github.com/regolith-linux/regolith-desktop)"
