@@ -5,6 +5,13 @@
   },
   {
     "#": [
+      "Control Elgato Stream Deck devices",
+      "(https://gitlab.gnome.org/World/boatswain)"
+    ],
+    "name": "boatswain"
+  },
+  {
+    "#": [
       "Project Cider. A new look into listening and enjoying music in style",
       " and performance. This is a git package, thus it compiles straight",
       "from the GitHub repository.",
