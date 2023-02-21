@@ -758,6 +758,11 @@ install_bashrc() {
       "$install_sh"
     info "Running installer"
     indent "$sudo" bash "$install_sh"
+
+    if check_cmd git; then
+      info "Adding /etc/bash to safe Git directories"
+      indent "$sudo" git config --global --add safe.directory /etc/bash
+    fi
   fi
 
 }
