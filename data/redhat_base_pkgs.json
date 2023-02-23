@@ -3,6 +3,7 @@
   "curl",
   "gawk",
   "git",
+  "iperf3",
   "psmisc",
   "pv",
   "screen",
