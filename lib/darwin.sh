@@ -187,6 +187,13 @@ darwin_set_preferences() {
 
   info "Use all function keys as function keys by default"
   defaults write -g com.apple.keyboard.fnState -bool true
+
+  info "Remove animation for switching between spaces"
+  defaults write com.apple.Accessibility ReduceMotionEnabled -int 1
+  defaults write com.apple.universalaccess reduceMotion -int 1
+
+  info "Disable rearranging of spaces"
+  defaults write com.apple.dock "mru-spaces" -int 0
 }
 
 darwin_finalize_base_setup() {
