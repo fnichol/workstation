@@ -72,9 +72,9 @@ arch_finalize_headless_setup() {
       indent sudo gpasswd -a "$USER" adm
     fi
 
-    svc=system76-firmware-daemon
-    arch_install_aur_pkg "$svc"
-    arch_enable_service "$svc"
+    svc=system76-firmware
+    arch_install_pkg "$svc"
+    arch_enable_service "${svc}-daemon"
 
     arch_install_aur_pkg firmware-manager
     arch_install_aur_pkg system76-dkms
