@@ -235,31 +235,17 @@ darwin_finalize_graphical_setup() {
       echo "$sudoers" | sudo tee "$dst" >/dev/null
     fi
 
-    if [ "$(darwin_yabai_service_status)" = "none" ]; then
+    if ! pgrep -q yabai; then
       info "Starting yabai service"
-      indent brew services start yabai
+      indent yabai --start-service
     fi
 
-    if [ "$(darwin_skhd_service_status)" = "none" ]; then
+    if ! pgrep -q skhd; then
       info "Starting skhd service"
-      indent brew services start skhd
+      indent skhd --start-service
     fi
 
   fi
-}
-
-darwin_yabai_service_status() {
-  need_cmd brew
-  need_cmd jq
-
-  brew services list --json | jq -r '.[] | select(.name == "yabai") | .status'
-}
-
-darwin_skhd_service_status() {
-  need_cmd brew
-  need_cmd jq
-
-  brew services list --json | jq -r '.[] | select(.name == "skhd") | .status'
 }
 
 darwin_install_headless_packages() {
