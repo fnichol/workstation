@@ -1418,10 +1418,10 @@ latest_go_version() {
   version="$(mktemp_file)"
   cleanup_file "$version"
 
-  need_cmd cat
+  need_cmd head
 
-  download "https://golang.org/VERSION?m=text" "$version" >/dev/null
-  cat "$version"
+  download "https://go.dev/VERSION?m=text" "$version" >/dev/null
+  head -n 1 "$version"
 }
 
 json_items() {
