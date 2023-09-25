@@ -992,7 +992,7 @@ install_go() {
       ;;
   esac
 
-  need_cmd cat
+  need_cmd head
   need_cmd rm
   need_cmd sudo
 
@@ -1002,7 +1002,7 @@ install_go() {
 
   if [ -f /usr/local/go/VERSION ]; then
     local installed_ver
-    installed_ver="$(cat /usr/local/go/VERSION)"
+    installed_ver="$(head -n 1 /usr/local/go/VERSION)"
     if [ "$installed_ver" = "$ver" ]; then
       info "Current version '$ver' is installed"
       return 0
