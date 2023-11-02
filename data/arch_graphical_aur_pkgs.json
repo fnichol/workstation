@@ -5,13 +5,6 @@
   },
   {
     "#": [
-      "Control Elgato Stream Deck devices",
-      "(https://gitlab.gnome.org/World/boatswain)"
-    ],
-    "name": "boatswain"
-  },
-  {
-    "#": [
       "Project Cider. A new look into listening and enjoying music in style",
       " and performance. This is a git package, thus it compiles straight",
       "from the GitHub repository.",
@@ -46,6 +39,13 @@
   {
     "#": ["Slack Desktop (Beta) for Linux (https://slack.com/downloads)"],
     "name": "slack-desktop"
+  },
+  {
+    "#": [
+      "A Linux compatible UI for the Elgato Stream Deck",
+      "(https://streamdeck-linux-gui.github.io/streamdeck-linux-gui/)"
+    ],
+    "name": "streamdeck-ui"
   },
   {
     "#": [
