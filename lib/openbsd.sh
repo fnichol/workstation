@@ -53,9 +53,11 @@ openbsd_install_headless_packages() {
 
 openbsd_install_rust() {
   install_pkg rust
+  install_pkg rust-analyzer
   install_pkg rust-clippy
   install_pkg rust-gdb
   install_pkg rust-rustfmt
+  install_pkg rust-src
 }
 
 openbsd_install_node() {
