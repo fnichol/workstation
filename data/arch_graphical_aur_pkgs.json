@@ -42,10 +42,10 @@
   },
   {
     "#": [
-      "A Linux compatible UI for the Elgato Stream Deck",
-      "(https://streamdeck-linux-gui.github.io/streamdeck-linux-gui/)"
+      "An elegant Linux app for the Elgato Stream Deck with support for plugins.",
+      "(https://github.com/StreamController/StreamController)"
     ],
-    "name": "streamdeck-ui"
+    "name": "streamcontroller"
   },
   {
     "#": [
