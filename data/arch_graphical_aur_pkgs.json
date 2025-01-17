@@ -5,12 +5,11 @@
   },
   {
     "#": [
-      "Project Cider. A new look into listening and enjoying music in style",
-      " and performance. This is a git package, thus it compiles straight",
-      "from the GitHub repository.",
-      "(https://github.com/CiderApp/Cider.git)"
+      "A cross-platform Apple Music experience built on Vue.js and written",
+      "from the ground up with performance in mind.",
+      "(https://cider.sh/)"
     ],
-    "name": "cider"
+    "name": "cider2-bin"
   },
   {
     "#": [
