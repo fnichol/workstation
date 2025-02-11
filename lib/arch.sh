@@ -169,35 +169,7 @@ arch_finalize_graphical_setup() {
     arch_start_service vmware-vmblock-fuse.service
   fi
 
-  if grep -q '^#greeter-session=' /etc/lightdm/lightdm.conf; then
-    info "Initializing lightdm greeter-session"
-    sudo sed -i -e 's|^#\(greeter-session\)=\(.*\)$|\1=\2|' \
-      /etc/lightdm/lightdm.conf
-  fi
-  if ! grep -q '^greeter-session=lightdm-webkit2-greeter$' \
-    /etc/lightdm/lightdm.conf; then
-    info "Setting lightdm greeter"
-    sudo sed -i -e 's|^\(greeter-session\)=.*$|\1=lightdm-webkit2-greeter|' \
-      /etc/lightdm/lightdm.conf
-  fi
-  if grep -q '^#user-session=' /etc/lightdm/lightdm.conf; then
-    info "Initializing lightdm user-session"
-    sudo sed -i -e 's|^#\(user-session\)=\(.*\)$|\1=\2|' \
-      /etc/lightdm/lightdm.conf
-  fi
-  if ! grep -q '^user-session=regolith$' \
-    /etc/lightdm/lightdm.conf; then
-    info "Setting lightdm user-session"
-    sudo sed -i -e 's|^\(user-session\)=.*$|\1=regolith|' \
-      /etc/lightdm/lightdm.conf
-  fi
-  if ! grep -q -E '^webkit_theme\s*=\s*litarvan$' \
-    /etc/lightdm/lightdm-webkit2-greeter.conf; then
-    info "Configuring lightdm-webkit2-greeter"
-    sudo sed -i -e 's|^\(webkit_theme *\)=.*$|\1= litarvan|' \
-      /etc/lightdm/lightdm-webkit2-greeter.conf
-  fi
-  svc=lightdm.service
+  svc=cosmic-greeter.service
   if [ -f "/usr/lib/systemd/system/$svc" ]; then
     arch_enable_service "$svc"
   fi
@@ -273,16 +245,6 @@ arch_finalize_graphical_setup() {
 	fi
 	EOF
     sudo chmod 0755 "$xinitrc_d"
-  fi
-
-  if ! grep -q -E '^# regolith 1.x compat$' /etc/regolith/i3/config; then
-    info "Adding Regolith Linux 1.x compat config.d includes"
-    cat <<-'EOF' | sudo tee -a /etc/regolith/i3/config >/dev/null
-
-	# regolith 1.x compat
-	# Include any user i3 partials
-	include $HOME/.config/regolith/i3/config.d/*
-	EOF
   fi
 }
 

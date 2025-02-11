@@ -9,6 +9,13 @@
   "chromium",
   {
     "#": [
+      "Session manager for the COSMIC desktop environment",
+      "(https://github.com/pop-os/cosmic-session)"
+    ],
+    "name": "cosmic-session"
+  },
+  {
+    "#": [
       "The CUPS Printing System - daemon package",
       "(https://openprinting.github.io/cups/)"
     ],
