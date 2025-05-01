@@ -216,36 +216,7 @@ darwin_finalize_headless_setup() {
 }
 
 darwin_finalize_graphical_setup() {
-  need_cmd csrutil
-  need_cmd grep
-
-  if ! csrutil status \
-    | grep -q "System Integrity Protection status: enabled"; then
-    need_cmd shasum
-    need_cmd cut
-    need_cmd tee
-
-    local dst cmd sha sudoers
-    dst=/etc/sudoers.d/yabai
-    cmd="$(brew --prefix yabai)/bin/yabai"
-    sha="$(shasum -a 256 "$cmd" | cut -d' ' -f 1)"
-    sudoers="$USER ALL = (root) NOPASSWD: sha256:$sha $cmd --load-sa"
-    if [ ! -f "$dst" ] || ! grep -q "^${sudoers}$" "$dst"; then
-      info "Creating $dst"
-      echo "$sudoers" | sudo tee "$dst" >/dev/null
-    fi
-
-    if ! pgrep -q yabai; then
-      info "Starting yabai service"
-      indent yabai --start-service
-    fi
-
-    if ! pgrep -q skhd; then
-      info "Starting skhd service"
-      indent skhd --start-service
-    fi
-
-  fi
+  return 0
 }
 
 darwin_install_headless_packages() {
