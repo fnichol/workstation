@@ -719,13 +719,12 @@ generate_keys() {
     indent ssh-keygen \
       -N '' \
       -C "${USER}@${hostname}-$(date -u +%FT%TZ)" \
-      -t rsa \
-      -b 4096 \
+      -t ed25519 \
       -a 100 \
-      -f "$HOME/.ssh/id_rsa"
+      -f "$HOME/.ssh/id_ed25519"
     chmod 0700 "$HOME/.ssh"
-    chmod 0600 "$HOME/.ssh/id_rsa"
-    chmod 0644 "$HOME/.ssh/id_rsa.pub"
+    chmod 0600 "$HOME/.ssh/id_ed25519"
+    chmod 0644 "$HOME/.ssh/id_ed25519.pub"
   fi
 }
 
