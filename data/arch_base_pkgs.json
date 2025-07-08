@@ -5,7 +5,6 @@
   "gawk",
   "git",
   "git-delta",
-  "gvim",
   "htop",
   "inetutils",
   "iperf3",
@@ -19,6 +18,7 @@
   "screen",
   "tmux",
   "tree",
+  "vim",
   "wget",
   "unzip"
 ]

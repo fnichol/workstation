@@ -4,21 +4,6 @@
     "name": "1password"
   },
   {
-    "#": [
-      "A cross-platform Apple Music experience built on Vue.js and written",
-      "from the ground up with performance in mind.",
-      "(https://cider.sh/)"
-    ],
-    "name": "cider2-bin"
-  },
-  {
-    "#": [
-      "Manage all your JetBrains Projects and Tools",
-      "(https://www.jetbrains.com/toolbox/)"
-    ],
-    "name": "jetbrains-toolbox"
-  },
-  {
     "#": ["Slack Desktop (Beta) for Linux (https://slack.com/downloads)"],
     "name": "slack-desktop"
   },
