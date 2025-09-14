@@ -720,7 +720,7 @@ generate_keys() {
       ;;
   esac
 
-  if [ ! -f "$HOME/.ssh/id_rsa" ]; then
+  if [ ! -f "$HOME/.ssh/id_ed25519" ]; then
     info "Generating SSH key for '$USER' on this system"
     mkdir -p "$HOME/.ssh"
     indent ssh-keygen \
