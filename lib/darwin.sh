@@ -277,11 +277,8 @@ darwin_install_xcode_cli_tools() {
   touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
   # Find the CLI Tools update
   product="$(softwareupdate --list \
-    | grep "\*.*Command Line" \
-    | tail -n 1 \
-    | awk -F"*" '{print $2}' \
-    | sed -e 's/^ *//' \
-    | tr -d '\n')"
+    | sed -n 's/.*Label: \(Command Line Tools for Xcode-.*\)/\1/p' \
+    | tail -n 1)"
   if [ -n "$product" ]; then
     # Install the update
     indent softwareupdate -i "$product" --verbose
