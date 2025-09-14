@@ -1,9 +1,6 @@
 [
   "cargo-edit",
-  "cargo-nextest",
   "cargo-outdated",
-  "cargo-readme",
   "cargo-udeps",
-  "cargo-update",
-  "cargo-watch"
+  "cargo-update"
 ]

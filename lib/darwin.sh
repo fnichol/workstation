@@ -67,6 +67,9 @@ darwin_set_preferences() {
   info "Automatically show and hide the Dock"
   defaults write com.apple.dock autohide -bool true
 
+  info "Remove the Dock autohide animation"
+  defaults write com.apple.dock "autohide-time-modifier" -float "0"
+
   info "Set icon size of Dock images"
   defaults write com.apple.dock tilesize -int 34
 
@@ -234,7 +237,9 @@ darwin_install_graphical_packages() {
   darwin_add_homebrew_taps_from_json "$data_path/homebrew_graphical_taps.json"
   install_pkgs_from_json "$data_path/darwin_graphical_pkgs.json"
   darwin_install_cask_pkgs_from_json "$data_path/darwin_graphical_cask_pkgs.json"
-  darwin_install_apps_from_json "$data_path/darwin_graphical_apps.json"
+  if [ "$(sysctl -n kern.hv_vmm_present)" = "0" ]; then
+    darwin_install_apps_from_json "$data_path/darwin_graphical_apps.json"
+  fi
   killall Dock
   killall Finder
 }
@@ -271,7 +276,7 @@ darwin_install_xcode_cli_tools() {
   # code in Apple's SUS catalog
   touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
   # Find the CLI Tools update
-  product="$(softwareupdate -l \
+  product="$(softwareupdate --list \
     | grep "\*.*Command Line" \
     | tail -n 1 \
     | awk -F"*" '{print $2}' \
@@ -292,7 +297,7 @@ darwin_install_xcode_cli_tools() {
     echo
     info "Press 'Enter' when the installation is completed"
     echo
-    read -r
+    read -r _wait
     sudo /usr/bin/xcode-select --switch /Library/Developer/CommandLineTools
   fi
 }

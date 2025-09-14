@@ -1,9 +1,5 @@
 [
   "dropshare",
   "homebrew/cask/docker",
-  "pgadmin4",
-  "powershell",
-  "vagrant",
-  "vagrant-vmware-utility",
-  "vmware-fusion"
+  "powershell"
 ]

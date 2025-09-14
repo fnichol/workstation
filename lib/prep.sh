@@ -170,7 +170,14 @@ invoke_cli() {
     _argv_hostname="$1"
   fi
 
+  # For some reason, you still can't sign into the App Store in a virtual
+  # machine running macOS *anything*, so I guess there won't be any App Store
+  # automation on VMs...
+  #
+  # See: https://support.apple.com/en-us/120468
+  # See: https://developer.apple.com/forums/thread/738564?answerId=767186022#767186022
   if [ "$(uname -s)" = "Darwin" ] \
+    && [ "$(sysctl -n kern.hv_vmm_present)" = "0" ] \
     && [ "$profile" = "graphical" ] \
     && [ ! -f "$HOME/Library/Preferences/com.apple.appstore.plist" ]; then
     printf -- "Not logged into App Store, please login and try again.\n\n"

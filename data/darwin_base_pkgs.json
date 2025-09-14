@@ -3,6 +3,7 @@
   "bash-completion",
   "bat",
   "curl",
+  "fd",
   "gawk",
   "git",
   "git-delta",
