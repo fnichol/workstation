@@ -200,8 +200,14 @@ darwin_set_preferences() {
 }
 
 darwin_finalize_base_setup() {
+  local ver_maj
+  ver_maj="$(sw_vers -productVersion | awk -F. '{ print $1 }')"
+
   darwin_set_bash_shell
-  darwin_install_terminfo_entries
+
+  if [ "$ver_maj" -lt 15 ]; then
+    darwin_install_terminfo_entries
+  fi
 }
 
 darwin_finalize_headless_setup() {
